@@ -28,7 +28,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @SuppressWarnings("JUnitTestMethodInProductSource")
-abstract class MovableChildFacadeIntegrationTest<T extends Movable, U extends Movable, V extends Movable> {
+public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U extends Movable, V extends Movable> {
 
     /**
      * Null ID message

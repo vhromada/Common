@@ -36,7 +36,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("JUnitTestMethodInProductSource")
-abstract class MovableServiceTest<T extends Movable> {
+public abstract class MovableServiceTest<T extends Movable> {
 
     /**
      * ID

@@ -35,7 +35,7 @@ import org.mockito.Mock;
  */
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("JUnitTestMethodInProductSource")
-abstract class MovableValidatorTest<T extends Movable, U extends Movable> {
+public abstract class MovableValidatorTest<T extends Movable, U extends Movable> {
 
     /**
      * ID

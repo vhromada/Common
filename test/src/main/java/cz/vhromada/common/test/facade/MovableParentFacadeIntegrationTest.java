@@ -27,7 +27,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  */
 @ExtendWith(SpringExtension.class)
 @SuppressWarnings("JUnitTestMethodInProductSource")
-abstract class MovableParentFacadeIntegrationTest<T extends Movable, U extends Movable> {
+public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U extends Movable> {
 
     /**
      * Test method for {@link MovableParentFacade#newData()}.

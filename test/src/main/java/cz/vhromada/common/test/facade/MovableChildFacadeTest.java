@@ -44,7 +44,7 @@ import org.mockito.Mock;
  */
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("JUnitTestMethodInProductSource")
-abstract class MovableChildFacadeTest<S extends Movable, T extends Movable, U extends Movable, V extends Movable> {
+public abstract class MovableChildFacadeTest<S extends Movable, T extends Movable, U extends Movable, V extends Movable> {
 
     /**
      * Result for invalid data
