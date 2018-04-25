@@ -34,7 +34,7 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
      */
     @Override
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         super.setUp();
 
         movable = null;
@@ -45,8 +45,8 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
      * service for movable data.
      */
     @Test
-    void constructor_NullCatalogService() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(null, getConverter(), getParentCatalogValidator(), getChildCatalogValidator()))
+    void constructor_NullMovableService() {
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(null, getConverter(), getParentMovableValidator(), getChildMovableValidator()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -56,7 +56,7 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
      */
     @Test
     void constructor_NullConverter() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), null, getParentCatalogValidator(), getChildCatalogValidator()))
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), null, getParentMovableValidator(), getChildMovableValidator()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -65,8 +65,8 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
      * parent common validator.
      */
     @Test
-    void constructor_NullParentCatalogValidator() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), null, getChildCatalogValidator()))
+    void constructor_NullParentMovableValidator() {
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), null, getChildMovableValidator()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -75,14 +75,14 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
      * child common validator.
      */
     @Test
-    void constructor_NullChildCatalogValidator() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentCatalogValidator(), null))
+    void constructor_NullChildMovableValidator() {
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentMovableValidator(), null))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override
-    protected MovableChildFacade<Movable, Movable> getCatalogChildFacade() {
-        return new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentCatalogValidator(), getChildCatalogValidator());
+    protected MovableChildFacade<Movable, Movable> getMovableChildFacade() {
+        return new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentMovableValidator(), getChildMovableValidator());
     }
 
     @Override

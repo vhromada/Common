@@ -1,6 +1,7 @@
 package cz.vhromada.common.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public final class CollectionUtils {
      */
     @SafeVarargs
     public static <T> List<T> newList(final T... data) {
-        return new ArrayList<>(List.of(data));
+        return new ArrayList<>(Arrays.asList(data));
     }
 
     /**

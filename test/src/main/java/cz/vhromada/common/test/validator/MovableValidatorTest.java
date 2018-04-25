@@ -57,7 +57,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * Initializes validator.
      */
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         movableValidator = getMovableValidator();
     }
 

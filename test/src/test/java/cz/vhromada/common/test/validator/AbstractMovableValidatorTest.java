@@ -50,7 +50,7 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
      * service for movable data.
      */
     @Test
-    void constructor_NullCatalogService() {
+    void constructor_NullMovableService() {
         assertThatThrownBy(() -> new AbstractMovableValidatorStub(getName(), null, KEY, VALUE)).isInstanceOf(IllegalArgumentException.class);
     }
 

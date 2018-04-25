@@ -68,7 +68,7 @@ public abstract class MovableServiceTest<T extends Movable> {
      * Initializes data.
      */
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         repository = getRepository();
         movableService = getMovableService();
         dataList = CollectionUtils.newList(getItem1(), getItem2());

@@ -78,14 +78,14 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
     /**
      * Instance of {@link MovableChildFacade}
      */
-    private MovableChildFacade<S, U> childCatalogFacade;
+    private MovableChildFacade<S, U> movableChildFacade;
 
     /**
      * Initializes facade for movable data.
      */
     @BeforeEach
-    void setUp() {
-        childCatalogFacade = getCatalogChildFacade();
+    public void setUp() {
+        movableChildFacade = getMovableChildFacade();
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(movableService.getAll()).thenReturn(CollectionUtils.newList(newParentDomain(1)));
         when(converter.convert(any(getChildDomainClass()), eq(getChildEntityClass()))).thenReturn(childEntity);
 
-        final Result<S> result = childCatalogFacade.get(1);
+        final Result<S> result = movableChildFacade.get(1);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -119,7 +119,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
     void get_NotExistingData() {
         when(movableService.getAll()).thenReturn(CollectionUtils.newList(newParentDomain(1)));
 
-        final Result<S> result = childCatalogFacade.get(Integer.MAX_VALUE);
+        final Result<S> result = movableChildFacade.get(Integer.MAX_VALUE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -138,7 +138,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
      */
     @Test
     void get_NullData() {
-        final Result<S> result = childCatalogFacade.get(null);
+        final Result<S> result = movableChildFacade.get(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -168,7 +168,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(parentValidator.validate(any(getParentEntityClass()), any())).thenReturn(new Result<>());
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.add(parentEntity, childEntity);
+        final Result<Void> result = movableChildFacade.add(parentEntity, childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -202,7 +202,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(parentValidator.validate(any(getParentEntityClass()), any())).thenReturn(invalidParentResult);
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(invalidChildResult);
 
-        final Result<Void> result = childCatalogFacade.add(parentEntity, childEntity);
+        final Result<Void> result = movableChildFacade.add(parentEntity, childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -229,7 +229,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(converter.convert(any(getChildEntityClass()), eq(getChildDomainClass()))).thenReturn(childDomain);
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.update(childEntity);
+        final Result<Void> result = movableChildFacade.update(childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -255,7 +255,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = childCatalogFacade.update(childEntity);
+        final Result<Void> result = movableChildFacade.update(childEntity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
@@ -276,7 +276,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(movableService.getAll()).thenReturn(CollectionUtils.newList(parentDomain));
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.remove(childEntity);
+        final Result<Void> result = movableChildFacade.remove(childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -301,7 +301,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = childCatalogFacade.remove(childEntity);
+        final Result<Void> result = movableChildFacade.remove(childEntity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
@@ -323,7 +323,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(movableService.getAll()).thenReturn(CollectionUtils.newList(newParentDomain(1)));
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.duplicate(childEntity);
+        final Result<Void> result = movableChildFacade.duplicate(childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -348,7 +348,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = childCatalogFacade.duplicate(childEntity);
+        final Result<Void> result = movableChildFacade.duplicate(childEntity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
@@ -373,7 +373,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
             newChildDomain(2)))));
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.moveUp(childEntity);
+        final Result<Void> result = movableChildFacade.moveUp(childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -398,7 +398,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = childCatalogFacade.moveUp(childEntity);
+        final Result<Void> result = movableChildFacade.moveUp(childEntity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
@@ -423,7 +423,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
             newChildDomain(2)))));
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = childCatalogFacade.moveDown(childEntity);
+        final Result<Void> result = movableChildFacade.moveDown(childEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -448,7 +448,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(childValidator.validate(any(getChildEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = childCatalogFacade.moveDown(childEntity);
+        final Result<Void> result = movableChildFacade.moveDown(childEntity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
@@ -473,7 +473,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         when(converter.convertCollection(anyList(), eq(getChildEntityClass()))).thenReturn(expectedData);
         when(parentValidator.validate(any(getParentEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<List<S>> result = childCatalogFacade.find(parentEntity);
+        final Result<List<S>> result = movableChildFacade.find(parentEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -500,7 +500,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         when(parentValidator.validate(any(getParentEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<List<S>> result = childCatalogFacade.find(parentEntity);
+        final Result<List<S>> result = movableChildFacade.find(parentEntity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -536,7 +536,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
      *
      * @return validator for movable data for parent data
      */
-    protected MovableValidator<U> getParentCatalogValidator() {
+    protected MovableValidator<U> getParentMovableValidator() {
         return parentValidator;
     }
 
@@ -545,7 +545,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
      *
      * @return validator for movable data for child data
      */
-    protected MovableValidator<S> getChildCatalogValidator() {
+    protected MovableValidator<S> getChildMovableValidator() {
         return childValidator;
     }
 
@@ -564,7 +564,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
      *
      * @return facade for movable data for child data
      */
-    protected abstract MovableChildFacade<S, U> getCatalogChildFacade();
+    protected abstract MovableChildFacade<S, U> getMovableChildFacade();
 
     /**
      * Returns parent entity.

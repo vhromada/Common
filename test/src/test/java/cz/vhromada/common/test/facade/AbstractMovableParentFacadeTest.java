@@ -25,7 +25,7 @@ class AbstractMovableParentFacadeTest extends MovableParentFacadeTest<Movable, M
      * service for movable data.
      */
     @Test
-    void constructor_NullCatalogService() {
+    void constructor_NullMovableService() {
         assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(null, getConverter(), getMovableValidator())).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -43,12 +43,12 @@ class AbstractMovableParentFacadeTest extends MovableParentFacadeTest<Movable, M
      * validator for movable data.
      */
     @Test
-    void constructor_NullCatalogValidator() {
+    void constructor_NullMovableValidator() {
         assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(getMovableService(), getConverter(), null)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override
-    protected MovableParentFacade<Movable> getCatalogParentFacade() {
+    protected MovableParentFacade<Movable> getMovableParentFacade() {
         return new AbstractMovableParentFacadeStub(getMovableService(), getConverter(), getMovableValidator());
     }
 
