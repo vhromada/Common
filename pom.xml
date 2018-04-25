@@ -7,15 +7,16 @@
     <parent>
         <groupId>cz.vhromada.maven</groupId>
         <artifactId>parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
     </parent>
 
     <groupId>cz.vhromada.common</groupId>
     <artifactId>common</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0</version>
 
     <name>Common</name>
-    <description>Java library from common components</description>
+    <description>Java library for common components</description>
     <url>https://github.com/vhromada/Common</url>
 
     <licenses>
@@ -40,46 +41,30 @@
         <url>git@github.com:vhromada/Common.git</url>
     </scm>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ehcache</groupId>
-            <artifactId>ehcache</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cz.vhromada.converters</groupId>
-            <artifactId>converters-orika</artifactId>
-            <version>3.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>cz.vhromada.validation</groupId>
-            <artifactId>result</artifactId>
-            <version>2.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.vhromada.test</groupId>
-            <artifactId>mockito-jupiter</artifactId>
-            <version>1.0.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>core</module>
+        <module>test</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>cz.vhromada.converters</groupId>
+                <artifactId>converters-core</artifactId>
+                <version>3.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.vhromada.validation</groupId>
+                <artifactId>result</artifactId>
+                <version>2.0.3</version>
+            </dependency>
+            <dependency>
+                <groupId>cz.vhromada.test</groupId>
+                <artifactId>mockito-jupiter</artifactId>
+                <version>1.0.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
