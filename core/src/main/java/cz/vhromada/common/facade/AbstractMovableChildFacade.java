@@ -95,12 +95,13 @@ public abstract class AbstractMovableChildFacade<S extends Movable, T extends Mo
      * <br>
      * Validation errors:
      * <ul>
-     * <li>Data is null</li>
-     * <li>ID isn't null</li>
-     * <li>Deep data validation errors</li>
      * <li>Parent is null</li>
      * <li>Parent ID is null</li>
      * <li>Parent doesn't exist in data storage</li>
+     * <li>Data is null</li>
+     * <li>Data ID isn't null</li>
+     * <li>Data position isn't null</li>
+     * <li>Deep data validation errors</li>
      * </ul>
      *
      * @param parent parent

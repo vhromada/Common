@@ -66,7 +66,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_New() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(null), ValidationType.NEW);
+        final Result<Void> result = movableValidator.validate(getValidatingData(null, null), ValidationType.NEW);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -81,7 +81,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_New_NotNullId() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(Integer.MAX_VALUE), ValidationType.NEW);
+        final Result<Void> result = movableValidator.validate(getValidatingData(Integer.MAX_VALUE, null), ValidationType.NEW);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -93,11 +93,27 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
     }
 
     /**
+     * Test method for {@link MovableValidator#validate(Movable, ValidationType...)} with {@link ValidationType#NEW} with data with not null position.
+     */
+    @Test
+    void validate_New_NotNullPosition() {
+        final Result<Void> result = movableValidator.validate(getValidatingData(null, Integer.MAX_VALUE), ValidationType.NEW);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
+            softly.assertThat(result.getEvents())
+                .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_POSITION_NOT_NULL", "Position must be null.")));
+        });
+
+        verifyZeroInteractions(movableService);
+    }
+
+    /**
      * Test method for {@link MovableValidator#validate(Movable, ValidationType...)} with {@link ValidationType#UPDATE} with correct data.
      */
     @Test
     void validate_Update() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(ID), ValidationType.UPDATE);
+        final Result<Void> result = movableValidator.validate(getValidatingData(ID, ID - 1), ValidationType.UPDATE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -112,10 +128,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_Update_NullPosition() {
-        final T validatingData = getValidatingData(ID);
-        validatingData.setPosition(null);
-
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.UPDATE);
+        final Result<Void> result = movableValidator.validate(getValidatingData(ID, null), ValidationType.UPDATE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -350,6 +363,15 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * @return instance of {@link T}
      */
     protected abstract T getValidatingData(Integer id);
+
+    /**
+     * Returns instance of {@link T}.
+     *
+     * @param id ID
+     * @param id position
+     * @return instance of {@link T}
+     */
+    protected abstract T getValidatingData(Integer id, Integer position);
 
     /**
      * Returns instance of {@link U}.

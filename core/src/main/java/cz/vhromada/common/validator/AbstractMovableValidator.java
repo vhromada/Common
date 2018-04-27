@@ -125,6 +125,7 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
      * Validation errors:
      * <ul>
      * <li>ID isn't null</li>
+     * <li>Position isn't null</li>
      * </ul>
      *
      * @param data   validating data
@@ -133,6 +134,9 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
     private void validateNewData(final T data, final Result<Void> result) {
         if (data.getId() != null) {
             result.addEvent(new Event(Severity.ERROR, prefix + "_ID_NOT_NULL", "ID must be null."));
+        }
+        if (data.getPosition() != null) {
+            result.addEvent(new Event(Severity.ERROR, prefix + "_POSITION_NOT_NULL", "Position must be null."));
         }
     }
 

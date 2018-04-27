@@ -97,7 +97,10 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
     public void add(final T data) {
         Assert.notNull(data, NULL_DATA_MESSAGE);
 
+        data.setPosition(0);
         final T savedData = repository.save(data);
+        savedData.setPosition(savedData.getId() - 1);
+        repository.save(savedData);
 
         final List<T> dataList = getCachedData(false);
         addItem(dataList, savedData);

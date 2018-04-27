@@ -24,6 +24,7 @@ public interface MovableChildFacade<T extends Movable, U extends Movable> extend
      * <li>Parent doesn't exist in data storage</li>
      * <li>Data is null</li>
      * <li>Data ID isn't null</li>
+     * <li>Data position isn't null</li>
      * <li>Deep data validation errors</li>
      * </ul>
      *

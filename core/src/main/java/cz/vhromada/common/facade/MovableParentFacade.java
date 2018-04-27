@@ -34,6 +34,7 @@ public interface MovableParentFacade<T extends Movable> extends MovableFacade<T>
      * <ul>
      * <li>Data is null</li>
      * <li>ID isn't null</li>
+     * <li>Position isn't null</li>
      * <li>Deep data validation errors</li>
      * </ul>
      *

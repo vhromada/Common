@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -208,7 +209,7 @@ public abstract class MovableServiceTest<T extends Movable> {
 
         assertAddResult(data);
 
-        verify(repository).save(data);
+        verify(repository, times(2)).save(data);
         verify(cache).get(getCacheKey());
         verify(cache).put(getCacheKey(), dataList);
         verifyNoMoreInteractions(repository, cache);
@@ -229,7 +230,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         assertAddResult(data);
 
         verify(repository).findAll();
-        verify(repository).save(data);
+        verify(repository, times(2)).save(data);
         verify(cache).get(getCacheKey());
         verify(cache).put(getCacheKey(), dataList);
         verifyNoMoreInteractions(repository, cache);

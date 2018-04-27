@@ -105,6 +105,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      * <ul>
      * <li>Data is null</li>
      * <li>ID isn't null</li>
+     * <li>Position isn't null</li>
      * <li>Deep data validation errors</li>
      * </ul>
      *

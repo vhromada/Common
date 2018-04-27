@@ -77,7 +77,12 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
 
     @Override
     protected Movable getValidatingData(final Integer id) {
-        return new MovableStub(id, 0);
+        return new MovableStub(id);
+    }
+
+    @Override
+    protected Movable getValidatingData(final Integer id, final Integer position) {
+        return new MovableStub(id, position);
     }
 
     @Override
