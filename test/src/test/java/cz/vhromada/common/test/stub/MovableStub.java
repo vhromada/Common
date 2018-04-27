@@ -30,7 +30,7 @@ public class MovableStub implements Movable {
      * @param id ID
      */
     public MovableStub(final Integer id) {
-        this(id, 0);
+        this(id, null);
     }
 
     /**
@@ -39,7 +39,7 @@ public class MovableStub implements Movable {
      * @param id       ID
      * @param position position
      */
-    public MovableStub(final Integer id, final int position) {
+    public MovableStub(final Integer id, final Integer position) {
         this.id = id;
         this.position = position;
     }

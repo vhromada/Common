@@ -93,6 +93,40 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
     }
 
     /**
+     * Test method for {@link MovableValidator#validate(Movable, ValidationType...)} with {@link ValidationType#UPDATE} with correct data.
+     */
+    @Test
+    void validate_Update() {
+        final Result<Void> result = movableValidator.validate(getValidatingData(ID), ValidationType.UPDATE);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
+            softly.assertThat(result.getEvents()).isEmpty();
+        });
+
+        verifyZeroInteractions(movableService);
+    }
+
+    /**
+     * Test method for {@link MovableValidator#validate(Movable, ValidationType...)} with {@link ValidationType#UPDATE} with data with null position.
+     */
+    @Test
+    void validate_Update_NullPosition() {
+        final T validatingData = getValidatingData(ID);
+        validatingData.setPosition(null);
+
+        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.UPDATE);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
+            softly.assertThat(result.getEvents())
+                .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_POSITION_NULL", "Position mustn't be null.")));
+        });
+
+        verifyZeroInteractions(movableService);
+    }
+
+    /**
      * Test method for {@link MovableValidator#validate(Movable, ValidationType...)} with {@link ValidationType#EXISTS} with correct data.
      */
     @Test

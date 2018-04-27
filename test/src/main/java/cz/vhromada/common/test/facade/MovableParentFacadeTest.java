@@ -259,7 +259,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.DEEP);
+        verify(movableValidator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
         verifyNoMoreInteractions(movableValidator);
         verifyZeroInteractions(movableService, converter);
     }
@@ -499,7 +499,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     protected void verifyUpdateMock(final T entity, final U domain) {
         verify(movableService).update(domain);
         verify(converter).convert(entity, getDomainClass());
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.DEEP);
+        verify(movableValidator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
     }
 
     /**

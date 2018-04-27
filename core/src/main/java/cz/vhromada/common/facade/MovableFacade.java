@@ -31,6 +31,7 @@ public interface MovableFacade<T extends Movable> {
      * <ul>
      * <li>Data is null</li>
      * <li>ID is null</li>
+     * <li>Position is null</li>
      * <li>Deep data validation errors</li>
      * <li>Data doesn't exist in data storage</li>
      * </ul>

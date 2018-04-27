@@ -129,6 +129,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      * <ul>
      * <li>Data is null</li>
      * <li>ID is null</li>
+     * <li>Position is null</li>
      * <li>Deep data validation errors</li>
      * <li>Data doesn't exist in data storage</li>
      * </ul>
@@ -138,7 +139,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> update(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.EXISTS, ValidationType.DEEP);
+        final Result<Void> result = movableValidator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
 
         if (Status.OK == result.getStatus()) {
             movableService.update(getDataForUpdate(data));

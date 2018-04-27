@@ -224,6 +224,25 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     }
 
     /**
+     * Test method for {@link MovableChildFacade#update(Movable)} with data with null position.
+     */
+    @Test
+    void update_NullPosition() {
+        final T data = newChildData(1);
+        data.setPosition(null);
+
+        final Result<Void> result = getMovableChildFacade().update(data);
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
+            softly.assertThat(result.getEvents())
+                .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getChildPrefix() + "_POSITION_NULL", "Position mustn't be null.")));
+        });
+
+        assertDefaultRepositoryData();
+    }
+
+    /**
      * Test method for {@link MovableChildFacade#update(Movable)} with data with bad ID.
      */
     @Test

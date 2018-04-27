@@ -98,11 +98,9 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
         Assert.notNull(data, NULL_DATA_MESSAGE);
 
         final T savedData = repository.save(data);
-        savedData.setPosition(savedData.getId() - 1);
-        repository.save(savedData);
 
         final List<T> dataList = getCachedData(false);
-        dataList.add(savedData);
+        addItem(dataList, savedData);
         cache.put(key, dataList);
     }
 
@@ -144,7 +142,7 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
         final T savedDataCopy = repository.save(getCopy(data));
 
         final List<T> dataList = getCachedData(false);
-        dataList.add(savedDataCopy);
+        addItem(dataList, savedDataCopy);
         cache.put(key, dataList);
     }
 
@@ -238,6 +236,18 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
         updateItem(dataList, savedData);
         updateItem(dataList, savedOther);
         cache.put(key, dataList);
+    }
+
+    /**
+     * Adds item if list of data.
+     *
+     * @param data list of data
+     * @param item adding item
+     */
+    private void addItem(final List<T> data, final T item) {
+        if (!data.contains(item)) {
+            data.add(item);
+        }
     }
 
     /**

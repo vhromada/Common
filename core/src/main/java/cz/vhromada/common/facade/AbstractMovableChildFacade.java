@@ -126,6 +126,7 @@ public abstract class AbstractMovableChildFacade<S extends Movable, T extends Mo
      * <ul>
      * <li>Data is null</li>
      * <li>ID is null</li>
+     * <li>Position is null</li>
      * <li>Deep data validation errors</li>
      * <li>Data doesn't exist in data storage</li>
      * </ul>
@@ -135,7 +136,7 @@ public abstract class AbstractMovableChildFacade<S extends Movable, T extends Mo
      */
     @Override
     public Result<Void> update(final S data) {
-        final Result<Void> result = childMovableValidator.validate(data, ValidationType.EXISTS, ValidationType.DEEP);
+        final Result<Void> result = childMovableValidator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
 
         if (Status.OK == result.getStatus()) {
             movableService.update(getForUpdate(data));

@@ -239,7 +239,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
         verify(movableService).getAll();
         verify(movableService).update(argumentCaptor.capture());
         verify(converter).convert(childEntity, getChildDomainClass());
-        verify(childValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.DEEP);
+        verify(childValidator).validate(childEntity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
         verifyNoMoreInteractions(movableService, converter, childValidator);
         verifyZeroInteractions(parentValidator);
 
@@ -259,7 +259,7 @@ public abstract class MovableChildFacadeTest<S extends Movable, T extends Movabl
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(childValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.DEEP);
+        verify(childValidator).validate(childEntity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
         verifyNoMoreInteractions(childValidator);
         verifyZeroInteractions(movableService, converter, parentValidator);
     }

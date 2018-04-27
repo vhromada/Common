@@ -13,6 +13,11 @@ public enum ValidationType {
     NEW,
 
     /**
+     * Update entity validation
+     */
+    UPDATE,
+
+    /**
      * Existing entity validation
      */
     EXISTS,

@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -202,14 +201,14 @@ public abstract class MovableServiceTest<T extends Movable> {
     void add_CachedData() {
         final T data = getAddItem();
 
-        when(repository.save(any(getItemClass()))).thenAnswer(setId());
+        when(repository.save(any(getItemClass()))).thenAnswer(setIdAndPosition());
         when(cache.get(any(String.class))).thenReturn(new SimpleValueWrapper(dataList));
 
         movableService.add(data);
 
         assertAddResult(data);
 
-        verify(repository, times(2)).save(data);
+        verify(repository).save(data);
         verify(cache).get(getCacheKey());
         verify(cache).put(getCacheKey(), dataList);
         verifyNoMoreInteractions(repository, cache);
@@ -222,7 +221,7 @@ public abstract class MovableServiceTest<T extends Movable> {
     void add_NotCachedData() {
         final T data = getAddItem();
 
-        when(repository.save(any(getItemClass()))).thenAnswer(setId());
+        when(repository.save(any(getItemClass()))).thenAnswer(setIdAndPosition());
         when(cache.get(any(String.class))).thenReturn(null);
 
         movableService.add(data);
@@ -230,7 +229,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         assertAddResult(data);
 
         verify(repository).findAll();
-        verify(repository, times(2)).save(data);
+        verify(repository).save(data);
         verify(cache).get(getCacheKey());
         verify(cache).put(getCacheKey(), dataList);
         verifyNoMoreInteractions(repository, cache);
@@ -660,14 +659,15 @@ public abstract class MovableServiceTest<T extends Movable> {
     protected abstract void assertDataDeepEquals(T expected, T actual);
 
     /**
-     * Sets ID.
+     * Sets ID and position.
      *
      * @return mocked answer
      */
-    private Answer<T> setId() {
+    private Answer<T> setIdAndPosition() {
         return invocation -> {
             final T movable = invocation.getArgument(0);
             movable.setId(ID);
+            movable.setPosition(ID - 1);
 
             return movable;
         };

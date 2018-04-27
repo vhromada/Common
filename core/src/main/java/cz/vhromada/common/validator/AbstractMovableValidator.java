@@ -63,6 +63,9 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
         if (validationTypeList.contains(ValidationType.NEW)) {
             validateNewData(data, result);
         }
+        if (validationTypeList.contains(ValidationType.UPDATE)) {
+            validateUpdateData(data, result);
+        }
         if (validationTypeList.contains(ValidationType.EXISTS)) {
             validateExistingData(data, result);
         }
@@ -130,6 +133,23 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
     private void validateNewData(final T data, final Result<Void> result) {
         if (data.getId() != null) {
             result.addEvent(new Event(Severity.ERROR, prefix + "_ID_NOT_NULL", "ID must be null."));
+        }
+    }
+
+    /**
+     * Validates new data.
+     * <br>
+     * Validation errors:
+     * <ul>
+     * <li>Position is null</li>
+     * </ul>
+     *
+     * @param data   validating data
+     * @param result result with validation errors
+     */
+    private void validateUpdateData(final T data, final Result<Void> result) {
+        if (data.getPosition() == null) {
+            result.addEvent(new Event(Severity.ERROR, prefix + "_POSITION_NULL", "Position mustn't be null."));
         }
     }
 
