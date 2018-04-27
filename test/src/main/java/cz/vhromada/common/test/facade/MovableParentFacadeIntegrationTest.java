@@ -209,7 +209,7 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     @Test
     void update_NullId() {
-        final Result<Void> result = getMovableParentFacade().update(newData(null));
+        final Result<Void> result = getMovableParentFacade().update(getUpdateData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -243,7 +243,7 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     @Test
     void update_BadId() {
-        final Result<Void> result = getMovableParentFacade().update(newData(Integer.MAX_VALUE));
+        final Result<Void> result = getMovableParentFacade().update(getUpdateData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
