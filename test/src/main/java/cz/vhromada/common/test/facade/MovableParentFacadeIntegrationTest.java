@@ -112,7 +112,7 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
     @Test
     @DirtiesContext
     void add() {
-        final Result<Void> result = getMovableParentFacade().add(newData(null));
+        final Result<Void> result = getMovableParentFacade().add(newData(null, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -143,12 +143,28 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     @Test
     void add_NotNullId() {
-        final Result<Void> result = getMovableParentFacade().add(newData(1));
+        final Result<Void> result = getMovableParentFacade().add(newData(1, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
             softly.assertThat(result.getEvents())
                 .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_ID_NOT_NULL", "ID must be null.")));
+        });
+
+        assertDefaultRepositoryData();
+    }
+
+    /**
+     * Test method for {@link MovableParentFacade#add(Movable)} with data with not null position.
+     */
+    @Test
+    void add_NotNullPosition() {
+        final Result<Void> result = getMovableParentFacade().add(newData(null, 1));
+
+        assertSoftly(softly -> {
+            softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
+            softly.assertThat(result.getEvents())
+                .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_POSITION_NOT_NULL", "Position must be null.")));
         });
 
         assertDefaultRepositoryData();
@@ -208,7 +224,7 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     @Test
     void update_NullPosition() {
-        final T data = newData(1);
+        final T data = getUpdateData(1);
         data.setPosition(null);
 
         final Result<Void> result = getMovableParentFacade().update(data);
@@ -658,7 +674,7 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     @SuppressWarnings("SameParameterValue")
     protected T getUpdateData(final Integer id) {
-        return newData(id);
+        return newData(id, 0);
     }
 
     /**
@@ -722,6 +738,20 @@ public abstract class MovableParentFacadeIntegrationTest<T extends Movable, U ex
      */
     protected void assertDuplicateRepositoryData() {
         assertThat(getRepositoryDataCount()).isEqualTo(getDefaultDataCount() + 1);
+    }
+
+    /**
+     * Returns new data.
+     *
+     * @param id       ID
+     * @param position position
+     * @return new data
+     */
+    private T newData(final Integer id, final Integer position) {
+        final T data = newData(id);
+        data.setPosition(position);
+
+        return data;
     }
 
     /**

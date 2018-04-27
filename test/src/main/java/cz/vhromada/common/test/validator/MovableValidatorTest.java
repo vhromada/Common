@@ -367,8 +367,8 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
     /**
      * Returns instance of {@link T}.
      *
-     * @param id ID
-     * @param id position
+     * @param id       ID
+     * @param position position
      * @return instance of {@link T}
      */
     protected abstract T getValidatingData(Integer id, Integer position);
