@@ -777,30 +777,6 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     }
 
     /**
-     * Returns new child data.
-     *
-     * @param id       ID
-     * @param position position
-     * @return new child data
-     */
-    private T newChildData(final Integer id, final Integer position) {
-        final T childData = newChildData(id);
-        childData.setPosition(position);
-
-        return childData;
-    }
-
-    /**
-     * Asserts repository data for {@link MovableChildFacade#add(Movable, Movable)}.
-     */
-    private void assertAddRepositoryData() {
-        assertSoftly(softly -> {
-            softly.assertThat(getRepositoryChildDataCount()).isEqualTo(getDefaultChildDataCount() + 1);
-            assertReferences();
-        });
-    }
-
-    /**
      * Asserts repository data for {@link MovableChildFacade#update(Movable)}.
      */
     protected void assertUpdateRepositoryData() {
@@ -835,6 +811,20 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     protected void assertReferences() {
         assertThat(getRepositoryParentDataCount()).isEqualTo(getDefaultParentDataCount());
+    }
+
+    /**
+     * Returns new child data.
+     *
+     * @param id       ID
+     * @param position position
+     * @return new child data
+     */
+    private T newChildData(final Integer id, final Integer position) {
+        final T childData = newChildData(id);
+        childData.setPosition(position);
+
+        return childData;
     }
 
     /**
@@ -907,6 +897,16 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     private String getChildPrefix() {
         return getChildName().toUpperCase();
+    }
+
+    /**
+     * Asserts repository data for {@link MovableChildFacade#add(Movable, Movable)}.
+     */
+    private void assertAddRepositoryData() {
+        assertSoftly(softly -> {
+            softly.assertThat(getRepositoryChildDataCount()).isEqualTo(getDefaultChildDataCount() + 1);
+            assertReferences();
+        });
     }
 
 }
