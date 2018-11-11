@@ -16,13 +16,13 @@ import java.util.List;
 import cz.vhromada.common.Movable;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.utils.CollectionUtils;
-import cz.vhromada.test.MockitoExtension;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.cache.Cache;
 import org.springframework.cache.support.SimpleValueWrapper;
@@ -72,8 +72,6 @@ public abstract class MovableServiceTest<T extends Movable> {
         repository = getRepository();
         movableService = getMovableService();
         dataList = CollectionUtils.newList(getItem1(), getItem2());
-
-        when(repository.findAll()).thenReturn(dataList);
     }
 
     /**
@@ -109,6 +107,7 @@ public abstract class MovableServiceTest<T extends Movable> {
      */
     @Test
     void getAll_NotCachedData() {
+        when(repository.findAll()).thenReturn(dataList);
         when(cache.get(any(String.class))).thenReturn(null);
 
         final List<T> data = movableService.getAll();
@@ -158,6 +157,7 @@ public abstract class MovableServiceTest<T extends Movable> {
      */
     @Test
     void get_NotCachedExistingData() {
+        when(repository.findAll()).thenReturn(dataList);
         when(cache.get(any(String.class))).thenReturn(null);
 
         final T data = movableService.get(dataList.get(0).getId());
@@ -175,6 +175,7 @@ public abstract class MovableServiceTest<T extends Movable> {
      */
     @Test
     void get_NotCachedNotExistingData() {
+        when(repository.findAll()).thenReturn(dataList);
         when(cache.get(any(String.class))).thenReturn(null);
 
         final T data = movableService.get(Integer.MAX_VALUE);
@@ -222,6 +223,7 @@ public abstract class MovableServiceTest<T extends Movable> {
     void add_NotCachedData() {
         final T data = getAddItem();
 
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.save(any(getItemClass()))).thenAnswer(setIdAndPosition());
         when(cache.get(any(String.class))).thenReturn(null);
 
@@ -276,6 +278,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         final T data = dataList.get(0);
         data.setPosition(10);
 
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.save(any(getItemClass()))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(cache.get(any(String.class))).thenReturn(null);
 
@@ -330,6 +333,7 @@ public abstract class MovableServiceTest<T extends Movable> {
     void remove_NotCachedData() {
         final T data = dataList.get(0);
 
+        when(repository.findAll()).thenReturn(dataList);
         when(cache.get(any(String.class))).thenReturn(null);
 
         movableService.remove(data);
@@ -389,6 +393,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         final T copy = getCopyItem();
         final ArgumentCaptor<T> copyArgumentCaptor = ArgumentCaptor.forClass(getItemClass());
 
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.save(any(getItemClass()))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(cache.get(any(String.class))).thenReturn(null);
 
@@ -454,6 +459,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         final T data2 = dataList.get(1);
         final int position2 = data2.getPosition();
 
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.save(any(getItemClass()))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(cache.get(any(String.class))).thenReturn(null);
 
@@ -517,6 +523,7 @@ public abstract class MovableServiceTest<T extends Movable> {
         final T data2 = dataList.get(1);
         final int position2 = data2.getPosition();
 
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.save(any(getItemClass()))).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(cache.get(any(String.class))).thenReturn(null);
 
@@ -569,6 +576,7 @@ public abstract class MovableServiceTest<T extends Movable> {
      */
     @Test
     void updatePositions_NotCachedData() {
+        when(repository.findAll()).thenReturn(dataList);
         when(repository.saveAll(anyList())).thenAnswer(invocation -> invocation.getArguments()[0]);
         when(cache.get(any(String.class))).thenReturn(null);
 

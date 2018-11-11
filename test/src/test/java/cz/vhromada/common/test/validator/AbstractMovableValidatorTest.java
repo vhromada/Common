@@ -2,7 +2,6 @@ package cz.vhromada.common.test.validator;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.util.Collections;
 
@@ -60,14 +59,18 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
     @Test
     @Override
     void validate_Deep() {
-        final Result<Void> result = getMovableValidator().validate(getValidatingData(1), ValidationType.DEEP);
+        final Movable movable = getValidatingData(1);
+
+        initDeepMock(movable);
+
+        final Result<Void> result = getMovableValidator().validate(movable, ValidationType.DEEP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.WARN);
             softly.assertThat(result.getEvents()).isEqualTo(Collections.singletonList(new Event(Severity.WARN, KEY, VALUE)));
         });
 
-        verifyZeroInteractions(getMovableService());
+        verifyDeepMock(movable);
     }
 
     @Override

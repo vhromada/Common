@@ -19,12 +19,12 @@ import cz.vhromada.result.Event;
 import cz.vhromada.result.Result;
 import cz.vhromada.result.Severity;
 import cz.vhromada.result.Status;
-import cz.vhromada.test.MockitoExtension;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * An abstract class represents test for {@link MovableValidator}.
@@ -277,14 +277,18 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_Deep() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(ID), ValidationType.DEEP);
+        final T validatingData = getValidatingData(ID);
+
+        initDeepMock(validatingData);
+
+        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.DEEP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verifyZeroInteractions(movableService);
+        verifyDeepMock(validatingData);
     }
 
     /**
@@ -316,6 +320,23 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
     protected void verifyExistsMock(final T validatingData) {
         verify(movableService).get(validatingData.getId());
         verifyNoMoreInteractions(movableService);
+    }
+
+    /**
+     * Initializes mock for deep.
+     *
+     * @param validatingData validating data
+     */
+    protected void initDeepMock(final T validatingData) {
+    }
+
+    /**
+     * Verifies mock for deep.
+     *
+     * @param validatingData validating data
+     */
+    protected void verifyDeepMock(final T validatingData) {
+        verifyZeroInteractions(movableService);
     }
 
     /**

@@ -7,7 +7,7 @@
     <parent>
         <groupId>cz.vhromada.common</groupId>
         <artifactId>common</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.4</version>
     </parent>
 
     <artifactId>test</artifactId>
@@ -25,8 +25,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>cz.vhromada.test</groupId>
-            <artifactId>mockito-jupiter</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
         </dependency>
     </dependencies>
     
