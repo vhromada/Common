@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.converter.MovableConverter;
 import cz.vhromada.common.facade.AbstractMovableChildFacade;
 import cz.vhromada.common.facade.MovableChildFacade;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.test.stub.AbstractMovableChildFacadeStub;
 import cz.vhromada.common.test.stub.MovableStub;
 import cz.vhromada.common.validator.MovableValidator;
-import cz.vhromada.converter.Converter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +41,8 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
     }
 
     /**
-     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, Converter, MovableValidator, MovableValidator)} with null
-     * service for movable data.
+     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, MovableConverter, MovableValidator, MovableValidator)}
+     * with null service for movable data.
      */
     @Test
     void constructor_NullMovableService() {
@@ -51,38 +51,38 @@ class AbstractMovableChildFacadeTest extends MovableChildFacadeTest<Movable, Mov
     }
 
     /**
-     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, Converter, MovableValidator, MovableValidator)} with null
-     * converter.
+     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, MovableConverter, MovableValidator, MovableValidator)}
+     * with null converter for movable data.
      */
     @Test
     void constructor_NullConverter() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), null, getParentMovableValidator(), getChildMovableValidator()))
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getService(), null, getParentMovableValidator(), getChildMovableValidator()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, Converter, MovableValidator, MovableValidator)} with null
-     * parent common validator.
+     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, MovableConverter, MovableValidator, MovableValidator)}
+     * with null validator for parent data.
      */
     @Test
     void constructor_NullParentMovableValidator() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), null, getChildMovableValidator()))
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getService(), getConverter(), null, getChildMovableValidator()))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, Converter, MovableValidator, MovableValidator)} with null
-     * child common validator.
+     * Test method for {@link AbstractMovableChildFacade#AbstractMovableChildFacade(MovableService, MovableConverter, MovableValidator, MovableValidator)}
+     * with null validator for child data.
      */
     @Test
     void constructor_NullChildMovableValidator() {
-        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentMovableValidator(), null))
+        assertThatThrownBy(() -> new AbstractMovableChildFacadeStub(getService(), getConverter(), getParentMovableValidator(), null))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override
-    protected MovableChildFacade<Movable, Movable> getMovableChildFacade() {
-        return new AbstractMovableChildFacadeStub(getMovableService(), getConverter(), getParentMovableValidator(), getChildMovableValidator());
+    protected MovableChildFacade<Movable, Movable> getFacade() {
+        return new AbstractMovableChildFacadeStub(getService(), getConverter(), getParentMovableValidator(), getChildMovableValidator());
     }
 
     @Override

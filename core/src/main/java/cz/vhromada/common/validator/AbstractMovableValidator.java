@@ -4,12 +4,9 @@ import java.util.List;
 
 import cz.vhromada.common.Movable;
 import cz.vhromada.common.service.MovableService;
-import cz.vhromada.common.utils.CollectionUtils;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
-
-import org.springframework.util.Assert;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
 
 /**
  * An abstract class represents validator for movable data.
@@ -33,23 +30,27 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
     /**
      * Service for movable data
      */
-    private final MovableService<U> movableService;
+    private final MovableService<U> service;
 
     /**
      * Creates a new instance of AbstractMovableValidator.
      *
-     * @param name           name of entity
-     * @param movableService service for  movable data
+     * @param name    name of entity
+     * @param service service for movable data
      * @throws IllegalArgumentException if name of entity is null
-     *                                  or service for  movable data is null
+     *                                  or service for movable data is null
      */
-    public AbstractMovableValidator(final String name, final MovableService<U> movableService) {
-        Assert.notNull(name, "Name of entity mustn't be null.");
-        Assert.notNull(movableService, "Service for  movable data mustn't be null.");
+    public AbstractMovableValidator(final String name, final MovableService<U> service) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name of entity mustn't be null.");
+        }
+        if (service == null) {
+            throw new IllegalArgumentException("Service for movable dat mustn't be null.");
+        }
 
         this.name = name;
         this.prefix = name.toUpperCase();
-        this.movableService = movableService;
+        this.service = service;
     }
 
     @Override
@@ -59,7 +60,7 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
         }
 
         final Result<Void> result = new Result<>();
-        final List<ValidationType> validationTypeList = CollectionUtils.newList(validationTypes);
+        final List<ValidationType> validationTypeList = List.of(validationTypes);
         if (validationTypeList.contains(ValidationType.NEW)) {
             validateNewData(data, result);
         }
@@ -87,8 +88,8 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
      *
      * @return service for movable data
      */
-    protected MovableService<U> getMovableService() {
-        return movableService;
+    protected MovableService<U> getService() {
+        return service;
     }
 
     /**
@@ -98,7 +99,7 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
      * @return data from repository
      */
     protected Movable getData(final T data) {
-        return movableService.get(data.getId());
+        return service.get(data.getId());
     }
 
     /**
@@ -108,7 +109,7 @@ public abstract class AbstractMovableValidator<T extends Movable, U extends Mova
      * @return list of data from repository
      */
     protected List<? extends Movable> getList(final T data) {
-        return movableService.getAll();
+        return service.getAll();
     }
 
     /**

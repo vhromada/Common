@@ -1,7 +1,7 @@
 package cz.vhromada.common.facade;
 
 import cz.vhromada.common.Movable;
-import cz.vhromada.result.Result;
+import cz.vhromada.validation.result.Result;
 
 /**
  * An interface represents facade for movable data.

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.repository.MovableRepository;
 import cz.vhromada.common.service.AbstractMovableService;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.test.stub.AbstractMovableServiceStub;
@@ -12,7 +13,6 @@ import cz.vhromada.common.test.stub.MovableStub;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.cache.Cache;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * A class represents test for class {@link AbstractMovableService}.
@@ -22,13 +22,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 class AbstractMovableServiceTest extends MovableServiceTest<Movable> {
 
     /**
-     * Instance of {@link JpaRepository}
+     * Instance of {@link MovableRepository}
      */
     @Mock
-    private JpaRepository<Movable, Integer> repository;
+    private MovableRepository<Movable> repository;
 
     /**
-     * Test method for {@link AbstractMovableService#AbstractMovableService(JpaRepository, Cache, String)} with null repository.
+     * Test method for {@link AbstractMovableService#AbstractMovableService(MovableRepository, Cache, String)} with null repository.
      */
     @Test
     void constructor_NullMovableRepository() {
@@ -37,7 +37,7 @@ class AbstractMovableServiceTest extends MovableServiceTest<Movable> {
     }
 
     /**
-     * Test method for {@link AbstractMovableService#AbstractMovableService(JpaRepository, Cache, String)} with null cache for data.
+     * Test method for {@link AbstractMovableService#AbstractMovableService(MovableRepository, Cache, String)} with null cache for data.
      */
     @Test
     void constructor_NullCache() {
@@ -46,7 +46,7 @@ class AbstractMovableServiceTest extends MovableServiceTest<Movable> {
     }
 
     /**
-     * Test method for {@link AbstractMovableService#AbstractMovableService(JpaRepository, Cache, String)} with null cache key.
+     * Test method for {@link AbstractMovableService#AbstractMovableService(MovableRepository, Cache, String)} with null cache key.
      */
     @Test
     void constructor_NullCacheKey() {
@@ -54,12 +54,12 @@ class AbstractMovableServiceTest extends MovableServiceTest<Movable> {
     }
 
     @Override
-    protected JpaRepository<Movable, Integer> getRepository() {
+    protected MovableRepository<Movable> getRepository() {
         return repository;
     }
 
     @Override
-    protected MovableService<Movable> getMovableService() {
+    protected MovableService<Movable> getService() {
         return new AbstractMovableServiceStub(repository, getCache(), getCacheKey(), this::getCopyItem);
     }
 

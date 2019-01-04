@@ -1,14 +1,14 @@
 package cz.vhromada.common.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.repository.MovableRepository;
 import cz.vhromada.common.utils.CollectionUtils;
 
 import org.springframework.cache.Cache;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 /**
  * An abstract class represents service for movable data.
@@ -27,7 +27,7 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
     /**
      * Repository for data
      */
-    private final JpaRepository<T, Integer> repository;
+    private final MovableRepository<T> repository;
 
     /**
      * Cache for data
@@ -49,10 +49,16 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      *                                  or cache for data is null
      *                                  or cache key is null
      */
-    public AbstractMovableService(final JpaRepository<T, Integer> repository, final Cache cache, final String key) {
-        Assert.notNull(repository, "Repository mustn't be null.");
-        Assert.notNull(cache, "Cache mustn't be null.");
-        Assert.notNull(key, "Cache key mustn't be null.");
+    public AbstractMovableService(final MovableRepository<T> repository, final Cache cache, final String key) {
+        if (repository == null) {
+            throw new IllegalArgumentException("Repository for data mustn't be null.");
+        }
+        if (cache == null) {
+            throw new IllegalArgumentException("Cache mustn't be null.");
+        }
+        if (key == null) {
+            throw new IllegalArgumentException("Cache key mustn't be null.");
+        }
 
         this.repository = repository;
         this.cache = cache;
@@ -61,8 +67,7 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
 
     @Override
     public void newData() {
-        repository.deleteAll();
-
+        repository.removeAll();
         cache.clear();
     }
 
@@ -78,16 +83,14 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
     @Override
     @Transactional(readOnly = true)
     public T get(final Integer id) {
-        Assert.notNull(id, "ID mustn't be null.");
-
-        final List<T> data = getCachedData(true);
-        for (final T item : data) {
-            if (id.equals(item.getId())) {
-                return item;
-            }
+        if (id == null) {
+            throw new IllegalArgumentException("ID mustn't be null.");
         }
 
-        return null;
+        return getCachedData(true).stream()
+            .filter(item -> id.equals(item.getId()))
+            .findFirst()
+            .orElse(null);
     }
 
     /**
@@ -95,16 +98,15 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      */
     @Override
     public void add(final T data) {
-        Assert.notNull(data, NULL_DATA_MESSAGE);
+        if (data == null) {
+            throw new IllegalArgumentException(NULL_DATA_MESSAGE);
+        }
 
         data.setPosition(0);
-        final T savedData = repository.save(data);
-        savedData.setPosition(savedData.getId() - 1);
-        repository.save(savedData);
-
-        final List<T> dataList = getCachedData(false);
-        addItem(dataList, savedData);
-        cache.put(key, dataList);
+        final T addedData = repository.add(data);
+        addedData.setPosition(addedData.getId() - 1);
+        repository.update(addedData);
+        cache.clear();
     }
 
     /**
@@ -112,12 +114,13 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      */
     @Override
     public void update(final T data) {
-        Assert.notNull(data, NULL_DATA_MESSAGE);
+        if (data == null) {
+            throw new IllegalArgumentException(NULL_DATA_MESSAGE);
+        }
 
-        final T savedData = repository.save(data);
-
-        final List<T> dataList = getCachedData(false);
-        updateItem(dataList, savedData);
+        final T updatedData = repository.update(data);
+        final List<T> dataList = new ArrayList<>(getCachedData(false));
+        updateItem(dataList, updatedData);
         cache.put(key, dataList);
     }
 
@@ -126,11 +129,12 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      */
     @Override
     public void remove(final T data) {
-        Assert.notNull(data, NULL_DATA_MESSAGE);
+        if (data == null) {
+            throw new IllegalArgumentException(NULL_DATA_MESSAGE);
+        }
 
-        repository.delete(data);
-
-        final List<T> dataList = getCachedData(false);
+        repository.remove(data);
+        final List<T> dataList = new ArrayList<>(getCachedData(false));
         dataList.remove(data);
         cache.put(key, dataList);
     }
@@ -140,13 +144,12 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      */
     @Override
     public void duplicate(final T data) {
-        Assert.notNull(data, NULL_DATA_MESSAGE);
+        if (data == null) {
+            throw new IllegalArgumentException(NULL_DATA_MESSAGE);
+        }
 
-        final T savedDataCopy = repository.save(getCopy(data));
-
-        final List<T> dataList = getCachedData(false);
-        addItem(dataList, savedDataCopy);
-        cache.put(key, dataList);
+        repository.add(getCopy(data));
+        cache.clear();
     }
 
     /**
@@ -169,9 +172,7 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
     public void updatePositions() {
         final List<T> data = CollectionUtils.getSortedData(getCachedData(false));
         updatePositions(data);
-
-        final List<T> savedData = repository.saveAll(data);
-
+        final List<T> savedData = repository.updateAll(data);
         cache.put(key, savedData);
     }
 
@@ -201,19 +202,17 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      * @param cached true if returned data from repository should be cached
      * @return list of data
      */
+    @SuppressWarnings("unchecked")
     private List<T> getCachedData(final boolean cached) {
         final Cache.ValueWrapper cacheValue = cache.get(key);
         if (cacheValue == null) {
-            final List<T> data = repository.findAll();
+            final List<T> data = repository.getAll();
             if (cached) {
                 cache.put(key, data);
             }
-
             return data;
         }
-
-        @SuppressWarnings("unchecked") final List<T> data = (List<T>) cacheValue.get();
-        return data;
+        return (List<T>) cacheValue.get();
     }
 
     /**
@@ -224,7 +223,9 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
      * @throws IllegalArgumentException if data is null
      */
     private void move(final T data, final boolean up) {
-        Assert.notNull(data, NULL_DATA_MESSAGE);
+        if (data == null) {
+            throw new IllegalArgumentException(NULL_DATA_MESSAGE);
+        }
 
         final List<T> dataList = CollectionUtils.getSortedData(getCachedData(false));
         final int index = dataList.indexOf(data);
@@ -232,25 +233,10 @@ public abstract class AbstractMovableService<T extends Movable> implements Movab
         final int position = data.getPosition();
         data.setPosition(other.getPosition());
         other.setPosition(position);
-
-        final T savedData = repository.save(data);
-        final T savedOther = repository.save(other);
-
-        updateItem(dataList, savedData);
-        updateItem(dataList, savedOther);
+        final List<T> updatedData = repository.updateAll(List.of(data, other));
+        updateItem(dataList, updatedData.get(0));
+        updateItem(dataList, updatedData.get(1));
         cache.put(key, dataList);
-    }
-
-    /**
-     * Adds item if list of data.
-     *
-     * @param data list of data
-     * @param item adding item
-     */
-    private void addItem(final List<T> data, final T item) {
-        if (!data.contains(item)) {
-            data.add(item);
-        }
     }
 
     /**

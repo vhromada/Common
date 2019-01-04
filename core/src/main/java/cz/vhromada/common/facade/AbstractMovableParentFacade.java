@@ -3,14 +3,12 @@ package cz.vhromada.common.facade;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.converter.MovableConverter;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.validator.MovableValidator;
 import cz.vhromada.common.validator.ValidationType;
-import cz.vhromada.converter.Converter;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Status;
-
-import org.springframework.util.Assert;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Status;
 
 /**
  * An abstract class facade for movable data for parent data.
@@ -24,36 +22,42 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
     /**
      * Service for movable data
      */
-    private final MovableService<U> movableService;
+    private final MovableService<U> service;
 
     /**
-     * Converter
+     * Converter for movable data
      */
-    private final Converter converter;
+    private final MovableConverter<T, U> converter;
 
     /**
      * Validator for movable data
      */
-    private final MovableValidator<T> movableValidator;
+    private final MovableValidator<T> validator;
 
     /**
      * Creates a new instance of AbstractMovableParentFacade.
      *
-     * @param movableService   service for movable data
-     * @param converter        converter
-     * @param movableValidator validator for movable data
+     * @param service   service for movable data
+     * @param converter converter for movable data
+     * @param validator validator for movable data
      * @throws IllegalArgumentException if service for movable data is null
-     *                                  or converter is null
+     *                                  or converter for movable data is null
      *                                  or validator for movable data is null
      */
-    public AbstractMovableParentFacade(final MovableService<U> movableService, final Converter converter, final MovableValidator<T> movableValidator) {
-        Assert.notNull(movableService, "Service for movable data mustn't be null.");
-        Assert.notNull(converter, "Converter mustn't be null.");
-        Assert.notNull(movableValidator, "Validator for movable data mustn't be null.");
+    public AbstractMovableParentFacade(final MovableService<U> service, final MovableConverter<T, U> converter, final MovableValidator<T> validator) {
+        if (service == null) {
+            throw new IllegalArgumentException("Service for data mustn't be null.");
+        }
+        if (converter == null) {
+            throw new IllegalArgumentException("Converter for data mustn't be null.");
+        }
+        if (validator == null) {
+            throw new IllegalArgumentException("Validator for data mustn't be null.");
+        }
 
-        this.movableService = movableService;
+        this.service = service;
         this.converter = converter;
-        this.movableValidator = movableValidator;
+        this.validator = validator;
     }
 
     /**
@@ -63,8 +67,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> newData() {
-        movableService.newData();
-
+        service.newData();
         return new Result<>();
     }
 
@@ -75,7 +78,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<List<T>> getAll() {
-        return Result.of(converter.convertCollection(movableService.getAll(), getEntityClass()));
+        return Result.of(converter.convertBack(service.getAll()));
     }
 
     /**
@@ -94,8 +97,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
         if (id == null) {
             return Result.error("ID_NULL", "ID mustn't be null.");
         }
-
-        return Result.of(converter.convert(movableService.get(id), getEntityClass()));
+        return Result.of(converter.convertBack(service.get(id)));
     }
 
     /**
@@ -114,12 +116,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> add(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.NEW, ValidationType.DEEP);
-
+        final Result<Void> result = validator.validate(data, ValidationType.NEW, ValidationType.DEEP);
         if (Status.OK == result.getStatus()) {
-            movableService.add(getDataForAdd(data));
+            service.add(getDataForAdd(data));
         }
-
         return result;
     }
 
@@ -140,12 +140,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> update(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
-
+        final Result<Void> result = validator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
         if (Status.OK == result.getStatus()) {
-            movableService.update(getDataForUpdate(data));
+            service.update(getDataForUpdate(data));
         }
-
         return result;
     }
 
@@ -164,12 +162,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> remove(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.EXISTS);
-
+        final Result<Void> result = validator.validate(data, ValidationType.EXISTS);
         if (Status.OK == result.getStatus()) {
-            movableService.remove(movableService.get(data.getId()));
+            service.remove(service.get(data.getId()));
         }
-
         return result;
     }
 
@@ -188,12 +184,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> duplicate(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.EXISTS);
-
+        final Result<Void> result = validator.validate(data, ValidationType.EXISTS);
         if (Status.OK == result.getStatus()) {
-            movableService.duplicate(movableService.get(data.getId()));
+            service.duplicate(service.get(data.getId()));
         }
-
         return result;
     }
 
@@ -213,12 +207,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> moveUp(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.EXISTS, ValidationType.UP);
-
+        final Result<Void> result = validator.validate(data, ValidationType.EXISTS, ValidationType.UP);
         if (Status.OK == result.getStatus()) {
-            movableService.moveUp(movableService.get(data.getId()));
+            service.moveUp(service.get(data.getId()));
         }
-
         return result;
     }
 
@@ -238,12 +230,10 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> moveDown(final T data) {
-        final Result<Void> result = movableValidator.validate(data, ValidationType.EXISTS, ValidationType.DOWN);
-
+        final Result<Void> result = validator.validate(data, ValidationType.EXISTS, ValidationType.DOWN);
         if (Status.OK == result.getStatus()) {
-            movableService.moveDown(movableService.get(data.getId()));
+            service.moveDown(service.get(data.getId()));
         }
-
         return result;
     }
 
@@ -254,8 +244,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      */
     @Override
     public Result<Void> updatePositions() {
-        movableService.updatePositions();
-
+        service.updatePositions();
         return new Result<>();
     }
 
@@ -264,8 +253,8 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      *
      * @return service for movable data
      */
-    protected MovableService<U> getMovableService() {
-        return movableService;
+    protected MovableService<U> getService() {
+        return service;
     }
 
     /**
@@ -275,7 +264,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      * @return data for add
      */
     protected U getDataForAdd(final T data) {
-        return converter.convert(data, getDomainClass());
+        return converter.convert(data);
     }
 
     /**
@@ -285,21 +274,7 @@ public abstract class AbstractMovableParentFacade<T extends Movable, U extends M
      * @return data for update
      */
     protected U getDataForUpdate(final T data) {
-        return converter.convert(data, getDomainClass());
+        return converter.convert(data);
     }
-
-    /**
-     * Returns entity class.
-     *
-     * @return entity class.
-     */
-    protected abstract Class<T> getEntityClass();
-
-    /**
-     * Returns domain class.
-     *
-     * @return domain class.
-     */
-    protected abstract Class<U> getDomainClass();
 
 }

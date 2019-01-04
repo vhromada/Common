@@ -3,7 +3,7 @@ package cz.vhromada.common.facade;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
-import cz.vhromada.result.Result;
+import cz.vhromada.validation.result.Result;
 
 /**
  * An interface represents facade for movable data for parent data.

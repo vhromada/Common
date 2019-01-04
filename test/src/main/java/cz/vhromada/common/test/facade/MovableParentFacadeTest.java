@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -14,16 +13,15 @@ import java.util.Collections;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.converter.MovableConverter;
 import cz.vhromada.common.facade.MovableParentFacade;
 import cz.vhromada.common.service.MovableService;
-import cz.vhromada.common.utils.CollectionUtils;
 import cz.vhromada.common.validator.MovableValidator;
 import cz.vhromada.common.validator.ValidationType;
-import cz.vhromada.converter.Converter;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
-import cz.vhromada.result.Status;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
+import cz.vhromada.validation.result.Status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,31 +49,31 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      * Instance of {@link MovableService}
      */
     @Mock
-    private MovableService<U> movableService;
+    private MovableService<U> service;
 
     /**
-     * Instance of {@link Converter}
+     * Instance of {@link MovableConverter}
      */
     @Mock
-    private Converter converter;
+    private MovableConverter<T, U> converter;
 
     /**
      * Instance of {@link MovableValidator}
      */
     @Mock
-    private MovableValidator<T> movableValidator;
+    private MovableValidator<T> validator;
 
     /**
      * Instance of {@link MovableParentFacade}
      */
-    private MovableParentFacade<T> movableParentFacade;
+    private MovableParentFacade<T> facade;
 
     /**
      * Initializes facade for movable data.
      */
     @BeforeEach
     public void setUp() {
-        movableParentFacade = getMovableParentFacade();
+        facade = getFacade();
     }
 
     /**
@@ -83,16 +81,16 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      */
     @Test
     void newData() {
-        final Result<Void> result = movableParentFacade.newData();
+        final Result<Void> result = facade.newData();
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).newData();
-        verifyNoMoreInteractions(movableService);
-        verifyZeroInteractions(converter, movableValidator);
+        verify(service).newData();
+        verifyNoMoreInteractions(service);
+        verifyZeroInteractions(converter, validator);
     }
 
     /**
@@ -100,13 +98,13 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      */
     @Test
     void getAll() {
-        final List<U> domainList = CollectionUtils.newList(newDomain(1), newDomain(2));
-        final List<T> entityList = CollectionUtils.newList(newEntity(1), newEntity(2));
+        final List<U> domainList = List.of(newDomain(1), newDomain(2));
+        final List<T> entityList = List.of(newEntity(1), newEntity(2));
 
-        when(movableService.getAll()).thenReturn(domainList);
-        when(converter.convertCollection(anyList(), eq(getEntityClass()))).thenReturn(entityList);
+        when(service.getAll()).thenReturn(domainList);
+        when(converter.convertBack(anyList())).thenReturn(entityList);
 
-        final Result<List<T>> result = movableParentFacade.getAll();
+        final Result<List<T>> result = facade.getAll();
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -114,10 +112,10 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).getAll();
-        verify(converter).convertCollection(domainList, getEntityClass());
-        verifyNoMoreInteractions(movableService, converter);
-        verifyZeroInteractions(movableValidator);
+        verify(service).getAll();
+        verify(converter).convertBack(domainList);
+        verifyNoMoreInteractions(service, converter);
+        verifyZeroInteractions(validator);
     }
 
 
@@ -129,10 +127,10 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final U domain = newDomain(1);
         final T entity = newEntity(1);
 
-        when(movableService.get(any(Integer.class))).thenReturn(domain);
-        when(converter.convert(any(getDomainClass()), eq(getEntityClass()))).thenReturn(entity);
+        when(service.get(any(Integer.class))).thenReturn(domain);
+        when(converter.convertBack(any(getDomainClass()))).thenReturn(entity);
 
-        final Result<T> result = movableParentFacade.get(1);
+        final Result<T> result = facade.get(1);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -140,10 +138,10 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(1);
-        verify(converter).convert(domain, getEntityClass());
-        verifyNoMoreInteractions(movableService, converter);
-        verifyZeroInteractions(movableValidator);
+        verify(service).get(1);
+        verify(converter).convertBack(domain);
+        verifyNoMoreInteractions(service, converter);
+        verifyZeroInteractions(validator);
     }
 
     /**
@@ -151,9 +149,9 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      */
     @Test
     void get_NotExistingData() {
-        when(movableService.get(any(Integer.class))).thenReturn(null);
+        when(service.get(any(Integer.class))).thenReturn(null);
 
-        final Result<T> result = movableParentFacade.get(Integer.MAX_VALUE);
+        final Result<T> result = facade.get(Integer.MAX_VALUE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -161,10 +159,10 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(Integer.MAX_VALUE);
-        verify(converter).convert(null, getEntityClass());
-        verifyNoMoreInteractions(movableService, converter);
-        verifyZeroInteractions(movableValidator);
+        verify(service).get(Integer.MAX_VALUE);
+        verify(converter).convertBack((U) null);
+        verifyNoMoreInteractions(service, converter);
+        verifyZeroInteractions(validator);
     }
 
     /**
@@ -172,7 +170,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      */
     @Test
     void get_NullData() {
-        final Result<T> result = movableParentFacade.get(null);
+        final Result<T> result = facade.get(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -180,7 +178,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
             softly.assertThat(result.getEvents()).isEqualTo(Collections.singletonList(new Event(Severity.ERROR, "ID_NULL", "ID mustn't be null.")));
         });
 
-        verifyZeroInteractions(movableService, converter, movableValidator);
+        verifyZeroInteractions(service, converter, validator);
     }
 
     /**
@@ -191,20 +189,20 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final T entity = newEntity(null);
         final U domain = newDomain(null);
 
-        when(converter.convert(any(getEntityClass()), eq(getDomainClass()))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(converter.convert(any(getEntityClass()))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = movableParentFacade.add(entity);
+        final Result<Void> result = facade.add(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).add(domain);
-        verify(converter).convert(entity, getDomainClass());
-        verify(movableValidator).validate(entity, ValidationType.NEW, ValidationType.DEEP);
-        verifyNoMoreInteractions(movableService, converter, movableValidator);
+        verify(service).add(domain);
+        verify(converter).convert(entity);
+        verify(validator).validate(entity, ValidationType.NEW, ValidationType.DEEP);
+        verifyNoMoreInteractions(service, converter, validator);
     }
 
     /**
@@ -214,15 +212,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void add_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.add(entity);
+        final Result<Void> result = facade.add(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.NEW, ValidationType.DEEP);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.NEW, ValidationType.DEEP);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -235,7 +233,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
 
         initUpdateMock(domain);
 
-        final Result<Void> result = movableParentFacade.update(entity);
+        final Result<Void> result = facade.update(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -243,7 +241,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         });
 
         verifyUpdateMock(entity, domain);
-        verifyNoMoreInteractions(movableService, converter, movableValidator);
+        verifyNoMoreInteractions(service, converter, validator);
     }
 
     /**
@@ -253,15 +251,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void update_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.update(entity);
+        final Result<Void> result = facade.update(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -272,20 +270,20 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final T entity = newEntity(1);
         final U domain = newDomain(1);
 
-        when(movableService.get(any(Integer.class))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(service.get(any(Integer.class))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = movableParentFacade.remove(entity);
+        final Result<Void> result = facade.remove(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(1);
-        verify(movableService).remove(domain);
-        verify(movableValidator).validate(entity, ValidationType.EXISTS);
-        verifyNoMoreInteractions(movableService, movableValidator);
+        verify(service).get(1);
+        verify(service).remove(domain);
+        verify(validator).validate(entity, ValidationType.EXISTS);
+        verifyNoMoreInteractions(service, validator);
         verifyZeroInteractions(converter);
     }
 
@@ -296,15 +294,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void remove_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.remove(entity);
+        final Result<Void> result = facade.remove(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.EXISTS);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.EXISTS);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -315,20 +313,20 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final T entity = newEntity(1);
         final U domain = newDomain(1);
 
-        when(movableService.get(any(Integer.class))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(service.get(any(Integer.class))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = movableParentFacade.duplicate(entity);
+        final Result<Void> result = facade.duplicate(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(1);
-        verify(movableService).duplicate(domain);
-        verify(movableValidator).validate(entity, ValidationType.EXISTS);
-        verifyNoMoreInteractions(movableService, movableValidator);
+        verify(service).get(1);
+        verify(service).duplicate(domain);
+        verify(validator).validate(entity, ValidationType.EXISTS);
+        verifyNoMoreInteractions(service, validator);
         verifyZeroInteractions(converter);
     }
 
@@ -339,15 +337,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void duplicate_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.duplicate(entity);
+        final Result<Void> result = facade.duplicate(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.EXISTS);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.EXISTS);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -358,20 +356,20 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final T entity = newEntity(1);
         final U domain = newDomain(1);
 
-        when(movableService.get(any(Integer.class))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(service.get(any(Integer.class))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = movableParentFacade.moveUp(entity);
+        final Result<Void> result = facade.moveUp(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(1);
-        verify(movableService).moveUp(domain);
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.UP);
-        verifyNoMoreInteractions(movableService, movableValidator);
+        verify(service).get(1);
+        verify(service).moveUp(domain);
+        verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.UP);
+        verifyNoMoreInteractions(service, validator);
         verifyZeroInteractions(converter);
     }
 
@@ -382,15 +380,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void moveUp_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.moveUp(entity);
+        final Result<Void> result = facade.moveUp(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.UP);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.UP);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -401,20 +399,20 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
         final T entity = newEntity(1);
         final U domain = newDomain(1);
 
-        when(movableService.get(any(Integer.class))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(service.get(any(Integer.class))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
 
-        final Result<Void> result = movableParentFacade.moveDown(entity);
+        final Result<Void> result = facade.moveDown(entity);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).get(1);
-        verify(movableService).moveDown(domain);
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN);
-        verifyNoMoreInteractions(movableService, movableValidator);
+        verify(service).get(1);
+        verify(service).moveDown(domain);
+        verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN);
+        verifyNoMoreInteractions(service, validator);
         verifyZeroInteractions(converter);
     }
 
@@ -425,15 +423,15 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
     void moveDown_InvalidData() {
         final T entity = newEntity(Integer.MAX_VALUE);
 
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(INVALID_DATA_RESULT);
 
-        final Result<Void> result = movableParentFacade.moveDown(entity);
+        final Result<Void> result = facade.moveDown(entity);
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT);
 
-        verify(movableValidator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN);
-        verifyNoMoreInteractions(movableValidator);
-        verifyZeroInteractions(movableService, converter);
+        verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN);
+        verifyNoMoreInteractions(validator);
+        verifyZeroInteractions(service, converter);
     }
 
     /**
@@ -441,16 +439,16 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      */
     @Test
     void updatePositions() {
-        final Result<Void> result = movableParentFacade.updatePositions();
+        final Result<Void> result = facade.updatePositions();
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verify(movableService).updatePositions();
-        verifyNoMoreInteractions(movableService);
-        verifyZeroInteractions(converter, movableValidator);
+        verify(service).updatePositions();
+        verifyNoMoreInteractions(service);
+        verifyZeroInteractions(converter, validator);
     }
 
     /**
@@ -458,16 +456,16 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      *
      * @return service for movable data
      */
-    protected MovableService<U> getMovableService() {
-        return movableService;
+    protected MovableService<U> getService() {
+        return service;
     }
 
     /**
-     * Returns converter.
+     * Returns converter for movable data.
      *
-     * @return converter
+     * @return converter for movable data
      */
-    protected Converter getConverter() {
+    protected MovableConverter<T, U> getConverter() {
         return converter;
     }
 
@@ -476,8 +474,8 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      *
      * @return validator for movable data
      */
-    protected MovableValidator<T> getMovableValidator() {
-        return movableValidator;
+    protected MovableValidator<T> getValidator() {
+        return validator;
     }
 
     /**
@@ -486,8 +484,8 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      * @param domain domain
      */
     protected void initUpdateMock(final U domain) {
-        when(converter.convert(any(getEntityClass()), eq(getDomainClass()))).thenReturn(domain);
-        when(movableValidator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
+        when(converter.convert(any(getEntityClass()))).thenReturn(domain);
+        when(validator.validate(any(getEntityClass()), any())).thenReturn(new Result<>());
     }
 
     /**
@@ -497,9 +495,9 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      * @param domain domain
      */
     protected void verifyUpdateMock(final T entity, final U domain) {
-        verify(movableService).update(domain);
-        verify(converter).convert(entity, getDomainClass());
-        verify(movableValidator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
+        verify(service).update(domain);
+        verify(converter).convert(entity);
+        verify(validator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP);
     }
 
     /**
@@ -507,7 +505,7 @@ public abstract class MovableParentFacadeTest<T extends Movable, U extends Movab
      *
      * @return facade for movable data for parent data
      */
-    protected abstract MovableParentFacade<T> getMovableParentFacade();
+    protected abstract MovableParentFacade<T> getFacade();
 
     /**
      * Returns entity.

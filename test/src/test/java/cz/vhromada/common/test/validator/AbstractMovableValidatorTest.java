@@ -12,10 +12,10 @@ import cz.vhromada.common.test.stub.MovableStub;
 import cz.vhromada.common.validator.AbstractMovableValidator;
 import cz.vhromada.common.validator.MovableValidator;
 import cz.vhromada.common.validator.ValidationType;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
-import cz.vhromada.result.Status;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
+import cz.vhromada.validation.result.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +41,7 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
      */
     @Test
     void constructor_NullName() {
-        assertThatThrownBy(() -> new AbstractMovableValidatorStub(null, getMovableService(), KEY, VALUE)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AbstractMovableValidatorStub(null, getService(), KEY, VALUE)).isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
@@ -63,7 +63,7 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
 
         initDeepMock(movable);
 
-        final Result<Void> result = getMovableValidator().validate(movable, ValidationType.DEEP);
+        final Result<Void> result = getValidator().validate(movable, ValidationType.DEEP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.WARN);
@@ -74,8 +74,8 @@ class AbstractMovableValidatorTest extends MovableValidatorTest<Movable, Movable
     }
 
     @Override
-    protected MovableValidator<Movable> getMovableValidator() {
-        return new AbstractMovableValidatorStub(getName(), getMovableService(), KEY, VALUE);
+    protected MovableValidator<Movable> getValidator() {
+        return new AbstractMovableValidatorStub(getName(), getService(), KEY, VALUE);
     }
 
     @Override

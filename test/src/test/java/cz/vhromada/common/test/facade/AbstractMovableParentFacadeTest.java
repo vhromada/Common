@@ -3,13 +3,13 @@ package cz.vhromada.common.test.facade;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.converter.MovableConverter;
 import cz.vhromada.common.facade.AbstractMovableParentFacade;
 import cz.vhromada.common.facade.MovableParentFacade;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.test.stub.AbstractMovableParentFacadeStub;
 import cz.vhromada.common.test.stub.MovableStub;
 import cz.vhromada.common.validator.MovableValidator;
-import cz.vhromada.converter.Converter;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,35 +21,35 @@ import org.junit.jupiter.api.Test;
 class AbstractMovableParentFacadeTest extends MovableParentFacadeTest<Movable, Movable> {
 
     /**
-     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, Converter, MovableValidator)} with null
-     * service for movable data.
+     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, MovableConverter, MovableValidator)}
+     * with null service for movable data.
      */
     @Test
     void constructor_NullMovableService() {
-        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(null, getConverter(), getMovableValidator())).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(null, getConverter(), getValidator())).isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, Converter, MovableValidator)} with null converter.
+     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, MovableConverter, MovableValidator)}
+     * with null converter for movable data.
      */
     @Test
     void constructor_NullConverter() {
-        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(getMovableService(), null, getMovableValidator()))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(getService(), null, getValidator())).isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
-     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, Converter, MovableValidator)} with null
-     * validator for movable data.
+     * Test method for {@link AbstractMovableParentFacade#AbstractMovableParentFacade(MovableService, MovableConverter, MovableValidator)}
+     * with null validator for movable data.
      */
     @Test
     void constructor_NullMovableValidator() {
-        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(getMovableService(), getConverter(), null)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new AbstractMovableParentFacadeStub(getService(), getConverter(), null)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Override
-    protected MovableParentFacade<Movable> getMovableParentFacade() {
-        return new AbstractMovableParentFacadeStub(getMovableService(), getConverter(), getMovableValidator());
+    protected MovableParentFacade<Movable> getFacade() {
+        return new AbstractMovableParentFacadeStub(getService(), getConverter(), getValidator());
     }
 
     @Override

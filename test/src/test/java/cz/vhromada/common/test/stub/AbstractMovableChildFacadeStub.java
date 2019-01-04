@@ -3,11 +3,10 @@ package cz.vhromada.common.test.stub;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
+import cz.vhromada.common.converter.MovableConverter;
 import cz.vhromada.common.facade.AbstractMovableChildFacade;
 import cz.vhromada.common.service.MovableService;
-import cz.vhromada.common.utils.CollectionUtils;
 import cz.vhromada.common.validator.MovableValidator;
-import cz.vhromada.converter.Converter;
 
 /**
  * A class represents stub for {@link AbstractMovableChildFacade}.
@@ -19,19 +18,23 @@ public class AbstractMovableChildFacadeStub extends AbstractMovableChildFacade<M
     /**
      * Creates a new instance of AbstractMovableChildFacadeStub.
      *
-     * @param movableService         service for movable data
-     * @param converter              converter
-     * @param parentMovableValidator validator for movable data for parent data
-     * @param childMovableValidator  validator for movable data for child data
+     * @param service         service for movable data
+     * @param converter       converter for movable data
+     * @param parentValidator validator for movable data for parent data
+     * @param childValidator  validator for movable data for child data
+     * @throws IllegalArgumentException if service for movable data is null
+     *                                  or converter for movable data is null
+     *                                  or validator for movable data for parent data is null
+     *                                  or validator for movable data for child data is null
      */
-    public AbstractMovableChildFacadeStub(final MovableService<Movable> movableService, final Converter converter,
-        final MovableValidator<Movable> parentMovableValidator, final MovableValidator<Movable> childMovableValidator) {
-        super(movableService, converter, parentMovableValidator, childMovableValidator);
+    public AbstractMovableChildFacadeStub(final MovableService<Movable> service, final MovableConverter<Movable, Movable> converter,
+        final MovableValidator<Movable> parentValidator, final MovableValidator<Movable> childValidator) {
+        super(service, converter, parentValidator, childValidator);
     }
 
     @Override
     protected Movable getDomainData(final Integer id) {
-        for (final Movable movable : getMovableService().getAll()) {
+        for (final Movable movable : getService().getAll()) {
             if (id.equals(movable.getId())) {
                 return movable;
             }
@@ -42,12 +45,12 @@ public class AbstractMovableChildFacadeStub extends AbstractMovableChildFacade<M
 
     @Override
     protected List<Movable> getDomainList(final Movable parent) {
-        return CollectionUtils.newList(getMovableService().get(parent.getId()));
+        return List.of(getService().get(parent.getId()));
     }
 
     @Override
     protected Movable getForAdd(final Movable parent, final Movable data) {
-        return getMovableService().get(parent.getId());
+        return getService().get(parent.getId());
     }
 
     @Override
@@ -68,16 +71,6 @@ public class AbstractMovableChildFacadeStub extends AbstractMovableChildFacade<M
     @Override
     protected Movable getForMove(final Movable data, final boolean up) {
         return getDomainData(data.getId());
-    }
-
-    @Override
-    protected Class<Movable> getEntityClass() {
-        return Movable.class;
-    }
-
-    @Override
-    protected Class<Movable> getDomainClass() {
-        return Movable.class;
     }
 
 }

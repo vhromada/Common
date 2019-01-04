@@ -8,10 +8,10 @@ import java.util.List;
 
 import cz.vhromada.common.Movable;
 import cz.vhromada.common.facade.MovableChildFacade;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
-import cz.vhromada.result.Status;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
+import cz.vhromada.validation.result.Status;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +41,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     void get() {
         for (int i = 1; i <= getDefaultChildDataCount(); i++) {
-            final Result<T> result = getMovableChildFacade().get(i);
+            final Result<T> result = getFacade().get(i);
             final int index = i;
 
             assertSoftly(softly -> {
@@ -51,7 +51,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
             });
         }
 
-        final Result<T> result = getMovableChildFacade().get(Integer.MAX_VALUE);
+        final Result<T> result = getFacade().get(Integer.MAX_VALUE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -67,7 +67,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void get_NullData() {
-        final Result<T> result = getMovableChildFacade().get(null);
+        final Result<T> result = getFacade().get(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -87,7 +87,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
         final U expectedData = newDomainData(getDefaultChildDataCount() + 1);
         expectedData.setPosition(Integer.MAX_VALUE);
 
-        final Result<Void> result = getMovableChildFacade().add(newParentData(1), newChildData(null, null));
+        final Result<Void> result = getFacade().add(newParentData(1), newChildData(null, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -103,7 +103,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NullParent() {
-        final Result<Void> result = getMovableChildFacade().add(null, newChildData(null, null));
+        final Result<Void> result = getFacade().add(null, newChildData(null, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -118,7 +118,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NullId() {
-        final Result<Void> result = getMovableChildFacade().add(newParentData(null), newChildData(null, null));
+        final Result<Void> result = getFacade().add(newParentData(null), newChildData(null, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -133,7 +133,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NotExistingParent() {
-        final Result<Void> result = getMovableChildFacade().add(newParentData(Integer.MAX_VALUE), newChildData(null, null));
+        final Result<Void> result = getFacade().add(newParentData(Integer.MAX_VALUE), newChildData(null, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -148,7 +148,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NullChild() {
-        final Result<Void> result = getMovableChildFacade().add(newParentData(1), null);
+        final Result<Void> result = getFacade().add(newParentData(1), null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -163,7 +163,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NotNullId() {
-        final Result<Void> result = getMovableChildFacade().add(newParentData(1), newChildData(1, null));
+        final Result<Void> result = getFacade().add(newParentData(1), newChildData(1, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -179,7 +179,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void add_NotNullPosition() {
-        final Result<Void> result = getMovableChildFacade().add(newParentData(1), newChildData(null, 0));
+        final Result<Void> result = getFacade().add(newParentData(1), newChildData(null, 0));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -198,7 +198,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     void update() {
         final T data = newChildData(1, 0);
 
-        final Result<Void> result = getMovableChildFacade().update(data);
+        final Result<Void> result = getFacade().update(data);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -214,7 +214,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void update_NullData() {
-        final Result<Void> result = getMovableChildFacade().update(null);
+        final Result<Void> result = getFacade().update(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -229,7 +229,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void update_NullId() {
-        final Result<Void> result = getMovableChildFacade().update(newChildData(null, 0));
+        final Result<Void> result = getFacade().update(newChildData(null, 0));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -244,7 +244,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void update_NullPosition() {
-        final Result<Void> result = getMovableChildFacade().update(newChildData(1, null));
+        final Result<Void> result = getFacade().update(newChildData(1, null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -260,7 +260,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void update_BadId() {
-        final Result<Void> result = getMovableChildFacade().update(newChildData(Integer.MAX_VALUE, 0));
+        final Result<Void> result = getFacade().update(newChildData(Integer.MAX_VALUE, 0));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -276,7 +276,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     @DirtiesContext
     void remove() {
-        final Result<Void> result = getMovableChildFacade().remove(newChildData(1));
+        final Result<Void> result = getFacade().remove(newChildData(1));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -292,7 +292,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void remove_NullData() {
-        final Result<Void> result = getMovableChildFacade().remove(null);
+        final Result<Void> result = getFacade().remove(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -307,7 +307,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void remove_NullId() {
-        final Result<Void> result = getMovableChildFacade().remove(newChildData(null));
+        final Result<Void> result = getFacade().remove(newChildData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -322,7 +322,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void remove_BadId() {
-        final Result<Void> result = getMovableChildFacade().remove(newChildData(Integer.MAX_VALUE));
+        final Result<Void> result = getFacade().remove(newChildData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -338,7 +338,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     @DirtiesContext
     void duplicate() {
-        final Result<Void> result = getMovableChildFacade().duplicate(newChildData(1));
+        final Result<Void> result = getFacade().duplicate(newChildData(1));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -354,7 +354,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void duplicate_NullData() {
-        final Result<Void> result = getMovableChildFacade().duplicate(null);
+        final Result<Void> result = getFacade().duplicate(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -369,7 +369,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void duplicate_NullId() {
-        final Result<Void> result = getMovableChildFacade().duplicate(newChildData(null));
+        final Result<Void> result = getFacade().duplicate(newChildData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -384,7 +384,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void duplicate_BadId() {
-        final Result<Void> result = getMovableChildFacade().duplicate(newChildData(Integer.MAX_VALUE));
+        final Result<Void> result = getFacade().duplicate(newChildData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -400,7 +400,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     @DirtiesContext
     void moveUp() {
-        final Result<Void> result = getMovableChildFacade().moveUp(newChildData(2));
+        final Result<Void> result = getFacade().moveUp(newChildData(2));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -424,7 +424,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveUp_NullData() {
-        final Result<Void> result = getMovableChildFacade().moveUp(null);
+        final Result<Void> result = getFacade().moveUp(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -439,7 +439,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveUp_NullId() {
-        final Result<Void> result = getMovableChildFacade().moveUp(newChildData(null));
+        final Result<Void> result = getFacade().moveUp(newChildData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -454,7 +454,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveUp_NotMovableData() {
-        final Result<Void> result = getMovableChildFacade().moveUp(newChildData(1));
+        final Result<Void> result = getFacade().moveUp(newChildData(1));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -470,7 +470,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveUp_BadId() {
-        final Result<Void> result = getMovableChildFacade().moveUp(newChildData(Integer.MAX_VALUE));
+        final Result<Void> result = getFacade().moveUp(newChildData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -486,7 +486,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     @DirtiesContext
     void moveDown() {
-        final Result<Void> result = getMovableChildFacade().moveDown(newChildData(1));
+        final Result<Void> result = getFacade().moveDown(newChildData(1));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -510,7 +510,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveDown_NullData() {
-        final Result<Void> result = getMovableChildFacade().moveDown(null);
+        final Result<Void> result = getFacade().moveDown(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -525,7 +525,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveDown_NullId() {
-        final Result<Void> result = getMovableChildFacade().moveDown(newChildData(null));
+        final Result<Void> result = getFacade().moveDown(newChildData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -540,7 +540,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveDown_NotMovableData() {
-        final Result<Void> result = getMovableChildFacade().moveDown(newChildData(getDefaultChildDataCount()));
+        final Result<Void> result = getFacade().moveDown(newChildData(getDefaultChildDataCount()));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -556,7 +556,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void moveDown_BadId() {
-        final Result<Void> result = getMovableChildFacade().moveDown(newChildData(Integer.MAX_VALUE));
+        final Result<Void> result = getFacade().moveDown(newChildData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -572,7 +572,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
     @Test
     void find() {
         for (int i = 1; i <= getDefaultParentDataCount(); i++) {
-            final Result<List<T>> result = getMovableChildFacade().find(newParentData(i));
+            final Result<List<T>> result = getFacade().find(newParentData(i));
             final int index = i;
 
             assertSoftly(softly -> {
@@ -590,7 +590,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void find_NullParent() {
-        final Result<List<T>> result = getMovableChildFacade().find(null);
+        final Result<List<T>> result = getFacade().find(null);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -606,7 +606,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void find_NullId() {
-        final Result<List<T>> result = getMovableChildFacade().find(newParentData(null));
+        final Result<List<T>> result = getFacade().find(newParentData(null));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -622,7 +622,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      */
     @Test
     void find_BadId() {
-        final Result<List<T>> result = getMovableChildFacade().find(newParentData(Integer.MAX_VALUE));
+        final Result<List<T>> result = getFacade().find(newParentData(Integer.MAX_VALUE));
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -638,7 +638,7 @@ public abstract class MovableChildFacadeIntegrationTest<T extends Movable, U ext
      *
      * @return facade for movable data for child data
      */
-    protected abstract MovableChildFacade<T, V> getMovableChildFacade();
+    protected abstract MovableChildFacade<T, V> getFacade();
 
     /**
      * Returns default count of parent data.

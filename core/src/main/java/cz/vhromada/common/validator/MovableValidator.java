@@ -1,7 +1,7 @@
 package cz.vhromada.common.validator;
 
 import cz.vhromada.common.Movable;
-import cz.vhromada.result.Result;
+import cz.vhromada.validation.result.Result;
 
 /**
  * An interface represents validator for movable data.

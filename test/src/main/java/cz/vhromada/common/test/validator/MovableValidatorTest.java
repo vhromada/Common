@@ -7,18 +7,18 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import cz.vhromada.common.Movable;
 import cz.vhromada.common.service.MovableService;
-import cz.vhromada.common.utils.CollectionUtils;
 import cz.vhromada.common.validator.MovableValidator;
 import cz.vhromada.common.validator.ValidationType;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
-import cz.vhromada.result.Status;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
+import cz.vhromada.validation.result.Status;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,19 +46,19 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * Instance of {@link MovableService}
      */
     @Mock
-    private MovableService<U> movableService;
+    private MovableService<U> service;
 
     /**
      * Instance of {@link MovableValidator}
      */
-    private MovableValidator<T> movableValidator;
+    private MovableValidator<T> validator;
 
     /**
      * Initializes validator.
      */
     @BeforeEach
     public void setUp() {
-        movableValidator = getMovableValidator();
+        validator = getValidator();
     }
 
     /**
@@ -66,14 +66,14 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_New() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(null, null), ValidationType.NEW);
+        final Result<Void> result = validator.validate(getValidatingData(null, null), ValidationType.NEW);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -81,7 +81,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_New_NotNullId() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(Integer.MAX_VALUE, null), ValidationType.NEW);
+        final Result<Void> result = validator.validate(getValidatingData(Integer.MAX_VALUE, null), ValidationType.NEW);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -89,7 +89,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
                 .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_ID_NOT_NULL", "ID must be null.")));
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -97,7 +97,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_New_NotNullPosition() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(null, Integer.MAX_VALUE), ValidationType.NEW);
+        final Result<Void> result = validator.validate(getValidatingData(null, Integer.MAX_VALUE), ValidationType.NEW);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -105,7 +105,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
                 .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_POSITION_NOT_NULL", "Position must be null.")));
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -113,14 +113,14 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_Update() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(ID, ID - 1), ValidationType.UPDATE);
+        final Result<Void> result = validator.validate(getValidatingData(ID, ID - 1), ValidationType.UPDATE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
             softly.assertThat(result.getEvents()).isEmpty();
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -128,7 +128,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_Update_NullPosition() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(ID, null), ValidationType.UPDATE);
+        final Result<Void> result = validator.validate(getValidatingData(ID, null), ValidationType.UPDATE);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -136,7 +136,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
                 .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_POSITION_NULL", "Position mustn't be null.")));
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initExistsMock(validatingData, true);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.EXISTS);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.EXISTS);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -163,7 +163,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      */
     @Test
     void validate_Exists_NullId() {
-        final Result<Void> result = movableValidator.validate(getValidatingData(null), ValidationType.EXISTS);
+        final Result<Void> result = validator.validate(getValidatingData(null), ValidationType.EXISTS);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -171,7 +171,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
                 .isEqualTo(Collections.singletonList(new Event(Severity.ERROR, getPrefix() + "_ID_NULL", "ID mustn't be null.")));
         });
 
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -183,7 +183,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initExistsMock(validatingData, false);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.EXISTS);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.EXISTS);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -203,7 +203,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initMovingMock(validatingData, true, true);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.UP);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.UP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -222,7 +222,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initMovingMock(validatingData, true, false);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.UP);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.UP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -242,7 +242,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initMovingMock(validatingData, false, true);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.DOWN);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.DOWN);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -261,7 +261,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initMovingMock(validatingData, false, false);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.DOWN);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.DOWN);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.ERROR);
@@ -281,7 +281,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
 
         initDeepMock(validatingData);
 
-        final Result<Void> result = movableValidator.validate(validatingData, ValidationType.DEEP);
+        final Result<Void> result = validator.validate(validatingData, ValidationType.DEEP);
 
         assertSoftly(softly -> {
             softly.assertThat(result.getStatus()).isEqualTo(Status.OK);
@@ -296,8 +296,8 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      *
      * @return instance of {@link MovableService}
      */
-    protected MovableService<U> getMovableService() {
-        return movableService;
+    protected MovableService<U> getService() {
+        return service;
     }
 
     /**
@@ -309,7 +309,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
     protected void initExistsMock(final T validatingData, final boolean exists) {
         final U result = exists ? getRepositoryData(validatingData) : null;
 
-        when(movableService.get(any(Integer.class))).thenReturn(result);
+        when(service.get(any(Integer.class))).thenReturn(result);
     }
 
     /**
@@ -318,8 +318,8 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * @param validatingData validating data
      */
     protected void verifyExistsMock(final T validatingData) {
-        verify(movableService).get(validatingData.getId());
-        verifyNoMoreInteractions(movableService);
+        verify(service).get(validatingData.getId());
+        verifyNoMoreInteractions(service);
     }
 
     /**
@@ -336,7 +336,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * @param validatingData validating data
      */
     protected void verifyDeepMock(final T validatingData) {
-        verifyZeroInteractions(movableService);
+        verifyZeroInteractions(service);
     }
 
     /**
@@ -347,7 +347,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * @param valid          true if data should be valid
      */
     protected void initMovingMock(final T validatingData, final boolean up, final boolean valid) {
-        final List<U> dataList = CollectionUtils.newList(getItem1(), getItem2());
+        final List<U> dataList = new ArrayList<>(List.of(getItem1(), getItem2()));
         final U repositoryData = getRepositoryData(validatingData);
         if (up && valid || !up && !valid) {
             dataList.add(repositoryData);
@@ -355,8 +355,8 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
             dataList.add(0, repositoryData);
         }
 
-        when(movableService.getAll()).thenReturn(dataList);
-        when(movableService.get(any(Integer.class))).thenReturn(repositoryData);
+        when(service.getAll()).thenReturn(dataList);
+        when(service.get(any(Integer.class))).thenReturn(repositoryData);
     }
 
     /**
@@ -365,9 +365,9 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      * @param validatingData validating data
      */
     protected void verifyMovingMock(final T validatingData) {
-        verify(movableService).getAll();
-        verify(movableService).get(validatingData.getId());
-        verifyNoMoreInteractions(movableService);
+        verify(service).getAll();
+        verify(service).get(validatingData.getId());
+        verifyNoMoreInteractions(service);
     }
 
     /**
@@ -375,7 +375,7 @@ public abstract class MovableValidatorTest<T extends Movable, U extends Movable>
      *
      * @return instance of {@link MovableValidator}
      */
-    protected abstract MovableValidator<T> getMovableValidator();
+    protected abstract MovableValidator<T> getValidator();
 
     /**
      * Returns instance of {@link T}.

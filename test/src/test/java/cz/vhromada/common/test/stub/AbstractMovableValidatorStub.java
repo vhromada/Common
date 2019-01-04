@@ -5,9 +5,9 @@ import java.util.List;
 import cz.vhromada.common.Movable;
 import cz.vhromada.common.service.MovableService;
 import cz.vhromada.common.validator.AbstractMovableValidator;
-import cz.vhromada.result.Event;
-import cz.vhromada.result.Result;
-import cz.vhromada.result.Severity;
+import cz.vhromada.validation.result.Event;
+import cz.vhromada.validation.result.Result;
+import cz.vhromada.validation.result.Severity;
 
 /**
  * A class represents stub for {@link AbstractMovableValidator}.
@@ -29,15 +29,15 @@ public class AbstractMovableValidatorStub extends AbstractMovableValidator<Movab
     /**
      * Creates a new instance of AbstractMovableValidatorStub.
      *
-     * @param name           name of entity
-     * @param movableService service for movable data
-     * @param key            event key
-     * @param value          event value
+     * @param name    name of entity
+     * @param service service for movable data
+     * @param key     event key
+     * @param value   event value
      * @throws IllegalArgumentException if name of entity is null
-     *                                  or service for  movable data is null
+     *                                  or service for movable data is null
      */
-    public AbstractMovableValidatorStub(final String name, final MovableService<Movable> movableService, final String key, final String value) {
-        super(name, movableService);
+    public AbstractMovableValidatorStub(final String name, final MovableService<Movable> service, final String key, final String value) {
+        super(name, service);
 
         this.key = key;
         this.value = value;
@@ -45,12 +45,12 @@ public class AbstractMovableValidatorStub extends AbstractMovableValidator<Movab
 
     @Override
     protected Movable getData(final Movable data) {
-        return getMovableService().get(data.getId());
+        return getService().get(data.getId());
     }
 
     @Override
     protected List<Movable> getList(final Movable data) {
-        return getMovableService().getAll();
+        return getService().getAll();
     }
 
     @Override

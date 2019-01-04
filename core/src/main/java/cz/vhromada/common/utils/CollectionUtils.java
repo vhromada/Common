@@ -1,7 +1,6 @@
 package cz.vhromada.common.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,18 +17,6 @@ public final class CollectionUtils {
      * Creates a new instance of CollectionUtils.
      */
     private CollectionUtils() {
-    }
-
-    /**
-     * Creates a new list with data.
-     *
-     * @param data data
-     * @param <T>  type of data
-     * @return list with data
-     */
-    @SafeVarargs
-    public static <T> List<T> newList(final T... data) {
-        return new ArrayList<>(Arrays.asList(data));
     }
 
     /**
@@ -60,7 +47,6 @@ public final class CollectionUtils {
 
             return result;
         });
-
         return sortedData;
     }
 
