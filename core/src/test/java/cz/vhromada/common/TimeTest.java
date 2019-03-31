@@ -28,10 +28,8 @@ class TimeTest {
     /**
      * Array of {@link Time} in strings
      */
-    //CHECKSTYLE.OFF: Indentation
     private static final String[] TIME_STRINGS = { "1:05:31:01", "1:00:31:01", "1:05:00:01", "1:05:31:00", "12:31:01", "5:31:01", "5:00:00", "0:03:31",
         "0:00:12", "0:00:00" };
-    //CHECKSTYLE.OFF: Indentation
 
     /**
      * Length - hours
