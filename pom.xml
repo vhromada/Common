@@ -7,13 +7,13 @@
     <parent>
         <groupId>cz.vhromada.maven</groupId>
         <artifactId>parent</artifactId>
-        <version>2.1.1</version>
+        <version>2.1.2</version>
     </parent>
 
     <groupId>cz.vhromada.common</groupId>
     <artifactId>common</artifactId>
     <packaging>pom</packaging>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 
     <name>Common</name>
     <description>Java library for common components</description>
@@ -51,7 +51,7 @@
             <dependency>
                 <groupId>cz.vhromada.validation</groupId>
                 <artifactId>result</artifactId>
-                <version>3.0.1</version>
+                <version>3.0.2</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
