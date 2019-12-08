@@ -12,7 +12,7 @@
 
     <groupId>cz.vhromada.common</groupId>
     <artifactId>common</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <packaging>pom</packaging>
 
     <name>Common</name>
@@ -42,7 +42,7 @@
     </scm>
 
     <properties>
-        <result.version>4.0.0-SNAPSHOT</result.version>
+        <result.version>4.0.0</result.version>
     </properties>
 
     <modules>
