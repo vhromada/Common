@@ -1,3 +1,3 @@
 # Common
 
-Library from common components
+Library for common components
