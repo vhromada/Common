@@ -1,3 +1,3 @@
 # Common
 
-Java library from common components
+Library from common components
