@@ -7,12 +7,12 @@
     <parent>
         <groupId>cz.vhromada.project</groupId>
         <artifactId>project-parent</artifactId>
-        <version>4.0.2</version>
+        <version>4.0.3</version>
     </parent>
 
     <groupId>cz.vhromada.common</groupId>
     <artifactId>common</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
     <packaging>pom</packaging>
 
     <name>Common</name>
@@ -41,26 +41,12 @@
         <url>git@github.com:vhromada/Common.git</url>
     </scm>
 
-    <properties>
-        <result.version>4.0.0</result.version>
-    </properties>
-
     <modules>
         <module>common-result</module>
         <module>common-core</module>
         <module>common-test</module>
         <module>common-web</module>
     </modules>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>cz.vhromada.validation</groupId>
-                <artifactId>result</artifactId>
-                <version>${result.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
