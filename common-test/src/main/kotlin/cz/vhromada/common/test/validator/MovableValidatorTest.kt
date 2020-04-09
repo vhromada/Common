@@ -5,7 +5,8 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.result.Event
 import cz.vhromada.common.result.Severity
 import cz.vhromada.common.result.Status
@@ -33,7 +34,7 @@ private const val ID = 5
  */
 @ExtendWith(MockitoExtension::class)
 @Suppress("FunctionName")
-abstract class MovableValidatorTest<T : Movable, U : Movable> {
+abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
     /**
      * Instance of [MovableService]

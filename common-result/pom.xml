@@ -7,7 +7,7 @@
     <parent>
         <groupId>cz.vhromada.common</groupId>
         <artifactId>common</artifactId>
-        <version>3.0.3</version>
+        <version>4.0.0</version>
     </parent>
 
     <artifactId>common-result</artifactId>

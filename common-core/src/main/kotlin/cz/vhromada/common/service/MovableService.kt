@@ -1,14 +1,14 @@
 package cz.vhromada.common.service
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
 
 /**
- * An interface represents service for movable data.
+ * An interface represents service for audible and movable data.
  *
  * @param <T> type of data
  * @author Vladimir Hromada
  */
-interface MovableService<T : Movable> {
+interface MovableService<T : AuditEntity> {
 
     /**
      * Returns list of data.

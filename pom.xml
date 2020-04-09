@@ -7,12 +7,12 @@
     <parent>
         <groupId>cz.vhromada.project</groupId>
         <artifactId>project-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
     </parent>
 
     <groupId>cz.vhromada.common</groupId>
     <artifactId>common</artifactId>
-    <version>3.0.3</version>
+    <version>4.0.0</version>
     <packaging>pom</packaging>
 
     <name>Common</name>
@@ -45,6 +45,7 @@
         <module>common-result</module>
         <module>common-core</module>
         <module>common-test</module>
+        <module>common-account</module>
         <module>common-web</module>
     </modules>
 

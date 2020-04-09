@@ -2,16 +2,21 @@ package cz.vhromada.common.test.facade
 
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.facade.MovableChildFacade
 import cz.vhromada.common.mapper.Mapper
+import cz.vhromada.common.provider.AccountProvider
+import cz.vhromada.common.provider.TimeProvider
 import cz.vhromada.common.result.Result
 import cz.vhromada.common.result.Status
 import cz.vhromada.common.service.MovableService
+import cz.vhromada.common.test.utils.TestConstants
 import cz.vhromada.common.validator.MovableValidator
 import cz.vhromada.common.validator.ValidationType
 import org.assertj.core.api.Assertions.assertThat
@@ -38,13 +43,25 @@ private val INVALID_DATA_RESULT = Result.error<Unit>("DATA_INVALID", "Data must 
  */
 @ExtendWith(MockitoExtension::class)
 @Suppress("FunctionName")
-abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V : Movable> {
+abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable, V : AuditEntity> {
 
     /**
      * Instance of [MovableService]
      */
     @Mock
     protected lateinit var service: MovableService<V>
+
+    /**
+     * Instance of [AccountProvider]
+     */
+    @Mock
+    protected lateinit var accountProvider: AccountProvider
+
+    /**
+     * Instance of [TimeProvider]
+     */
+    @Mock
+    protected lateinit var timeProvider: TimeProvider
 
     /**
      * Instance of [Mapper]
@@ -98,7 +115,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         verify(service).getAll()
         verify(mapper).mapBack(newChildDomain(1))
         verifyNoMoreInteractions(service, mapper)
-        verifyZeroInteractions(parentMovableValidator, childMovableValidator)
+        verifyZeroInteractions(accountProvider, timeProvider, parentMovableValidator, childMovableValidator)
     }
 
     /**
@@ -118,7 +135,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(service).getAll()
         verifyNoMoreInteractions(service, mapper)
-        verifyZeroInteractions(mapper, parentMovableValidator, childMovableValidator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, parentMovableValidator, childMovableValidator)
     }
 
     /**
@@ -136,6 +153,8 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         } else {
             whenever(service.getAll()).thenReturn(listOf(newParentDomain(1)))
         }
+        whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
+        whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(mapper.map(anyChildEntity())).thenReturn(childDomain)
         whenever(parentMovableValidator.validate(anyParentEntity(), any())).thenReturn(Result())
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(Result())
@@ -153,10 +172,12 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
             verify(service).getAll()
         }
         verify(service).update(argumentCaptor.capture())
+        verify(accountProvider).getAccount()
+        verify(timeProvider).getTime()
         verify(parentMovableValidator).validate(parentEntity, ValidationType.EXISTS)
         verify(childMovableValidator).validate(childEntity, ValidationType.NEW, ValidationType.DEEP)
         verify(mapper).map(childEntity)
-        verifyNoMoreInteractions(service, mapper, parentMovableValidator, childMovableValidator)
+        verifyNoMoreInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator, childMovableValidator)
 
         assertParentDeepEquals(newParentDomainWithChildren(1, listOf(newChildDomain(1), childDomain)), argumentCaptor.lastValue)
     }
@@ -184,7 +205,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         verify(parentMovableValidator).validate(parentEntity, ValidationType.EXISTS)
         verify(childMovableValidator).validate(childEntity, ValidationType.NEW, ValidationType.DEEP)
         verifyNoMoreInteractions(parentMovableValidator, childMovableValidator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -198,6 +219,8 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         val argumentCaptor = argumentCaptorParentDomain()
 
         whenever(service.getAll()).thenReturn(listOf(parentDomain))
+        whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
+        whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(mapper.map(anyChildEntity())).thenReturn(childDomain)
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(Result())
 
@@ -210,9 +233,11 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(service).getAll()
         verify(service).update(argumentCaptor.capture())
+        verify(accountProvider).getAccount()
+        verify(timeProvider).getTime()
         verify(mapper).map(childEntity)
         verify(childMovableValidator).validate(childEntity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
-        verifyNoMoreInteractions(service, mapper, childMovableValidator)
+        verifyNoMoreInteractions(service, accountProvider, timeProvider, mapper, childMovableValidator)
         verifyZeroInteractions(parentMovableValidator)
 
         assertParentDeepEquals(parentDomain, argumentCaptor.lastValue)
@@ -233,7 +258,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(childMovableValidator).validate(childEntity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
         verifyNoMoreInteractions(childMovableValidator)
-        verifyZeroInteractions(service, mapper, parentMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator)
     }
 
     /**
@@ -259,7 +284,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         verify(service).update(argumentCaptor.capture())
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(service, childMovableValidator)
-        verifyZeroInteractions(mapper, parentMovableValidator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, parentMovableValidator)
 
         assertParentDeepEquals(getParentRemovedData(parentDomain, newChildDomain(1)), argumentCaptor.lastValue)
     }
@@ -279,7 +304,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(childMovableValidator)
-        verifyZeroInteractions(service, mapper, parentMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator)
     }
 
     /**
@@ -306,7 +331,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         verify(service).update(argumentCaptor.capture())
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(service, childMovableValidator)
-        verifyZeroInteractions(mapper, parentMovableValidator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, parentMovableValidator)
 
         assertParentDeepEquals(newParentDomainWithChildren(1, listOf(newChildDomain(1), childDomain)), argumentCaptor.lastValue)
     }
@@ -326,7 +351,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(childMovableValidator)
-        verifyZeroInteractions(service, mapper, parentMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator)
     }
 
     /**
@@ -343,6 +368,8 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         val argumentCaptor = argumentCaptorParentDomain()
 
         whenever(service.getAll()).thenReturn(listOf(newParentDomainWithChildren(1, listOf(newChildDomain(1), newChildDomain(2)))))
+        whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
+        whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(Result())
 
         val result = facade.moveUp(childEntity)
@@ -354,8 +381,10 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(service).getAll()
         verify(service).update(argumentCaptor.capture())
+        verify(accountProvider, atLeastOnce()).getAccount()
+        verify(timeProvider, atLeastOnce()).getTime()
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.UP)
-        verifyNoMoreInteractions(service, childMovableValidator)
+        verifyNoMoreInteractions(service, accountProvider, timeProvider, childMovableValidator)
         verifyZeroInteractions(mapper, parentMovableValidator)
 
         assertParentDeepEquals(newParentDomainWithChildren(1, listOf(childDomain1, childDomain2)), argumentCaptor.lastValue)
@@ -376,7 +405,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.UP)
         verifyNoMoreInteractions(childMovableValidator)
-        verifyZeroInteractions(service, mapper, parentMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator)
     }
 
     /**
@@ -393,6 +422,8 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         val argumentCaptor = argumentCaptorParentDomain()
 
         whenever(service.getAll()).thenReturn(listOf(newParentDomainWithChildren(1, listOf(newChildDomain(1), newChildDomain(2)))))
+        whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
+        whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(Result())
 
         val result = facade.moveDown(childEntity)
@@ -404,8 +435,10 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(service).getAll()
         verify(service).update(argumentCaptor.capture())
+        verify(accountProvider, atLeastOnce()).getAccount()
+        verify(timeProvider, atLeastOnce()).getTime()
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.DOWN)
-        verifyNoMoreInteractions(service, childMovableValidator)
+        verifyNoMoreInteractions(service, accountProvider, timeProvider, childMovableValidator)
         verifyZeroInteractions(mapper, parentMovableValidator)
 
         assertParentDeepEquals(newParentDomainWithChildren(1, listOf(childDomain1, childDomain2)), argumentCaptor.lastValue)
@@ -426,7 +459,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(childMovableValidator).validate(childEntity, ValidationType.EXISTS, ValidationType.DOWN)
         verifyNoMoreInteractions(childMovableValidator)
-        verifyZeroInteractions(service, mapper, parentMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, parentMovableValidator)
     }
 
     /**
@@ -460,7 +493,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
         verify(mapper).mapBack(listOf(newChildDomain(1)))
         verify(parentMovableValidator).validate(parentEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(service, mapper, parentMovableValidator)
-        verifyZeroInteractions(childMovableValidator)
+        verifyZeroInteractions(accountProvider, timeProvider, childMovableValidator)
     }
 
     /**
@@ -482,7 +515,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : Movable, U : Movable, V :
 
         verify(parentMovableValidator).validate(parentEntity, ValidationType.EXISTS)
         verifyNoMoreInteractions(parentMovableValidator)
-        verifyZeroInteractions(service, mapper, childMovableValidator)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper, childMovableValidator)
     }
 
     /**

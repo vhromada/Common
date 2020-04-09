@@ -1,22 +1,33 @@
 package cz.vhromada.common.service
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.Audit
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Account
+import cz.vhromada.common.provider.AccountProvider
+import cz.vhromada.common.provider.TimeProvider
 import cz.vhromada.common.utils.sorted
 import org.springframework.cache.Cache
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.annotation.Transactional
 
 /**
- * An abstract class represents service for movable data.
+ * An abstract class represents service for audible and movable data.
  *
  * @param <T> type of data
  * @author Vladimir Hromada
  */
 @Transactional
-abstract class AbstractMovableService<T : Movable>(
+abstract class AbstractMovableService<T : AuditEntity>(
         private val repository: JpaRepository<T, Int>,
+        private val accountProvider: AccountProvider,
+        private val timeProvider: TimeProvider,
         private val cache: Cache,
-        private val key: String) : MovableService<T> {
+        key: String) : MovableService<T> {
+
+    /**
+     * Cache key
+     */
+    private val cacheKey by lazy { key + accountProvider.getAccount().id }
 
     @Transactional(readOnly = true)
     override fun getAll(): List<T> {
@@ -25,8 +36,8 @@ abstract class AbstractMovableService<T : Movable>(
     }
 
     override fun newData() {
-        repository.deleteAll()
-        cache.clear()
+        repository.deleteAll(getCachedData(false))
+        cache.evictIfPresent(cacheKey)
     }
 
     @Transactional(readOnly = true)
@@ -37,10 +48,11 @@ abstract class AbstractMovableService<T : Movable>(
 
     override fun add(data: T) {
         data.position = 0
+        data.audit = getAudit()
         val addedData = repository.save(data)
         addedData.position = addedData.id!! - 1
         repository.save(addedData)
-        cache.clear()
+        cache.evictIfPresent(cacheKey)
     }
 
     override fun update(data: T) {
@@ -48,7 +60,7 @@ abstract class AbstractMovableService<T : Movable>(
         val dataList = getCachedData(false)
                 .toMutableList()
         updateItem(dataList, updatedData)
-        cache.put(key, dataList)
+        cache.put(cacheKey, dataList)
     }
 
     override fun remove(data: T) {
@@ -56,12 +68,14 @@ abstract class AbstractMovableService<T : Movable>(
         val dataList = getCachedData(false)
                 .toMutableList()
         dataList.remove(data)
-        cache.put(key, dataList)
+        cache.put(cacheKey, dataList)
     }
 
     override fun duplicate(data: T) {
-        repository.save(getCopy(data))
-        cache.clear()
+        val copy = getCopy(data)
+        copy.audit = getAudit()
+        repository.save(copy)
+        cache.evictIfPresent(cacheKey)
     }
 
     override fun moveUp(data: T) {
@@ -77,8 +91,16 @@ abstract class AbstractMovableService<T : Movable>(
                 .sorted()
         updatePositions(data)
         val savedData = repository.saveAll(data)
-        cache.put(key, savedData)
+        cache.put(cacheKey, savedData)
     }
+
+    /**
+     * Returns account data.
+     *
+     * @param account account
+     * @return account data
+     */
+    protected abstract fun getAccountData(account: Account): List<T>
 
     /**
      * Returns copy of data.
@@ -89,14 +111,38 @@ abstract class AbstractMovableService<T : Movable>(
     protected abstract fun getCopy(data: T): T
 
     /**
+     * Returns data.
+     *
+     * @return data
+     */
+    protected fun getData(): List<T> {
+        val account = accountProvider.getAccount()
+        if (account.roles.contains("ROLE_ADMIN")) {
+            return repository.findAll()
+        }
+        return getAccountData(account)
+    }
+
+    /**
      * Updates positions.
      *
      * @param data data
      */
     protected fun updatePositions(data: List<T>) {
+        val audit = getAudit()
         for (i in data.indices) {
             data[i].position = i
+            data[i].modify(audit)
         }
+    }
+
+    /**
+     * Returns audit
+     *
+     * @return audit
+     */
+    protected fun getAudit(): Audit {
+        return Audit(accountProvider.getAccount().id, timeProvider.getTime())
     }
 
     /**
@@ -107,11 +153,11 @@ abstract class AbstractMovableService<T : Movable>(
      */
     @Suppress("UNCHECKED_CAST")
     private fun getCachedData(cached: Boolean): List<T> {
-        val cacheValue = cache.get(key)
+        val cacheValue = cache.get(cacheKey)
         if (cacheValue == null) {
-            val data = repository.findAll()
+            val data = getData()
             if (cached) {
-                cache.put(key, data)
+                cache.put(cacheKey, data)
             }
             return data
         }
@@ -132,12 +178,15 @@ abstract class AbstractMovableService<T : Movable>(
         val index = dataList.indexOf(data)
         val other = dataList[if (up) index - 1 else index + 1]
         val position = data.position!!
+        val audit = getAudit()
         data.position = other.position
         other.position = position
+        data.modify(audit)
+        other.modify(audit)
         val updatedData = repository.saveAll(listOf(data, other))
         updateItem(dataList, updatedData[0])
         updateItem(dataList, updatedData[1])
-        cache.put(key, dataList)
+        cache.put(cacheKey, dataList)
     }
 
     /**

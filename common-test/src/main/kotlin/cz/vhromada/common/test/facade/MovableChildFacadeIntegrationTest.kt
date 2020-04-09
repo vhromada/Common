@@ -1,10 +1,13 @@
 package cz.vhromada.common.test.facade
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.Audit
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.facade.MovableChildFacade
 import cz.vhromada.common.result.Event
 import cz.vhromada.common.result.Severity
 import cz.vhromada.common.result.Status
+import cz.vhromada.common.test.utils.TestConstants
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
@@ -22,7 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
  */
 @ExtendWith(SpringExtension::class)
 @Suppress("FunctionName", "Unused")
-abstract class MovableChildFacadeIntegrationTest<T : Movable, U : Movable, V : Movable> {
+abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V : Movable> {
 
     /**
      * Test method for [MovableChildFacade.get].
@@ -304,8 +307,10 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : Movable, V : M
 
         val data1 = getDomainData(1)
         data1.position = 1
+        data1.modify(getUpdatedAudit())
         val data2 = getDomainData(2)
         data2.position = 0
+        data2.modify(getUpdatedAudit())
         assertDataDomainDeepEquals(data1, getRepositoryData(1)!!)
         assertDataDomainDeepEquals(data2, getRepositoryData(2)!!)
         for (i in 3..getDefaultChildDataCount()) {
@@ -375,8 +380,10 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : Movable, V : M
 
         val data1 = getDomainData(1)
         data1.position = 1
+        data1.modify(getUpdatedAudit())
         val data2 = getDomainData(2)
         data2.position = 0
+        data2.modify(getUpdatedAudit())
         assertDataDomainDeepEquals(data1, getRepositoryData(1)!!)
         assertDataDomainDeepEquals(data2, getRepositoryData(2)!!)
         for (i in 3..getDefaultChildDataCount()) {
@@ -672,6 +679,15 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : Movable, V : M
         childData.position = position
 
         return childData
+    }
+
+    /**
+     * Returns audit for update.
+     *
+     * @return audit for update
+     */
+    private fun getUpdatedAudit(): Audit {
+        return Audit(TestConstants.ACCOUNT_ID, TestConstants.TIME)
     }
 
     /**

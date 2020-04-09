@@ -1,6 +1,7 @@
 package cz.vhromada.common.validator
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.result.Event
 import cz.vhromada.common.result.Result
 import cz.vhromada.common.result.Severity
@@ -13,7 +14,7 @@ import cz.vhromada.common.service.MovableService
  * @param <U> type of domain data
  * @author Vladimir Hromada
  */
-abstract class AbstractMovableValidator<T : Movable, U : Movable>(
+abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
         private val name: String,
         protected val service: MovableService<U>) : MovableValidator<T> {
 

@@ -1,6 +1,6 @@
 package cz.vhromada.common.validator
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.result.Result
 
 /**

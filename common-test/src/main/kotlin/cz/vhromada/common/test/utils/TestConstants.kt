@@ -1,6 +1,8 @@
 package cz.vhromada.common.test.utils
 
+import cz.vhromada.common.entity.Account
 import cz.vhromada.common.utils.Constants
+import java.time.LocalDateTime
 
 /**
  * A class represents constants for tests.
@@ -29,5 +31,20 @@ object TestConstants {
      * Bad maximum IMDB code
      */
     const val BAD_MAX_IMDB_CODE = Constants.MAX_IMDB_CODE + 1
+
+    /**
+     * Account's ID
+     */
+    const val ACCOUNT_ID = 10
+
+    /**
+     * Time
+     */
+    val TIME: LocalDateTime = LocalDateTime.of(2000, 2, 4, 10, 45, 55, 70)
+
+    /**
+     * Account
+     */
+    val ACCOUNT = Account(id = ACCOUNT_ID, username = "", password = "", roles = listOf("ROLE_USER"))
 
 }

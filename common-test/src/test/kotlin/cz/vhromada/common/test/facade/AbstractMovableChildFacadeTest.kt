@@ -3,11 +3,12 @@ package cz.vhromada.common.test.facade
 import com.nhaarman.mockitokotlin2.KArgumentCaptor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.facade.AbstractMovableChildFacade
 import cz.vhromada.common.facade.MovableChildFacade
 import cz.vhromada.common.test.stub.AbstractMovableChildFacadeStub
-import cz.vhromada.common.test.stub.MovableStub
+import cz.vhromada.common.test.stub.AuditEntityStub
 import org.junit.jupiter.api.BeforeEach
 
 /**
@@ -15,12 +16,12 @@ import org.junit.jupiter.api.BeforeEach
  *
  * @author Vladimir Hromada
  */
-class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, Movable, Movable, Movable>() {
+class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, AuditEntity, Movable, AuditEntity>() {
 
     /**
-     * Instance of [Movable]
+     * Instance of [AuditEntity]
      */
-    private var movable: Movable? = null
+    private var auditEntity: AuditEntity? = null
 
     /**
      * {@inheritDoc}
@@ -30,22 +31,22 @@ class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, Movable, 
     override fun setUp() {
         super.setUp()
 
-        movable = null
+        auditEntity = null
     }
 
     override fun getFacade(): MovableChildFacade<Movable, Movable> {
-        return AbstractMovableChildFacadeStub(service, mapper, parentMovableValidator, childMovableValidator)
+        return AbstractMovableChildFacadeStub(service, accountProvider, timeProvider, mapper, parentMovableValidator, childMovableValidator)
     }
 
     override fun newParentEntity(id: Int): Movable {
         return getMovable(id)
     }
 
-    override fun newParentDomain(id: Int): Movable {
+    override fun newParentDomain(id: Int): AuditEntity {
         return getMovable(id)
     }
 
-    override fun newParentDomainWithChildren(id: Int, children: List<Movable>): Movable {
+    override fun newParentDomainWithChildren(id: Int, children: List<AuditEntity>): AuditEntity {
         return getMovable(id)
     }
 
@@ -53,11 +54,11 @@ class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, Movable, 
         return getMovable(id)
     }
 
-    override fun newChildDomain(id: Int?): Movable {
+    override fun newChildDomain(id: Int?): AuditEntity {
         return getMovable(id)
     }
 
-    override fun getParentRemovedData(parent: Movable, child: Movable): Movable {
+    override fun getParentRemovedData(parent: AuditEntity, child: AuditEntity): AuditEntity {
         return parent
     }
 
@@ -69,15 +70,15 @@ class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, Movable, 
         return any()
     }
 
-    override fun anyChildDomain(): Movable {
+    override fun anyChildDomain(): AuditEntity {
         return any()
     }
 
-    override fun argumentCaptorParentDomain(): KArgumentCaptor<Movable> {
+    override fun argumentCaptorParentDomain(): KArgumentCaptor<AuditEntity> {
         return argumentCaptor()
     }
 
-    override fun assertParentDeepEquals(expected: Movable, actual: Movable) {
+    override fun assertParentDeepEquals(expected: AuditEntity, actual: AuditEntity) {
         // nothing
     }
 
@@ -87,14 +88,14 @@ class AbstractMovableChildFacadeTest : MovableChildFacadeTest<Movable, Movable, 
      * @param id ID
      * @return movable object
      */
-    private fun getMovable(id: Int?): Movable {
-        if (movable == null) {
-            movable = MovableStub(id)
+    private fun getMovable(id: Int?): AuditEntity {
+        if (auditEntity == null) {
+            auditEntity = AuditEntityStub(id)
         } else {
-            movable!!.id = id
+            auditEntity!!.id = id
         }
 
-        return movable!!
+        return auditEntity!!
     }
 
 }

@@ -1,10 +1,13 @@
 package cz.vhromada.common.test.facade
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.Audit
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.facade.MovableParentFacade
 import cz.vhromada.common.result.Event
 import cz.vhromada.common.result.Severity
 import cz.vhromada.common.result.Status
+import cz.vhromada.common.test.utils.TestConstants
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
@@ -21,7 +24,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
  */
 @ExtendWith(SpringExtension::class)
 @Suppress("FunctionName", "Unused")
-abstract class MovableParentFacadeIntegrationTest<T : Movable, U : Movable> {
+abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> {
 
     /**
      * Test method for [MovableParentFacade.newData].
@@ -309,8 +312,10 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : Movable> {
 
         val data1 = getDomainData(1)
         data1.position = 1
+        data1.modify(getUpdatedAudit())
         val data2 = getDomainData(2)
         data2.position = 0
+        data2.modify(getUpdatedAudit())
         assertDataDomainDeepEquals(data1, getRepositoryData(1)!!)
         assertDataDomainDeepEquals(data2, getRepositoryData(2)!!)
         for (i in 3..getDefaultDataCount()) {
@@ -380,8 +385,10 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : Movable> {
 
         val data1 = getDomainData(1)
         data1.position = 1
+        data1.modify(getUpdatedAudit())
         val data2 = getDomainData(2)
         data2.position = 0
+        data2.modify(getUpdatedAudit())
         assertDataDomainDeepEquals(data1, getRepositoryData(1)!!)
         assertDataDomainDeepEquals(data2, getRepositoryData(2)!!)
         for (i in 3..getDefaultDataCount()) {
@@ -449,7 +456,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : Movable> {
         }
 
         for (i in 1..getDefaultDataCount()) {
-            assertDataDomainDeepEquals(getDomainData(i), getRepositoryData(i)!!)
+            assertDataDomainDeepEquals(getExpectedUpdatePositionData(i), getRepositoryData(i)!!)
         }
         assertDefaultRepositoryData()
     }
@@ -577,8 +584,31 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : Movable> {
     protected open fun getExpectedDuplicatedData(): U {
         val data = getDomainData(getDefaultDataCount())
         data.id = getDefaultDataCount() + 1
+        data.audit = getUpdatedAudit()
 
         return data
+    }
+
+    /**
+     * Returns expected update position data.
+     *
+     * @param index index of data
+     * @return expected update position data
+     */
+    protected open fun getExpectedUpdatePositionData(index: Int): U {
+        val data = getDomainData(index)
+        data.modify(getUpdatedAudit())
+
+        return data
+    }
+
+    /**
+     * Returns audit for update.
+     *
+     * @return audit for update
+     */
+    protected open fun getUpdatedAudit(): Audit {
+        return Audit(TestConstants.ACCOUNT_ID, TestConstants.TIME)
     }
 
     /**

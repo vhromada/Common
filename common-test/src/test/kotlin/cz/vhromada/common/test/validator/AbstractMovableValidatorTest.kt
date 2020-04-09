@@ -1,11 +1,12 @@
 package cz.vhromada.common.test.validator
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.result.Event
 import cz.vhromada.common.result.Severity
 import cz.vhromada.common.result.Status
 import cz.vhromada.common.test.stub.AbstractMovableValidatorStub
-import cz.vhromada.common.test.stub.MovableStub
+import cz.vhromada.common.test.stub.AuditEntityStub
 import cz.vhromada.common.validator.AbstractMovableValidator
 import cz.vhromada.common.validator.MovableValidator
 import cz.vhromada.common.validator.ValidationType
@@ -27,7 +28,7 @@ private const val VALUE = "value"
  *
  * @author Vladimir Hromada
  */
-class AbstractMovableValidatorTest : MovableValidatorTest<Movable, Movable>() {
+class AbstractMovableValidatorTest : MovableValidatorTest<Movable, AuditEntity>() {
 
     /**
      * Test method for [AbstractMovableValidator.validate] with [ValidationType.DEEP].
@@ -53,23 +54,23 @@ class AbstractMovableValidatorTest : MovableValidatorTest<Movable, Movable>() {
     }
 
     override fun getValidatingData(id: Int?): Movable {
-        return MovableStub(id)
+        return AuditEntityStub(id)
     }
 
     override fun getValidatingData(id: Int?, position: Int?): Movable {
-        return MovableStub(id, position)
+        return AuditEntityStub(id, position)
     }
 
-    override fun getRepositoryData(validatingData: Movable): Movable {
-        return MovableStub(validatingData.id)
+    override fun getRepositoryData(validatingData: Movable): AuditEntity {
+        return AuditEntityStub(validatingData.id)
     }
 
-    override fun getItem1(): Movable {
-        return MovableStub(1)
+    override fun getItem1(): AuditEntity {
+        return AuditEntityStub(1)
     }
 
-    override fun getItem2(): Movable {
-        return MovableStub(2)
+    override fun getItem2(): AuditEntity {
+        return AuditEntityStub(2)
     }
 
     override fun getName(): String {

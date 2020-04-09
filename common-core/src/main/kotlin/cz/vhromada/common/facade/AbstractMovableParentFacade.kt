@@ -1,7 +1,11 @@
 package cz.vhromada.common.facade
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.Audit
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.mapper.Mapper
+import cz.vhromada.common.provider.AccountProvider
+import cz.vhromada.common.provider.TimeProvider
 import cz.vhromada.common.result.Result
 import cz.vhromada.common.result.Status
 import cz.vhromada.common.service.MovableService
@@ -15,8 +19,10 @@ import cz.vhromada.common.validator.ValidationType
  * @param <U> type of domain data
  * @author Vladimir Hromada
  */
-abstract class AbstractMovableParentFacade<T : Movable, U : Movable>(
+abstract class AbstractMovableParentFacade<T : Movable, U : AuditEntity>(
         protected val service: MovableService<U>,
+        private val accountProvider: AccountProvider,
+        private val timeProvider: TimeProvider,
         private val mapper: Mapper<T, U>,
         private val validator: MovableValidator<T>) : MovableParentFacade<T> {
 
@@ -45,7 +51,10 @@ abstract class AbstractMovableParentFacade<T : Movable, U : Movable>(
     override fun update(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
         if (Status.OK == result.status) {
-            service.update(getDataForUpdate(data))
+            val updateData = getDataForUpdate(data)
+            updateData.audit = service.get(data.id!!)!!.audit
+            updateData.modify(getAudit())
+            service.update(updateData)
         }
         return result
     }
@@ -105,6 +114,15 @@ abstract class AbstractMovableParentFacade<T : Movable, U : Movable>(
      */
     protected open fun getDataForUpdate(data: T): U {
         return mapper.map(data)
+    }
+
+    /**
+     * Returns audit.
+     *
+     * @return audit
+     */
+    protected open fun getAudit(): Audit {
+        return Audit(accountProvider.getAccount().id, timeProvider.getTime())
     }
 
 }

@@ -1,4 +1,4 @@
-package cz.vhromada.common
+package cz.vhromada.common.entity
 
 import java.io.Serializable
 

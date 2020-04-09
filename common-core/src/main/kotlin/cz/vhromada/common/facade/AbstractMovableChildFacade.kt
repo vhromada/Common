@@ -1,7 +1,11 @@
 package cz.vhromada.common.facade
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.Audit
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.mapper.Mapper
+import cz.vhromada.common.provider.AccountProvider
+import cz.vhromada.common.provider.TimeProvider
 import cz.vhromada.common.result.Result
 import cz.vhromada.common.result.Status
 import cz.vhromada.common.service.MovableService
@@ -18,8 +22,10 @@ import cz.vhromada.common.validator.ValidationType
  * @param <V> type of domain repository data
  * @author Vladimir Hromada
  */
-abstract class AbstractMovableChildFacade<S : Movable, T : Movable, U : Movable, V : Movable>(
+abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Movable, V : AuditEntity>(
         protected val service: MovableService<V>,
+        private val accountProvider: AccountProvider,
+        private val timeProvider: TimeProvider,
         private val mapper: Mapper<S, T>,
         private val parentValidator: MovableValidator<U>,
         private val childValidator: MovableValidator<S>) : MovableChildFacade<S, U> {
@@ -99,6 +105,15 @@ abstract class AbstractMovableChildFacade<S : Movable, T : Movable, U : Movable,
     }
 
     /**
+     * Returns audit.
+     *
+     * @return audit
+     */
+    protected open fun getAudit(): Audit {
+        return Audit(accountProvider.getAccount().id, timeProvider.getTime())
+    }
+
+    /**
      * Returns domain data with specified ID.
      *
      * @param id ID
@@ -165,6 +180,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : Movable, U : Movable,
     private fun getDataForAdd(data: S): T {
         val updatedData = mapper.map(data)
         updatedData.position = Integer.MAX_VALUE
+        updatedData.modify(getAudit())
         return updatedData
     }
 

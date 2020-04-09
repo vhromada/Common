@@ -1,4 +1,4 @@
-package cz.vhromada.common
+package cz.vhromada.common.entity
 
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.assertj.core.api.SoftAssertions.assertSoftly

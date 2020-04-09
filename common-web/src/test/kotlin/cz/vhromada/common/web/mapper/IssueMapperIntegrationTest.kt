@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension
  */
 @ExtendWith(SpringExtension::class)
 @ContextConfiguration(classes = [WebMapperTestConfiguration::class])
-class IssueMapperTest {
+class IssueMapperIntegrationTest {
 
     /**
      * Instance of [IssueMapper]

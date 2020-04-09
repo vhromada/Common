@@ -1,6 +1,6 @@
 package cz.vhromada.common.utils
 
-import cz.vhromada.common.Movable
+import cz.vhromada.common.entity.Movable
 
 /**
  * Returns sorted data.

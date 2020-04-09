@@ -1,16 +1,21 @@
 package cz.vhromada.common.test.facade
 
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import cz.vhromada.common.Movable
+import cz.vhromada.common.domain.AuditEntity
+import cz.vhromada.common.entity.Movable
 import cz.vhromada.common.facade.MovableParentFacade
 import cz.vhromada.common.mapper.Mapper
+import cz.vhromada.common.provider.AccountProvider
+import cz.vhromada.common.provider.TimeProvider
 import cz.vhromada.common.result.Result
 import cz.vhromada.common.result.Status
 import cz.vhromada.common.service.MovableService
+import cz.vhromada.common.test.utils.TestConstants
 import cz.vhromada.common.validator.MovableValidator
 import cz.vhromada.common.validator.ValidationType
 import org.assertj.core.api.Assertions.assertThat
@@ -35,13 +40,25 @@ private val INVALID_DATA_RESULT = Result.error<Unit>("DATA_INVALID", "Data must 
  */
 @ExtendWith(MockitoExtension::class)
 @Suppress("FunctionName")
-abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
+abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
 
     /**
      * Instance of [MovableService]
      */
     @Mock
     protected lateinit var service: MovableService<U>
+
+    /**
+     * Instance of [AccountProvider]
+     */
+    @Mock
+    protected lateinit var accountProvider: AccountProvider
+
+    /**
+     * Instance of [TimeProvider]
+     */
+    @Mock
+    protected lateinit var timeProvider: TimeProvider
 
     /**
      * Instance of [Mapper]
@@ -82,7 +99,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(service).newData()
         verifyNoMoreInteractions(service)
-        verifyZeroInteractions(mapper, validator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, validator)
     }
 
     /**
@@ -107,7 +124,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).getAll()
         verify(mapper).mapBack(domainList)
         verifyNoMoreInteractions(service, mapper)
-        verifyZeroInteractions(validator)
+        verifyZeroInteractions(accountProvider, timeProvider, validator)
     }
 
 
@@ -133,7 +150,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).get(1)
         verify(mapper).mapBack(domain)
         verifyNoMoreInteractions(service, mapper)
-        verifyZeroInteractions(validator)
+        verifyZeroInteractions(accountProvider, timeProvider, validator)
     }
 
     /**
@@ -153,7 +170,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(service).get(Integer.MAX_VALUE)
         verifyNoMoreInteractions(service, mapper)
-        verifyZeroInteractions(mapper, validator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, validator)
     }
 
     /**
@@ -166,6 +183,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         whenever(mapper.map(anyEntity())).thenReturn(domain)
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
+        initAddProviders()
 
         val result = facade.add(entity)
 
@@ -178,6 +196,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(mapper).map(entity)
         verify(validator).validate(entity, ValidationType.NEW, ValidationType.DEEP)
         verifyNoMoreInteractions(service, mapper, validator)
+        verifyAddProviders()
     }
 
     /**
@@ -195,7 +214,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.NEW, ValidationType.DEEP)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(accountProvider, timeProvider, service, mapper)
     }
 
     /**
@@ -215,8 +234,13 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verifyUpdateMock(entity, domain)
-        verifyNoMoreInteractions(service, mapper, validator)
+        verify(service, atLeastOnce()).get(domain.id!!)
+        verify(service).update(domain)
+        verify(accountProvider, atLeastOnce()).getAccount()
+        verify(timeProvider, atLeastOnce()).getTime()
+        verify(mapper).map(entity)
+        verify(validator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
+        verifyNoMoreInteractions(service, accountProvider, timeProvider, mapper, validator)
     }
 
     /**
@@ -234,7 +258,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -259,7 +283,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).remove(domain)
         verify(validator).validate(entity, ValidationType.EXISTS)
         verifyNoMoreInteractions(service, validator)
-        verifyZeroInteractions(mapper)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -277,7 +301,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.EXISTS)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -302,7 +326,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).duplicate(domain)
         verify(validator).validate(entity, ValidationType.EXISTS)
         verifyNoMoreInteractions(service, validator)
-        verifyZeroInteractions(mapper)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -320,7 +344,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.EXISTS)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -345,7 +369,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).moveUp(domain)
         verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.UP)
         verifyNoMoreInteractions(service, validator)
-        verifyZeroInteractions(mapper)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -363,7 +387,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.UP)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -388,7 +412,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
         verify(service).moveDown(domain)
         verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN)
         verifyNoMoreInteractions(service, validator)
-        verifyZeroInteractions(mapper)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -406,7 +430,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(validator).validate(entity, ValidationType.EXISTS, ValidationType.DOWN)
         verifyNoMoreInteractions(validator)
-        verifyZeroInteractions(service, mapper)
+        verifyZeroInteractions(service, accountProvider, timeProvider, mapper)
     }
 
     /**
@@ -423,7 +447,21 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
 
         verify(service).updatePositions()
         verifyNoMoreInteractions(service)
-        verifyZeroInteractions(mapper, validator)
+        verifyZeroInteractions(accountProvider, timeProvider, mapper, validator)
+    }
+
+    /**
+     * Initializes providers for add.
+     */
+    protected open fun initAddProviders() {
+        // no init
+    }
+
+    /**
+     * Verifies providers for add.
+     */
+    protected open fun verifyAddProviders() {
+        verifyZeroInteractions(accountProvider, timeProvider)
     }
 
     /**
@@ -432,20 +470,11 @@ abstract class MovableParentFacadeTest<T : Movable, U : Movable> {
      * @param domain domain
      */
     protected open fun initUpdateMock(domain: U) {
+        whenever(service.get(any())).thenReturn(domain)
+        whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
+        whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(mapper.map(anyEntity())).thenReturn(domain)
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
-    }
-
-    /**
-     * Verifies mock for update.
-     *
-     * @param entity entity
-     * @param domain domain
-     */
-    protected open fun verifyUpdateMock(entity: T, domain: U) {
-        verify(service).update(domain)
-        verify(mapper).map(entity)
-        verify(validator).validate(entity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
     }
 
     /**

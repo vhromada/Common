@@ -1,4 +1,4 @@
-package cz.vhromada.common
+package cz.vhromada.common.entity
 
 /**
  * An enumeration represents language.
