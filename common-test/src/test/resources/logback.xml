@@ -8,7 +8,7 @@
     <logger name="org.springframework" level="warn"/>
     <logger name="net.sf.ehcache" level="warn"/>
     <logger name="ch.qos" level="warn"/>
-    <logger name="cz.vhromada" level="all"/>
+    <logger name="com.github.vhromada" level="all"/>
     <root level="all">
         <appender-ref ref="CONSOLE"/>
     </root>
