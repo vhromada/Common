@@ -38,6 +38,11 @@ object TestConstants {
     const val ACCOUNT_ID = 10
 
     /**
+     * Account's ID
+     */
+    const val ACCOUNT_UUID = "d53b2577-a3de-4df7-a8dd-2e6d9e5c1014"
+
+    /**
      * Time
      */
     val TIME: LocalDateTime = LocalDateTime.of(2000, 2, 4, 10, 45, 55, 70)
@@ -45,6 +50,6 @@ object TestConstants {
     /**
      * Account
      */
-    val ACCOUNT = Account(id = ACCOUNT_ID, username = "", password = "", roles = listOf("ROLE_USER"))
+    val ACCOUNT = Account(id = ACCOUNT_ID, uuid = ACCOUNT_UUID, username = "", password = "", roles = listOf("ROLE_USER"))
 
 }

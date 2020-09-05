@@ -110,7 +110,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
      * @return audit
      */
     protected open fun getAudit(): Audit {
-        return Audit(accountProvider.getAccount().id, timeProvider.getTime())
+        return Audit(accountProvider.getAccount().uuid, timeProvider.getTime())
     }
 
     /**

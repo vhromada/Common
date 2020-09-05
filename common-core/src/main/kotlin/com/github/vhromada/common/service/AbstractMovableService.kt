@@ -142,7 +142,7 @@ abstract class AbstractMovableService<T : AuditEntity>(
      * @return audit
      */
     protected fun getAudit(): Audit {
-        return Audit(accountProvider.getAccount().id, timeProvider.getTime())
+        return Audit(accountProvider.getAccount().uuid, timeProvider.getTime())
     }
 
     /**

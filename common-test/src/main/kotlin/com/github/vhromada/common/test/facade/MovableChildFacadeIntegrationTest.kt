@@ -687,7 +687,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * @return audit for update
      */
     private fun getUpdatedAudit(): Audit {
-        return Audit(TestConstants.ACCOUNT_ID, TestConstants.TIME)
+        return Audit(TestConstants.ACCOUNT_UUID, TestConstants.TIME)
     }
 
     /**

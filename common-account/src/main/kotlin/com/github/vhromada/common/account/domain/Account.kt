@@ -34,6 +34,11 @@ data class Account(
         val id: Int?,
 
         /**
+         * UUID
+         */
+        val uuid: String,
+
+        /**
          * Username
          */
         val username: String,

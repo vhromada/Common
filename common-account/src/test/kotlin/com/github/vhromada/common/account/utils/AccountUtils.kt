@@ -44,11 +44,19 @@ object AccountUtils {
      * @return account for index
      */
     fun getAccount(index: Int): Account {
+        val uuid: String
         val roles = mutableListOf<Role>()
         when (index) {
-            1 -> roles.add(RoleUtils.getRole(1))
-            2 -> roles.add(RoleUtils.getRole(2))
+            1 -> {
+                uuid = "08f12e2f-f842-436f-ac0d-b4d1026d74be"
+                roles.add(RoleUtils.getRole(1))
+            }
+            2 -> {
+                uuid = "1436b587-401e-4183-9982-9e7eaea9d33a"
+                roles.add(RoleUtils.getRole(2))
+            }
             3 -> {
+                uuid = "be63de12-96b7-46fc-943d-a1af577c0e5d"
                 roles.add(RoleUtils.getRole(1))
                 roles.add(RoleUtils.getRole(2))
             }
@@ -57,6 +65,7 @@ object AccountUtils {
 
         return Account(
                 id = index,
+                uuid = uuid,
                 username = "$ACCOUNT$index username",
                 password = "$ACCOUNT$index password",
                 roles = roles)
@@ -71,6 +80,7 @@ object AccountUtils {
     fun newAccountDomain(id: Int): Account {
         return Account(
                 id = id,
+                uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
                 username = "username",
                 password = "password",
                 roles = listOf(RoleUtils.getRole(1)))
@@ -86,6 +96,7 @@ object AccountUtils {
     fun newAccount(id: Int): com.github.vhromada.common.entity.Account {
         return com.github.vhromada.common.entity.Account(
                 id = id,
+                uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
                 username = "username",
                 password = "password",
                 roles = listOf(RoleUtils.getRole(1).name))
@@ -134,6 +145,7 @@ object AccountUtils {
         }
         assertSoftly {
             it.assertThat(actual!!.id).isEqualTo(expected!!.id)
+            it.assertThat(actual.uuid).isEqualTo(expected.uuid)
             it.assertThat(actual.username).isEqualTo(expected.username)
             it.assertThat(actual.password).isEqualTo(expected.password)
             RoleUtils.assertRolesDeepEquals(expected.roles, actual.roles)
@@ -153,6 +165,7 @@ object AccountUtils {
         }
         assertSoftly {
             it.assertThat(actual!!.id).isEqualTo(expected!!.id)
+            it.assertThat(actual.uuid).isEqualTo(expected.uuid)
             it.assertThat(actual.username).isEqualTo(expected.username)
             it.assertThat(actual.password).isEqualTo(expected.password)
             RoleUtils.assertRolesListDeepEquals(expected.roles, actual.roles)

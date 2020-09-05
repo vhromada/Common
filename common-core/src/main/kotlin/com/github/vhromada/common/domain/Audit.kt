@@ -16,7 +16,7 @@ data class Audit(
          * Identifier of user who created record
          */
         @Column(name = "created_user")
-        val createdUser: Int,
+        val createdUser: String,
 
         /**
          * Timestamp when record was created
@@ -28,7 +28,7 @@ data class Audit(
          * Identifier uf user who modified record
          */
         @Column(name = "updated_user")
-        val updatedUser: Int,
+        val updatedUser: String,
 
         /**
          * Timestamp when record was modified
@@ -36,6 +36,6 @@ data class Audit(
         @Column(name = "updated_time")
         val updatedTime: LocalDateTime) {
 
-    constructor(user: Int, time: LocalDateTime) : this(user, time, user, time)
+    constructor(user: String, time: LocalDateTime) : this(user, time, user, time)
 
 }

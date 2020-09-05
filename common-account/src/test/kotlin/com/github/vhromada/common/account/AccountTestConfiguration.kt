@@ -26,7 +26,7 @@ class AccountTestConfiguration {
     fun dataSource(): DataSource {
         return EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScripts("account.sql", "data.sql")
+                .addScripts("data.sql")
                 .build()
     }
 

@@ -19,4 +19,12 @@ interface AccountRepository : JpaRepository<Account, Int> {
      */
     fun findByUsername(username: String): Optional<Account>
 
+    /**
+     * Search account by uuid.
+     *
+     * @param uuid uuid
+     * @return account
+     */
+    fun findByUuid(uuid: String): Optional<Account>
+
 }

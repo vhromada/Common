@@ -3,7 +3,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 plugins {
-    val kotlinVersion = "1.4.0"
+    val kotlinVersion = "1.3.72"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
@@ -43,10 +43,14 @@ allprojects {
         }
     }
 
+    java {
+        withSourcesJar()
+    }
+
     publishing {
         publications {
             create<MavenPublication>("maven") {
-                from(components["kotlin"])
+                from(components["java"])
             }
         }
     }

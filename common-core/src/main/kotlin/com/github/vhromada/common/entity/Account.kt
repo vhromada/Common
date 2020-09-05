@@ -16,6 +16,11 @@ data class Account(
         val id: Int,
 
         /**
+         * UUID
+         */
+        val uuid: String,
+
+        /**
          * Username
          */
         private val username: String,

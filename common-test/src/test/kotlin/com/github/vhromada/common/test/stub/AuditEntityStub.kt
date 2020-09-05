@@ -12,4 +12,4 @@ import com.github.vhromada.common.test.utils.TestConstants
 class AuditEntityStub(
         override var id: Int?,
         override var position: Int? = null,
-        override var audit: Audit? = Audit(TestConstants.ACCOUNT_ID, TestConstants.TIME)) : AuditEntity(audit)
+        override var audit: Audit? = Audit(TestConstants.ACCOUNT_UUID, TestConstants.TIME)) : AuditEntity(audit)

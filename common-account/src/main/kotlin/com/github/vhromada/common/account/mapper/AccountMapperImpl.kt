@@ -14,6 +14,7 @@ class AccountMapperImpl : AccountMapper {
     override fun map(source: Account): com.github.vhromada.common.entity.Account {
         return com.github.vhromada.common.entity.Account(
                 id = source.id!!,
+                uuid = source.uuid,
                 username = source.username,
                 password = source.password,
                 roles = source.roles.map { it.name })
