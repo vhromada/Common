@@ -1,7 +1,6 @@
 package com.github.vhromada.common.web.controller
 
 import com.github.vhromada.common.result.Result
-import com.github.vhromada.common.result.Status
 import com.github.vhromada.common.web.exception.InputException
 import org.springframework.http.HttpStatus
 
@@ -21,13 +20,13 @@ abstract class AbstractController {
      * @return result data
      */
     protected fun <T> processResult(result: Result<T>): T? {
-        if (Status.ERROR == result.status) {
-            if (result.events().stream().anyMatch { it.key.contains("NOT_EXIST") }) {
-                throw InputException(result, HttpStatus.NOT_FOUND)
-            }
-            throw InputException(result)
+        if (result.isOk()) {
+            return result.data
         }
-        return result.data
+        if (result.events().stream().anyMatch { it.key.contains("NOT_EXIST") }) {
+            throw InputException(result, HttpStatus.NOT_FOUND)
+        }
+        throw InputException(result)
     }
 
 }

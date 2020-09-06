@@ -13,41 +13,41 @@ data class Account(
         /**
          * ID
          */
-        val id: Int,
+        val id: Int?,
 
         /**
          * UUID
          */
-        val uuid: String,
+        val uuid: String?,
 
         /**
          * Username
          */
-        private val username: String,
+        private val username: String?,
 
         /**
          * Password
          */
-        private val password: String,
+        private val password: String?,
 
         /**
          * Roles
          */
-        val roles: List<String>) : UserDetails {
+        val roles: List<String>?) : UserDetails {
 
     override fun getAuthorities(): List<GrantedAuthority> {
-        return roles.map { SimpleGrantedAuthority(it) }
+        return roles!!.map { SimpleGrantedAuthority(it) }
     }
 
     override fun isEnabled(): Boolean {
         return true
     }
 
-    override fun getUsername(): String {
+    override fun getUsername(): String? {
         return username
     }
 
-    override fun getPassword(): String {
+    override fun getPassword(): String? {
         return password
     }
 

@@ -1,5 +1,6 @@
 package com.github.vhromada.common.account
 
+import com.github.vhromada.common.provider.UuidProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
@@ -9,6 +10,7 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.support.SharedEntityManagerBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.PlatformTransactionManager
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
@@ -52,6 +54,32 @@ class AccountTestConfiguration {
         val transactionManager = JpaTransactionManager()
         transactionManager.entityManagerFactory = entityManagerFactory(dataSource)
         return transactionManager
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
+        return object : PasswordEncoder {
+
+            override fun encode(rawPassword: CharSequence): String {
+                return rawPassword.toString()
+            }
+
+            override fun matches(rawPassword: CharSequence, encodedPassword: String): Boolean {
+                return true
+            }
+
+        }
+    }
+
+    @Bean
+    fun uuidProvider(): UuidProvider {
+        return object : UuidProvider {
+
+            override fun getUuid(): String {
+                return "c01cb46d-0acf-402b-9d76-d12a75b98f8a"
+            }
+
+        }
     }
 
 }

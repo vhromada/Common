@@ -218,7 +218,8 @@ abstract class MovableServiceTest<T : AuditEntity> {
 
         val data = service.get(dataList[0].id!!)
 
-        assertThat(data).isEqualTo(dataList[0])
+        assertThat(data).isPresent
+        assertThat(data.get()).isEqualTo(dataList[0])
 
         verify(accountProvider).getAccount()
         verify(cache).get(getCacheKey())
@@ -234,9 +235,9 @@ abstract class MovableServiceTest<T : AuditEntity> {
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
         whenever(cache.get(any<String>())).thenReturn(SimpleValueWrapper(dataList))
 
-        val data = service.get(Integer.MAX_VALUE)
+        val data = service.get(Int.MAX_VALUE)
 
-        assertThat(data).isNull()
+        assertThat(data).isNotPresent
 
         verify(accountProvider).getAccount()
         verify(cache).get(getCacheKey())
@@ -255,7 +256,8 @@ abstract class MovableServiceTest<T : AuditEntity> {
 
         val data = service.get(dataList[0].id!!)
 
-        assertThat(data).isEqualTo(dataList[0])
+        assertThat(data).isPresent
+        assertThat(data.get()).isEqualTo(dataList[0])
 
         verify(repository).findAll()
         verify(accountProvider, times(2)).getAccount()
@@ -276,7 +278,8 @@ abstract class MovableServiceTest<T : AuditEntity> {
 
         val data = service.get(dataList[0].id!!)
 
-        assertThat(data).isEqualTo(dataList[0])
+        assertThat(data).isPresent
+        assertThat(data.get()).isEqualTo(dataList[0])
 
         verify(accountProvider, times(2)).getAccount()
         verify(cache).get(getCacheKey())
@@ -295,9 +298,9 @@ abstract class MovableServiceTest<T : AuditEntity> {
         whenever(accountProvider.getAccount()).thenReturn(ADMIN)
         whenever(cache.get(any<String>())).thenReturn(null)
 
-        val data = service.get(Integer.MAX_VALUE)
+        val data = service.get(Int.MAX_VALUE)
 
-        assertThat(data).isNull()
+        assertThat(data).isNotPresent
 
         verify(repository).findAll()
         verify(accountProvider, times(2)).getAccount()
@@ -316,9 +319,9 @@ abstract class MovableServiceTest<T : AuditEntity> {
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
         whenever(cache.get(any<String>())).thenReturn(null)
 
-        val data = service.get(Integer.MAX_VALUE)
+        val data = service.get(Int.MAX_VALUE)
 
-        assertThat(data).isNull()
+        assertThat(data).isNotPresent
 
         verify(accountProvider, times(2)).getAccount()
         verify(cache).get(getCacheKey())

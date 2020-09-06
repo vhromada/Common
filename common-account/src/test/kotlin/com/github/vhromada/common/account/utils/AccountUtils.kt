@@ -77,7 +77,7 @@ object AccountUtils {
      * @param id ID
      * @return account
      */
-    fun newAccountDomain(id: Int): Account {
+    fun newAccountDomain(id: Int?): Account {
         return Account(
                 id = id,
                 uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
@@ -93,7 +93,7 @@ object AccountUtils {
      * @param id ID
      * @return account
      */
-    fun newAccount(id: Int): com.github.vhromada.common.entity.Account {
+    fun newAccount(id: Int?): com.github.vhromada.common.entity.Account {
         return com.github.vhromada.common.entity.Account(
                 id = id,
                 uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
@@ -110,7 +110,18 @@ object AccountUtils {
      */
     @Suppress("CheckStyle")
     fun getAccountsCount(entityManager: EntityManager): Int {
-        return entityManager.createQuery("SELECT COUNT(u.id) FROM Account u", java.lang.Long::class.java).singleResult.toInt()
+        return entityManager.createQuery("SELECT COUNT(a.id) FROM Account a", java.lang.Long::class.java).singleResult.toInt()
+    }
+
+    /**
+     * Returns account.
+     *
+     * @param entityManager entity manager
+     * @param id            game ID
+     * @return account
+     */
+    fun getAccount(entityManager: EntityManager, id: Int): Account? {
+        return entityManager.find(Account::class.java, id)
     }
 
     /**

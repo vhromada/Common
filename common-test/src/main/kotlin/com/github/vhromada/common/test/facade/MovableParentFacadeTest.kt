@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import java.util.Optional
 
 /**
  * Result for invalid data
@@ -136,7 +137,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
         val domain = newDomain(1)
         val entity = newEntity(1)
 
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(mapper.mapBack(anyDomain())).thenReturn(entity)
 
         val result = facade.get(1)
@@ -158,9 +159,9 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun getNotExistingData() {
-        whenever(service.get(any())).thenReturn(null)
+        whenever(service.get(any())).thenReturn(Optional.empty())
 
-        val result = facade.get(Integer.MAX_VALUE)
+        val result = facade.get(Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -168,7 +169,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(Integer.MAX_VALUE)
+        verify(service).get(Int.MAX_VALUE)
         verifyNoMoreInteractions(service, mapper)
         verifyZeroInteractions(accountProvider, timeProvider, mapper, validator)
     }
@@ -204,7 +205,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun addInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -248,7 +249,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun updateInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -269,7 +270,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
         val entity = newEntity(1)
         val domain = newDomain(1)
 
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
 
         val result = facade.remove(entity)
@@ -291,7 +292,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun removeInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -312,7 +313,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
         val entity = newEntity(1)
         val domain = newDomain(1)
 
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
 
         val result = facade.duplicate(entity)
@@ -334,7 +335,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun duplicateInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -355,7 +356,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
         val entity = newEntity(1)
         val domain = newDomain(1)
 
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
 
         val result = facade.moveUp(entity)
@@ -377,7 +378,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun moveUpInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -398,7 +399,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
         val entity = newEntity(1)
         val domain = newDomain(1)
 
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(validator.validate(anyEntity(), any())).thenReturn(Result())
 
         val result = facade.moveDown(entity)
@@ -420,7 +421,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun moveDownInvalidData() {
-        val entity = newEntity(Integer.MAX_VALUE)
+        val entity = newEntity(Int.MAX_VALUE)
 
         whenever(validator.validate(anyEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -470,7 +471,7 @@ abstract class MovableParentFacadeTest<T : Movable, U : AuditEntity> {
      * @param domain domain
      */
     protected open fun initUpdateMock(domain: U) {
-        whenever(service.get(any())).thenReturn(domain)
+        whenever(service.get(any())).thenReturn(Optional.of(domain))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
         whenever(timeProvider.getTime()).thenReturn(TestConstants.TIME)
         whenever(mapper.map(anyEntity())).thenReturn(domain)

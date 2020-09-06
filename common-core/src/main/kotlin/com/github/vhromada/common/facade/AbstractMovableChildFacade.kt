@@ -7,7 +7,6 @@ import com.github.vhromada.common.mapper.Mapper
 import com.github.vhromada.common.provider.AccountProvider
 import com.github.vhromada.common.provider.TimeProvider
 import com.github.vhromada.common.result.Result
-import com.github.vhromada.common.result.Status
 import com.github.vhromada.common.service.MovableService
 import com.github.vhromada.common.utils.sorted
 import com.github.vhromada.common.validator.MovableValidator
@@ -38,7 +37,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
     override fun add(parent: U, data: S): Result<Unit> {
         val result = parentValidator.validate(parent, ValidationType.EXISTS)
         result.addEvents(childValidator.validate(data, ValidationType.NEW, ValidationType.DEEP).events())
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForAdd(parent, getDataForAdd(data)))
         }
         return result
@@ -46,7 +45,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun update(data: S): Result<Unit> {
         val result = childValidator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForUpdate(data))
         }
         return result
@@ -54,7 +53,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun remove(data: S): Result<Unit> {
         val result = childValidator.validate(data, ValidationType.EXISTS)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForRemove(data))
         }
         return result
@@ -62,7 +61,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun duplicate(data: S): Result<Unit> {
         val result = childValidator.validate(data, ValidationType.EXISTS)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForDuplicate(data))
         }
         return result
@@ -70,7 +69,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun moveUp(data: S): Result<Unit> {
         val result = childValidator.validate(data, ValidationType.EXISTS, ValidationType.UP)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForMove(data, true))
         }
         return result
@@ -78,7 +77,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun moveDown(data: S): Result<Unit> {
         val result = childValidator.validate(data, ValidationType.EXISTS, ValidationType.DOWN)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.update(getForMove(data, false))
         }
         return result
@@ -86,7 +85,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
 
     override fun find(parent: U): Result<List<S>> {
         val validationResult = parentValidator.validate(parent, ValidationType.EXISTS)
-        if (Status.OK == validationResult.status) {
+        if (validationResult.isOk()) {
             return Result.of(mapper.mapBack(getDomainList(parent)).sorted())
         }
         val result = Result<List<S>>()
@@ -110,7 +109,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
      * @return audit
      */
     protected open fun getAudit(): Audit {
-        return Audit(accountProvider.getAccount().uuid, timeProvider.getTime())
+        return Audit(accountProvider.getAccount().uuid!!, timeProvider.getTime())
     }
 
     /**
@@ -179,7 +178,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
      */
     private fun getDataForAdd(data: S): T {
         val updatedData = mapper.map(data)
-        updatedData.position = Integer.MAX_VALUE
+        updatedData.position = Int.MAX_VALUE
         updatedData.modify(getAudit())
         return updatedData
     }

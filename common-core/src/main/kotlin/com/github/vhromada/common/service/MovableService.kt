@@ -1,6 +1,7 @@
 package com.github.vhromada.common.service
 
 import com.github.vhromada.common.domain.AuditEntity
+import java.util.Optional
 
 /**
  * An interface represents service for audible and movable data.
@@ -23,12 +24,12 @@ interface MovableService<T : AuditEntity> {
     fun newData()
 
     /**
-     * Returns data with ID or null if there aren't such data.
+     * Returns data with ID.
      *
      * @param id ID
-     * @return data with ID or null if there aren't such data
+     * @return data with ID
      */
-    fun get(id: Int): T?
+    fun get(id: Int): Optional<T>
 
     /**
      * Adds data. Sets new ID and position.

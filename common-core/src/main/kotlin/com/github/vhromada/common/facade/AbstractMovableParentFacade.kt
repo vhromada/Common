@@ -7,7 +7,6 @@ import com.github.vhromada.common.mapper.Mapper
 import com.github.vhromada.common.provider.AccountProvider
 import com.github.vhromada.common.provider.TimeProvider
 import com.github.vhromada.common.result.Result
-import com.github.vhromada.common.result.Status
 import com.github.vhromada.common.service.MovableService
 import com.github.vhromada.common.validator.MovableValidator
 import com.github.vhromada.common.validator.ValidationType
@@ -36,13 +35,16 @@ abstract class AbstractMovableParentFacade<T : Movable, U : AuditEntity>(
     }
 
     override fun get(id: Int): Result<T> {
-        val item = service.get(id) ?: return Result()
-        return Result.of(mapper.mapBack(item))
+        val item = service.get(id)
+        if (item.isPresent) {
+            return Result.of(mapper.mapBack(item.get()))
+        }
+        return Result()
     }
 
     override fun add(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.NEW, ValidationType.DEEP)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             service.add(getDataForAdd(data))
         }
         return result
@@ -50,9 +52,9 @@ abstract class AbstractMovableParentFacade<T : Movable, U : AuditEntity>(
 
     override fun update(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
-        if (Status.OK == result.status) {
+        if (result.isOk()) {
             val updateData = getDataForUpdate(data)
-            updateData.audit = service.get(data.id!!)!!.audit
+            updateData.audit = service.get(data.id!!).get().audit
             updateData.modify(getAudit())
             service.update(updateData)
         }
@@ -61,32 +63,32 @@ abstract class AbstractMovableParentFacade<T : Movable, U : AuditEntity>(
 
     override fun remove(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.EXISTS)
-        if (Status.OK == result.status) {
-            service.remove(service.get(data.id!!)!!)
+        if (result.isOk()) {
+            service.remove(service.get(data.id!!).get())
         }
         return result
     }
 
     override fun duplicate(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.EXISTS)
-        if (Status.OK == result.status) {
-            service.duplicate(service.get(data.id!!)!!)
+        if (result.isOk()) {
+            service.duplicate(service.get(data.id!!).get())
         }
         return result
     }
 
     override fun moveUp(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.EXISTS, ValidationType.UP)
-        if (Status.OK == result.status) {
-            service.moveUp(service.get(data.id!!)!!)
+        if (result.isOk()) {
+            service.moveUp(service.get(data.id!!).get())
         }
         return result
     }
 
     override fun moveDown(data: T): Result<Unit> {
         val result = validator.validate(data, ValidationType.EXISTS, ValidationType.DOWN)
-        if (Status.OK == result.status) {
-            service.moveDown(service.get(data.id!!)!!)
+        if (result.isOk()) {
+            service.moveDown(service.get(data.id!!).get())
         }
         return result
     }
@@ -122,7 +124,7 @@ abstract class AbstractMovableParentFacade<T : Movable, U : AuditEntity>(
      * @return audit
      */
     protected open fun getAudit(): Audit {
-        return Audit(accountProvider.getAccount().uuid, timeProvider.getTime())
+        return Audit(accountProvider.getAccount().uuid!!, timeProvider.getTime())
     }
 
 }

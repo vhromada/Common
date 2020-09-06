@@ -9,6 +9,7 @@ import com.github.vhromada.common.utils.sorted
 import org.springframework.cache.Cache
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.transaction.annotation.Transactional
+import java.util.Optional
 
 /**
  * An abstract class represents service for audible and movable data.
@@ -41,9 +42,9 @@ abstract class AbstractMovableService<T : AuditEntity>(
     }
 
     @Transactional(readOnly = true)
-    override fun get(id: Int): T? {
-        return getCachedData(true)
-                .firstOrNull { id == it.id }
+    override fun get(id: Int): Optional<T> {
+        return Optional.ofNullable(getCachedData(true)
+                .firstOrNull { id == it.id })
     }
 
     override fun add(data: T) {
@@ -117,7 +118,7 @@ abstract class AbstractMovableService<T : AuditEntity>(
      */
     protected fun getData(): List<T> {
         val account = accountProvider.getAccount()
-        if (account.roles.contains("ROLE_ADMIN")) {
+        if (account.roles!!.contains("ROLE_ADMIN")) {
             return repository.findAll()
         }
         return getAccountData(account)
@@ -142,7 +143,7 @@ abstract class AbstractMovableService<T : AuditEntity>(
      * @return audit
      */
     protected fun getAudit(): Audit {
-        return Audit(accountProvider.getAccount().uuid, timeProvider.getTime())
+        return Audit(accountProvider.getAccount().uuid!!, timeProvider.getTime())
     }
 
     /**

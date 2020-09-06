@@ -75,7 +75,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
             }
         }
 
-        val result = getFacade().get(Integer.MAX_VALUE)
+        val result = getFacade().get(Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -190,7 +190,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     @Test
     fun updateBadId() {
-        val result = getFacade().update(getUpdateData(Integer.MAX_VALUE))
+        val result = getFacade().update(getUpdateData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -239,7 +239,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     @Test
     fun removeBadId() {
-        val result = getFacade().remove(newData(Integer.MAX_VALUE))
+        val result = getFacade().remove(newData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -286,7 +286,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     @Test
     fun duplicateBadId() {
-        val result = getFacade().duplicate(newData(Integer.MAX_VALUE))
+        val result = getFacade().duplicate(newData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -359,7 +359,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     @Test
     fun moveUpBadId() {
-        val result = getFacade().moveUp(newData(Integer.MAX_VALUE))
+        val result = getFacade().moveUp(newData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -432,7 +432,7 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     @Test
     fun moveDownBadId() {
-        val result = getFacade().moveDown(newData(Integer.MAX_VALUE))
+        val result = getFacade().moveDown(newData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)

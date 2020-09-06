@@ -6,6 +6,7 @@ import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Result
 import com.github.vhromada.common.result.Severity
 import com.github.vhromada.common.service.MovableService
+import java.util.Optional
 
 /**
  * An abstract class represents validator for movable data.
@@ -57,8 +58,9 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
      * @param data data
      * @return data from repository
      */
-    protected open fun getData(data: T): Movable? {
+    protected open fun getData(data: T): Optional<Movable> {
         return service.get(data.id!!)
+                .map { it }
     }
 
     /**
@@ -131,7 +133,7 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
             data.id == null -> {
                 result.addEvent(Event(Severity.ERROR, prefix + "_ID_NULL", "ID mustn't be null."))
             }
-            getData(data) == null -> {
+            getData(data).isEmpty -> {
                 result.addEvent(Event(Severity.ERROR, prefix + "_NOT_EXIST", "$name doesn't exist."))
             }
         }
@@ -151,9 +153,9 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
     private fun validateMovingData(data: T, result: Result<Unit>, up: Boolean) {
         if (data.id != null) {
             val domainData = getData(data)
-            if (domainData != null) {
+            if (domainData.isPresent) {
                 val list = getList(data)
-                val index = list.indexOf(domainData)
+                val index = list.indexOf(domainData.get())
                 when {
                     up && index <= 0 -> {
                         result.addEvent(Event(Severity.ERROR, prefix + "_NOT_MOVABLE", "$name can't be moved up."))

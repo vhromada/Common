@@ -36,7 +36,7 @@ data class Account(
         /**
          * UUID
          */
-        val uuid: String,
+        val uuid: String?,
 
         /**
          * Username

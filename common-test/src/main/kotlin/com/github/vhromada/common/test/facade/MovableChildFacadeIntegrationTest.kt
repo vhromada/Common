@@ -42,7 +42,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
             }
         }
 
-        val result = getFacade().get(Integer.MAX_VALUE)
+        val result = getFacade().get(Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -60,7 +60,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
     @DirtiesContext
     fun add() {
         val expectedData = newDomainData(getDefaultChildDataCount() + 1)
-        expectedData.position = Integer.MAX_VALUE
+        expectedData.position = Int.MAX_VALUE
 
         val result = getFacade().add(newParentData(1), newChildData(null, null))
 
@@ -93,7 +93,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun addNotExistingParent() {
-        val result = getFacade().add(newParentData(Integer.MAX_VALUE), newChildData(null, null))
+        val result = getFacade().add(newParentData(Int.MAX_VALUE), newChildData(null, null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -187,7 +187,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun updateBadId() {
-        val result = getFacade().update(newChildData(Integer.MAX_VALUE, 0))
+        val result = getFacade().update(newChildData(Int.MAX_VALUE, 0))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -234,7 +234,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun removeBadId() {
-        val result = getFacade().remove(newChildData(Integer.MAX_VALUE))
+        val result = getFacade().remove(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -281,7 +281,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun duplicateBadId() {
-        val result = getFacade().duplicate(newChildData(Integer.MAX_VALUE))
+        val result = getFacade().duplicate(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -354,7 +354,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun moveUpBadId() {
-        val result = getFacade().moveUp(newChildData(Integer.MAX_VALUE))
+        val result = getFacade().moveUp(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -427,7 +427,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun moveDownBadId() {
-        val result = getFacade().moveDown(newChildData(Integer.MAX_VALUE))
+        val result = getFacade().moveDown(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -476,7 +476,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     fun findBadId() {
-        val result = getFacade().find(newParentData(Integer.MAX_VALUE))
+        val result = getFacade().find(newParentData(Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)

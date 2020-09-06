@@ -3,6 +3,7 @@ package com.github.vhromada.common.account.utils
 import com.github.vhromada.common.account.domain.Role
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
+import javax.persistence.EntityManager
 
 /**
  * A class represents utility class for roles.
@@ -10,6 +11,25 @@ import org.assertj.core.api.SoftAssertions.assertSoftly
  * @author Vladimir Hromada
  */
 object RoleUtils {
+
+    /**
+     * Count of roles
+     */
+    const val ROLES_COUNT = 2
+
+    /**
+     * Returns roles.
+     *
+     * @return roles
+     */
+    fun getRoles(): List<Role> {
+        val roles = mutableListOf<Role>()
+        for (i in 0 until ROLES_COUNT) {
+            roles.add(getRole(i + 1))
+        }
+
+        return roles
+    }
 
     /**
      * Returns role for index.
@@ -27,6 +47,17 @@ object RoleUtils {
         return Role(
                 id = index,
                 name = "ROLE_$name")
+    }
+
+    /**
+     * Returns count of roles.
+     *
+     * @param entityManager entity manager
+     * @return count of roles
+     */
+    @Suppress("CheckStyle")
+    fun getRolesCount(entityManager: EntityManager): Int {
+        return entityManager.createQuery("SELECT COUNT(r.id) FROM Role r", java.lang.Long::class.java).singleResult.toInt()
     }
 
     /**
@@ -54,7 +85,7 @@ object RoleUtils {
      * @param expected expected role
      * @param actual   actual role
      */
-    private fun assertRoleDeepEquals(expected: Role?, actual: Role?) {
+    fun assertRoleDeepEquals(expected: Role?, actual: Role?) {
         assertSoftly {
             it.assertThat(expected).isNotNull
             it.assertThat(actual).isNotNull

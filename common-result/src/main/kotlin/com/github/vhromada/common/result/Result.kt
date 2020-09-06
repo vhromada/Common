@@ -61,6 +61,14 @@ class Result<T> : Serializable {
         eventList.forEach { addEvent(it) }
     }
 
+    /**
+     * Returns true if status is OK.
+     *
+     * @return true if status is OK
+     */
+    fun isOk(): Boolean {
+        return Status.OK == status
+    }
 
     /**
      * Returns new status.

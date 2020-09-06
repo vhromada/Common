@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import java.util.Optional
 
 /**
  * ID
@@ -75,7 +76,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun validateNewNotNullId() {
-        val result = validator.validate(getValidatingData(Integer.MAX_VALUE, null), ValidationType.NEW)
+        val result = validator.validate(getValidatingData(Int.MAX_VALUE, null), ValidationType.NEW)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -90,7 +91,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun validateNewNotNullPosition() {
-        val result = validator.validate(getValidatingData(null, Integer.MAX_VALUE), ValidationType.NEW)
+        val result = validator.validate(getValidatingData(null, Int.MAX_VALUE), ValidationType.NEW)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -207,7 +208,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun validateUpInvalid() {
-        val validatingData = getValidatingData(Integer.MAX_VALUE)
+        val validatingData = getValidatingData(Int.MAX_VALUE)
 
         initMovingMock(validatingData, up = true, valid = false)
 
@@ -245,7 +246,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      */
     @Test
     fun validateDownInvalid() {
-        val validatingData = getValidatingData(Integer.MAX_VALUE)
+        val validatingData = getValidatingData(Int.MAX_VALUE)
 
         initMovingMock(validatingData, up = false, valid = false)
 
@@ -287,7 +288,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
     protected open fun initExistsMock(validatingData: T, exists: Boolean) {
         val result = if (exists) getRepositoryData(validatingData) else null
 
-        whenever(service.get(any())).thenReturn(result)
+        whenever(service.get(any())).thenReturn(Optional.ofNullable(result))
     }
 
     /**
@@ -335,7 +336,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
         }
 
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(service.get(any())).thenReturn(repositoryData)
+        whenever(service.get(any())).thenReturn(Optional.of(repositoryData))
     }
 
     /**

@@ -32,11 +32,11 @@ class AbstractMovableChildFacadeStub(
     }
 
     override fun getDomainList(parent: Movable): List<AuditEntity> {
-        return listOf(service.get(parent.id!!)!!)
+        return listOf(service.get(parent.id!!).get())
     }
 
     override fun getForAdd(parent: Movable, data: AuditEntity): AuditEntity {
-        return service.get(parent.id!!)!!
+        return service.get(parent.id!!).get()
     }
 
     override fun getForUpdate(data: Movable): AuditEntity {

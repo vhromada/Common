@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import java.util.Optional
 
 /**
  * Result for invalid data
@@ -125,7 +126,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
     fun getNotExistingData() {
         whenever(service.getAll()).thenReturn(listOf(newParentDomain(1)))
 
-        val result = facade.get(Integer.MAX_VALUE)
+        val result = facade.get(Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -149,7 +150,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
         val argumentCaptor = argumentCaptorParentDomain()
 
         if (isFirstChild()) {
-            whenever(service.get(any())).thenReturn(newParentDomain(1))
+            whenever(service.get(any())).thenReturn(Optional.of(newParentDomain(1)))
         } else {
             whenever(service.getAll()).thenReturn(listOf(newParentDomain(1)))
         }
@@ -187,7 +188,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun addInvalidData() {
-        val parentEntity = newParentEntity(Integer.MAX_VALUE)
+        val parentEntity = newParentEntity(Int.MAX_VALUE)
         val childEntity = newChildEntity(null)
         val invalidParentResult = Result.error<Unit>("PARENT_INVALID", "Parent must be valid.")
         val invalidChildResult = Result.error<Unit>("CHILD_INVALID", "Child must be valid.")
@@ -248,7 +249,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun updateInvalidData() {
-        val childEntity = newChildEntity(Integer.MAX_VALUE)
+        val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -294,7 +295,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun removeInvalidData() {
-        val childEntity = newChildEntity(Integer.MAX_VALUE)
+        val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -341,7 +342,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun duplicateInvalidData() {
-        val childEntity = newChildEntity(Integer.MAX_VALUE)
+        val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -395,7 +396,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun moveUpInvalidData() {
-        val childEntity = newChildEntity(Integer.MAX_VALUE)
+        val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -449,7 +450,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     fun moveDownInvalidData() {
-        val childEntity = newChildEntity(Integer.MAX_VALUE)
+        val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
 
@@ -471,7 +472,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
         val expectedData = listOf(newChildEntity(1))
 
         if (isFirstChild()) {
-            whenever(service.get(any())).thenReturn(newParentDomain(1))
+            whenever(service.get(any())).thenReturn(Optional.of(newParentDomain(1)))
         } else {
             whenever(service.getAll()).thenReturn(listOf(newParentDomain(1)))
         }
