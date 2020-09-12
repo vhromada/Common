@@ -13,7 +13,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -65,7 +65,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -82,7 +82,7 @@ class AccountValidatorTest {
     fun validateNewNullAccount() {
         val result = validator.validateNew(null)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NULL", "Account mustn't be null.")))
         }
@@ -101,7 +101,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NOT_NULL", "ID must be null.")))
         }
@@ -122,7 +122,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NOT_NULL", "UUID must be null.")))
         }
@@ -144,7 +144,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
         }
@@ -166,7 +166,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
@@ -187,7 +187,7 @@ class AccountValidatorTest {
 
         val result = validator.validateNew(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
@@ -209,7 +209,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -226,7 +226,7 @@ class AccountValidatorTest {
     fun validateExistNullAccount() {
         val result = validator.validateExist(null)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NULL", "Account mustn't be null.")))
         }
@@ -245,7 +245,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null.")))
         }
@@ -267,7 +267,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NULL", "UUID mustn't be null.")))
         }
@@ -290,7 +290,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
         }
@@ -313,7 +313,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
@@ -335,7 +335,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist.")))
         }
@@ -357,7 +357,7 @@ class AccountValidatorTest {
 
         val result = validator.validateExist(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }

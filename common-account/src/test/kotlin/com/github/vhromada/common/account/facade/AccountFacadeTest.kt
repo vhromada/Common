@@ -18,7 +18,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -107,7 +107,7 @@ class AccountFacadeTest {
 
         val result = facade.add(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -158,7 +158,7 @@ class AccountFacadeTest {
 
         val result = facade.update(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -198,6 +198,5 @@ class AccountFacadeTest {
     private fun argumentCaptorAccount(): KArgumentCaptor<com.github.vhromada.common.account.domain.Account> {
         return argumentCaptor()
     }
-
 
 }

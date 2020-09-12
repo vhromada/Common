@@ -7,7 +7,7 @@ import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Severity
 import com.github.vhromada.common.result.Status
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,7 +47,7 @@ class AccountFacadeIntegrationTest {
     fun add() {
         val result = facade.add(newAccountNullUuid(null))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -65,7 +65,7 @@ class AccountFacadeIntegrationTest {
     fun addNotNullId() {
         val result = facade.add(newAccountNullUuid(Int.MAX_VALUE))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NOT_NULL", "ID must be null.")))
         }
@@ -80,7 +80,7 @@ class AccountFacadeIntegrationTest {
     fun addNotNullUuid() {
         val result = facade.add(newAccount(null))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NOT_NULL", "UUID must be null.")))
         }
@@ -98,7 +98,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.add(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
         }
@@ -116,7 +116,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.add(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
@@ -134,7 +134,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.add(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
@@ -150,7 +150,7 @@ class AccountFacadeIntegrationTest {
     fun update() {
         val result = facade.update(newAccount(1))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -166,7 +166,7 @@ class AccountFacadeIntegrationTest {
     fun updateNullId() {
         val result = facade.update(newAccount(null))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null.")))
         }
@@ -181,7 +181,7 @@ class AccountFacadeIntegrationTest {
     fun updateNullUuid() {
         val result = facade.update(newAccountNullUuid(1))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NULL", "UUID mustn't be null.")))
         }
@@ -199,7 +199,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.update(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
         }
@@ -217,7 +217,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.update(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
@@ -232,7 +232,7 @@ class AccountFacadeIntegrationTest {
     fun updateAccountNotExisting() {
         val result = facade.update(newAccount(Int.MAX_VALUE))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist.")))
         }
@@ -250,7 +250,7 @@ class AccountFacadeIntegrationTest {
 
         val result = facade.update(account)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
