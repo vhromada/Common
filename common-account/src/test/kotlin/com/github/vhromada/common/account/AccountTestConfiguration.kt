@@ -1,5 +1,8 @@
 package com.github.vhromada.common.account
 
+import com.github.vhromada.common.account.utils.AccountUtils
+import com.github.vhromada.common.entity.Account
+import com.github.vhromada.common.provider.AccountProvider
 import com.github.vhromada.common.provider.UuidProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -66,6 +69,17 @@ class AccountTestConfiguration {
 
             override fun matches(rawPassword: CharSequence, encodedPassword: String): Boolean {
                 return true
+            }
+
+        }
+    }
+
+    @Bean
+    fun accountProvider(): AccountProvider {
+        return object : AccountProvider {
+
+            override fun getAccount(): Account {
+                return AccountUtils.newAccount(1)
             }
 
         }

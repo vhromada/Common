@@ -1,8 +1,9 @@
 package com.github.vhromada.common.account.mapper
 
 import com.github.vhromada.common.account.AccountTestConfiguration
-import com.github.vhromada.common.account.domain.Account
 import com.github.vhromada.common.account.utils.AccountUtils
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 /**
- * A class represents test for mapper between [Account] and [com.github.vhromada.common.entity.Account]
+ * A class represents test for mapper for account
  *
  * @author Vladimir Hromada
  */
@@ -44,6 +45,24 @@ class AccountMapperIntegrationTest {
         val accountDomain = mapper.mapBack(account)
 
         AccountUtils.assertAccountDeepEquals(accountDomain, account)
+    }
+
+    /**
+     * Test method for [AccountMapper.mapCredentials].
+     */
+    @Test
+    fun mapCredentials() {
+        val credentials = AccountUtils.newCredentials()
+        val account = mapper.mapCredentials(credentials)
+
+        assertThat(account).isNotNull
+        assertSoftly {
+            it.assertThat(account.id).isNull()
+            it.assertThat(account.uuid).isNull()
+            it.assertThat(account.username).isEqualTo(credentials.username)
+            it.assertThat(account.password).isEqualTo(credentials.password)
+            it.assertThat(account.roles).isNull()
+        }
     }
 
 }

@@ -57,6 +57,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent))
+            it.assertThat(result.isOk()).isTrue
+            it.assertThat(result.isError()).isFalse
         }
 
         result.addEvent(warnEvent)
@@ -65,6 +67,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.WARN)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isFalse
         }
 
         result.addEvent(infoEvent)
@@ -73,6 +77,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.WARN)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, infoEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isFalse
         }
 
         result.addEvent(errorEvent)
@@ -81,6 +87,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, infoEvent, errorEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
         }
 
         result.addEvent(infoEvent)
@@ -89,6 +97,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, infoEvent, errorEvent, infoEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
         }
 
         result.addEvent(warnEvent)
@@ -97,6 +107,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, infoEvent, errorEvent, infoEvent, warnEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
         }
     }
 
@@ -112,6 +124,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, errorEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
         }
     }
 
@@ -126,6 +140,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.data).isEqualTo(DATA)
             it.assertThat(result.events()).isEmpty()
+            it.assertThat(result.isOk()).isTrue
+            it.assertThat(result.isError()).isFalse
         }
     }
 
@@ -140,6 +156,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(infoEvent))
+            it.assertThat(result.isOk()).isTrue
+            it.assertThat(result.isError()).isFalse
         }
     }
 
@@ -154,6 +172,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.WARN)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(warnEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isFalse
         }
     }
 
@@ -168,6 +188,8 @@ class ResultTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.data).isNull()
             it.assertThat(result.events()).isEqualTo(listOf(errorEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
         }
     }
 

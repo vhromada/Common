@@ -1,7 +1,8 @@
-package com.github.vhromada.common.account.validator
+package com.github.vhromada.common.account.validator.impl
 
 import com.github.vhromada.common.account.repository.RoleRepository
 import com.github.vhromada.common.account.service.AccountService
+import com.github.vhromada.common.account.validator.AccountValidator
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Result
@@ -14,8 +15,8 @@ import org.springframework.stereotype.Component
  * @author Vladimir Hromada
  */
 @Component("accountValidator")
-class AccountValidatorImpl(private val service: AccountService,
-                           private val repository: RoleRepository) : AccountValidator {
+class AccountValidatorImpl(private val accountService: AccountService,
+                           private val roleRepository: RoleRepository) : AccountValidator {
 
     override fun validateNew(account: Account?): Result<Unit> {
         if (account == null) {
@@ -39,7 +40,7 @@ class AccountValidatorImpl(private val service: AccountService,
         val result = Result<Unit>()
         if (account.id == null) {
             result.addEvent(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null."))
-        } else if (service.get(account.id!!).isEmpty) {
+        } else if (accountService.get(account.id!!).isEmpty) {
             result.addEvent(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist."))
         }
         if (account.uuid == null) {
@@ -70,7 +71,7 @@ class AccountValidatorImpl(private val service: AccountService,
         }
         if (account.roles != null) {
             account.roles!!.forEach {
-                if (repository.findByName(it).isEmpty) {
+                if (roleRepository.findByName(it).isEmpty) {
                     result.addEvent(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist."))
                 }
             }

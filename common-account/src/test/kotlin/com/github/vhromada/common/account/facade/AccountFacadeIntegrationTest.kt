@@ -142,6 +142,8 @@ class AccountFacadeIntegrationTest {
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
+    //TODO vhromada 13.09.2020: add credentials
+
     /**
      * Test method for [AccountFacade.update].
      */
@@ -257,6 +259,10 @@ class AccountFacadeIntegrationTest {
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
+
+    //TODO vhromada 13.09.2020: update credentials
+
+    //TODO vhromada 13.09.2020: update roles
 
     /**
      * Returns instance of [Account].

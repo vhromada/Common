@@ -71,6 +71,15 @@ class Result<T> : Serializable {
     }
 
     /**
+     * Returns true if status is error.
+     *
+     * @return true if status is error
+     */
+    fun isError(): Boolean {
+        return Status.ERROR == status
+    }
+
+    /**
      * Returns new status.
      *
      * @param event event

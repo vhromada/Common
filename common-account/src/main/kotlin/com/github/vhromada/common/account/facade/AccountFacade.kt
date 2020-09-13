@@ -1,5 +1,7 @@
 package com.github.vhromada.common.account.facade
 
+import com.github.vhromada.common.account.entity.Credentials
+import com.github.vhromada.common.account.entity.UpdateRoles
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Result
 
@@ -27,6 +29,19 @@ interface AccountFacade {
     fun add(account: Account): Result<Unit>
 
     /**
+     * Adds account.
+     * <br></br>
+     * Validation errors:
+     *
+     *  * Username is null
+     *  * Password is null
+     *
+     * @param credentials credentials
+     * @return result with validation errors
+     */
+    fun add(credentials: Credentials): Result<Unit>
+
+    /**
      * Updates account.
      * <br></br>
      * Validation errors:
@@ -42,5 +57,32 @@ interface AccountFacade {
      * @return result with validation errors
      */
     fun update(account: Account): Result<Unit>
+
+    /**
+     * Updates account.
+     * <br></br>
+     * Validation errors:
+     *
+     *  * Username is null
+     *  * Password is null
+     *
+     * @param credentials credentials
+     * @return result with validation errors
+     */
+    fun update(credentials: Credentials): Result<Unit>
+
+    /**
+     * Updates roles.
+     * <br></br>
+     * Validation errors:
+     *
+     *  * Roles are null
+     *  * Roles contains null
+     *  * Role doesn't exist in data storage
+     *
+     * @param roles roles
+     * @return result with validation errors
+     */
+    fun updateRoles(roles: UpdateRoles): Result<Unit>
 
 }

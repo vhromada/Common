@@ -2,6 +2,7 @@ package com.github.vhromada.common.account.utils
 
 import com.github.vhromada.common.account.domain.Account
 import com.github.vhromada.common.account.domain.Role
+import com.github.vhromada.common.account.entity.Credentials
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import javax.persistence.EntityManager
@@ -100,6 +101,17 @@ object AccountUtils {
                 username = "username",
                 password = "password",
                 roles = listOf(RoleUtils.getRole(1).name))
+    }
+
+    /**
+     * Returns credentials.
+     *
+     * @return credentials
+     */
+    fun newCredentials(): Credentials {
+        return Credentials(
+                username = "username",
+                password = "password")
     }
 
     /**
