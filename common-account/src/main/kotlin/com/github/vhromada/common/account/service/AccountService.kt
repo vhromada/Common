@@ -12,6 +12,13 @@ import java.util.Optional
 interface AccountService : UserDetailsService {
 
     /**
+     * Returns list of accounts.
+     *
+     * @return list of accounts
+     */
+    fun getAll(): List<Account>
+
+    /**
      * Returns account with ID.
      *
      * @param id ID

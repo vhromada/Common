@@ -2,6 +2,7 @@ package com.github.vhromada.common.account.facade
 
 import com.github.vhromada.common.account.AccountTestConfiguration
 import com.github.vhromada.common.account.utils.AccountUtils
+import com.github.vhromada.common.account.utils.RoleUtils
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Severity
@@ -40,7 +41,49 @@ class AccountFacadeIntegrationTest {
     private lateinit var facade: AccountFacade
 
     /**
-     * Test method for [AccountFacade.add].
+     * Test method for [AccountFacade.getAll].
+     */
+    @Test
+    fun getAll() {
+        val result = facade.getAll()
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.events()).isEmpty()
+        }
+        AccountUtils.assertAccountListDeepEquals(result.data!!, AccountUtils.getAccounts())
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.get].
+     */
+    @Test
+    fun get() {
+        for (i in 1..AccountUtils.ACCOUNTS_COUNT) {
+            val result = facade.get(i)
+
+            assertSoftly {
+                it.assertThat(result.status).isEqualTo(Status.OK)
+                it.assertThat(result.events()).isEmpty()
+            }
+            AccountUtils.assertAccountDeepEquals(result.data!!, AccountUtils.getAccount(i))
+        }
+
+        val result = facade.get(Int.MAX_VALUE)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.data).isNull()
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.add] with account.
      */
     @Test
     @DirtiesContext
@@ -142,10 +185,64 @@ class AccountFacadeIntegrationTest {
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
-    //TODO vhromada 13.09.2020: add credentials
+    /**
+     * Test method for [AccountFacade.add] with credentials.
+     */
+    @Test
+    @DirtiesContext
+    fun addCredentials() {
+        val result = facade.add(AccountUtils.newCredentials())
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        val expectedAccount = AccountUtils.newAccountDomain(AccountUtils.ACCOUNTS_COUNT + 1)
+                .copy(roles = listOf(RoleUtils.getRole(2)))
+        val repositoryData = AccountUtils.getAccount(entityManager, AccountUtils.ACCOUNTS_COUNT + 1)
+        AccountUtils.assertAccountDeepEquals(expectedAccount, repositoryData)
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
+    }
 
     /**
-     * Test method for [AccountFacade.update].
+     * Test method for [AccountFacade.add] with credentials with username.
+     */
+    @Test
+    fun addCredentialsNullUsername() {
+        val account = AccountUtils.newCredentials()
+                .copy(username = null)
+
+        val result = facade.add(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.add] with credentials with password.
+     */
+    @Test
+    fun addCredentialsNullPassword() {
+        val account = AccountUtils.newCredentials()
+                .copy(password = null)
+
+        val result = facade.add(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.update] with account.
      */
     @Test
     @DirtiesContext
@@ -260,9 +357,58 @@ class AccountFacadeIntegrationTest {
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
-    //TODO vhromada 13.09.2020: update credentials
+    /**
+     * Test method for [AccountFacade.update] with credentials.
+     */
+    @Test
+    @DirtiesContext
+    fun updateCredentials() {
+        val result = facade.update(AccountUtils.newCredentials())
 
-    //TODO vhromada 13.09.2020: update roles
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        AccountUtils.assertAccountDeepEquals(AccountUtils.newAccountDomain(1), AccountUtils.getAccount(entityManager, 1))
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.update] with credentials with username.
+     */
+    @Test
+    fun updateCredentialsNullUsername() {
+        val account = AccountUtils.newCredentials()
+                .copy(username = null)
+
+        val result = facade.update(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.update] with credentials with password.
+     */
+    @Test
+    fun updateCredentialsNullPassword() {
+        val account = AccountUtils.newCredentials()
+                .copy(password = null)
+
+        val result = facade.add(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
 
     /**
      * Returns instance of [Account].

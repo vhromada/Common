@@ -176,12 +176,31 @@ object AccountUtils {
     }
 
     /**
+     * Asserts accounts deep equals.
+     *
+     * @param expected expected accounts
+     * @param actual   actual accounts
+     */
+    fun assertAccountListDeepEquals(expected: List<com.github.vhromada.common.entity.Account?>?, actual: List<Account?>?) {
+        assertSoftly {
+            it.assertThat(expected).isNotNull
+            it.assertThat(actual).isNotNull
+        }
+        assertThat(expected!!.size).isEqualTo(actual!!.size)
+        if (expected.isNotEmpty()) {
+            for (i in expected.indices) {
+                assertAccountDeepEquals(expected[i], actual[i])
+            }
+        }
+    }
+
+    /**
      * Asserts account deep equals.
      *
      * @param expected expected account
      * @param actual   actual account
      */
-    fun assertAccountDeepEquals(expected: Account?, actual: com.github.vhromada.common.entity.Account?) {
+    fun assertAccountDeepEquals(expected: com.github.vhromada.common.entity.Account?, actual: Account?) {
         assertSoftly {
             it.assertThat(expected).isNotNull
             it.assertThat(actual).isNotNull

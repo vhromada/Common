@@ -102,7 +102,7 @@ object RoleUtils {
      * @param expected expected roles
      * @param actual   actual roles
      */
-    fun assertRolesListDeepEquals(expected: List<Role?>?, actual: List<String?>?) {
+    fun assertRolesListDeepEquals(expected: List<String?>?, actual: List<Role?>?) {
         assertSoftly {
             it.assertThat(expected).isNotNull
             it.assertThat(actual).isNotNull
@@ -121,13 +121,13 @@ object RoleUtils {
      * @param expected expected role
      * @param actual   actual role
      */
-    private fun assertRoleDeepEquals(expected: Role?, actual: String?) {
+    fun assertRoleDeepEquals(expected: String?, actual: Role?) {
         assertSoftly {
             it.assertThat(expected).isNotNull
             it.assertThat(actual).isNotNull
         }
         assertSoftly {
-            it.assertThat(expected!!.name).isEqualTo(actual)
+            it.assertThat(expected).isEqualTo(actual!!.name)
         }
     }
 

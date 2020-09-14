@@ -33,7 +33,7 @@ class AccountMapperIntegrationTest {
         val accountDomain = AccountUtils.newAccountDomain(1)
         val account = mapper.map(accountDomain)
 
-        AccountUtils.assertAccountDeepEquals(accountDomain, account)
+        AccountUtils.assertAccountDeepEquals(account, accountDomain)
     }
 
     /**
@@ -44,7 +44,7 @@ class AccountMapperIntegrationTest {
         val account = AccountUtils.newAccount(1)
         val accountDomain = mapper.mapBack(account)
 
-        AccountUtils.assertAccountDeepEquals(accountDomain, account)
+        AccountUtils.assertAccountDeepEquals(account, accountDomain)
     }
 
     /**

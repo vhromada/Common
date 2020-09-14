@@ -1,13 +1,12 @@
-package com.github.vhromada.common.account.facade
+package com.github.vhromada.common.account.facade.impl
 
 import com.github.vhromada.common.account.domain.Role
 import com.github.vhromada.common.account.entity.Credentials
-import com.github.vhromada.common.account.entity.UpdateRoles
+import com.github.vhromada.common.account.facade.AccountFacade
 import com.github.vhromada.common.account.mapper.AccountMapper
 import com.github.vhromada.common.account.repository.RoleRepository
 import com.github.vhromada.common.account.service.AccountService
 import com.github.vhromada.common.account.validator.AccountValidator
-import com.github.vhromada.common.account.validator.RoleValidator
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.provider.AccountProvider
 import com.github.vhromada.common.provider.UuidProvider
@@ -25,10 +24,21 @@ class AccountFacadeImpl(private val accountService: AccountService,
                         private val roleRepository: RoleRepository,
                         private val accountMapper: AccountMapper,
                         private val accountValidator: AccountValidator,
-                        private val roleValidator: RoleValidator,
                         private val passwordEncoder: PasswordEncoder,
                         private val accountProvider: AccountProvider,
                         private val uuidProvider: UuidProvider) : AccountFacade {
+
+    override fun getAll(): Result<List<Account>> {
+        return Result.of(accountMapper.map(accountService.getAll()))
+    }
+
+    override fun get(id: Int): Result<Account> {
+        val item = accountService.get(id)
+        if (item.isPresent) {
+            return Result.of(accountMapper.map(item.get()))
+        }
+        return Result()
+    }
 
     override fun add(account: Account): Result<Unit> {
         val result = accountValidator.validateNew(account)
@@ -44,7 +54,7 @@ class AccountFacadeImpl(private val accountService: AccountService,
     }
 
     override fun update(account: Account): Result<Unit> {
-        val result = accountValidator.validateExist(account)
+        val result = accountValidator.validateUpdate(account)
         if (result.isOk()) {
             accountService.update(getForUpdate(account))
         }
@@ -57,18 +67,6 @@ class AccountFacadeImpl(private val accountService: AccountService,
         return update(account)
     }
 
-    override fun updateRoles(roles: UpdateRoles): Result<Unit> {
-        val result = roleValidator.validateUpdateRoles(roles)
-        if (result.isError()) {
-            return result
-        }
-        val account = accountProvider.getAccount()
-        val domainAccount = accountMapper.mapBack(account)
-                .copy(roles = mapRoles(roles.roles!!.filterNotNull()))
-        accountService.update(domainAccount)
-        return result
-    }
-
     /**
      * Returns account for adding.
      *
@@ -76,7 +74,7 @@ class AccountFacadeImpl(private val accountService: AccountService,
      * @return account for adding
      */
     private fun getForAdd(account: Account): com.github.vhromada.common.account.domain.Account {
-        val domainAccount = accountMapper.mapBack(account)
+        val domainAccount = accountMapper.mapBack(account.copy(roles = account.roles ?: emptyList()))
         return domainAccount.copy(uuid = uuidProvider.getUuid(), password = getEncodedPassword(domainAccount.password), roles = mapRoles(account.roles))
     }
 

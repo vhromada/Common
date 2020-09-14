@@ -1,7 +1,6 @@
 package com.github.vhromada.common.account.facade
 
 import com.github.vhromada.common.account.entity.Credentials
-import com.github.vhromada.common.account.entity.UpdateRoles
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Result
 
@@ -11,6 +10,21 @@ import com.github.vhromada.common.result.Result
  * @author Vladimir Hromada
  */
 interface AccountFacade {
+
+    /**
+     * Returns list of accounts.
+     *
+     * @return result with list of accounts
+     */
+    fun getAll(): Result<List<Account>>
+
+    /**
+     * Returns account with ID or null if there isn't such data.
+     *
+     * @param id ID
+     * @return result with account or validation errors
+     */
+    fun get(id: Int): Result<Account>
 
     /**
      * Adds account. Sets new ID and UUID.
@@ -70,19 +84,5 @@ interface AccountFacade {
      * @return result with validation errors
      */
     fun update(credentials: Credentials): Result<Unit>
-
-    /**
-     * Updates roles.
-     * <br></br>
-     * Validation errors:
-     *
-     *  * Roles are null
-     *  * Roles contains null
-     *  * Role doesn't exist in data storage
-     *
-     * @param roles roles
-     * @return result with validation errors
-     */
-    fun updateRoles(roles: UpdateRoles): Result<Unit>
 
 }

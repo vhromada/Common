@@ -1,13 +1,12 @@
 package com.github.vhromada.common.account.facade
 
-import com.github.vhromada.common.account.entity.UpdateRoles
+import com.github.vhromada.common.account.facade.impl.AccountFacadeImpl
 import com.github.vhromada.common.account.mapper.AccountMapper
 import com.github.vhromada.common.account.repository.RoleRepository
 import com.github.vhromada.common.account.service.AccountService
 import com.github.vhromada.common.account.utils.AccountUtils
 import com.github.vhromada.common.account.utils.RoleUtils
 import com.github.vhromada.common.account.validator.AccountValidator
-import com.github.vhromada.common.account.validator.RoleValidator
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.provider.AccountProvider
 import com.github.vhromada.common.provider.UuidProvider
@@ -68,12 +67,6 @@ class AccountFacadeTest {
     private lateinit var accountValidator: AccountValidator
 
     /**
-     * Instance of [RoleValidator]
-     */
-    @Mock
-    private lateinit var roleValidator: RoleValidator
-
-    /**
      * Instance of [PasswordEncoder]
      */
     @Mock
@@ -101,7 +94,77 @@ class AccountFacadeTest {
      */
     @BeforeEach
     fun setUp() {
-        facade = AccountFacadeImpl(accountService, roleRepository, accountMapper, accountValidator, roleValidator, passwordEncoder, accountProvider, uuidProvider)
+        facade = AccountFacadeImpl(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, accountProvider, uuidProvider)
+    }
+
+    /**
+     * Test method for [AccountFacade.getAll].
+     */
+    @Test
+    fun getAll() {
+        val domainList = listOf(AccountUtils.newAccountDomain(1), AccountUtils.newAccountDomain(2))
+        val entityList = listOf(AccountUtils.newAccount(1), AccountUtils.newAccount(2))
+
+        whenever(accountService.getAll()).thenReturn(domainList)
+        whenever(accountMapper.map(any<List<com.github.vhromada.common.account.domain.Account>>())).thenReturn(entityList)
+
+        val result = facade.getAll()
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.data).isEqualTo(entityList)
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        verify(accountService).getAll()
+        verify(accountMapper).map(domainList)
+        verifyNoMoreInteractions(accountService, accountMapper)
+        verifyZeroInteractions(roleRepository, accountValidator, passwordEncoder, accountProvider, uuidProvider)
+    }
+
+    /**
+     * Test method for [AccountFacade.get] with existing data.
+     */
+    @Test
+    fun getExistingData() {
+        val domain = AccountUtils.newAccountDomain(1)
+        val entity = AccountUtils.newAccount(1)
+
+        whenever(accountService.get(any())).thenReturn(Optional.of(domain))
+        whenever(accountMapper.map(any<com.github.vhromada.common.account.domain.Account>())).thenReturn(entity)
+
+        val result = facade.get(1)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.data).isEqualTo(entity)
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        verify(accountService).get(1)
+        verify(accountMapper).map(domain)
+        verifyNoMoreInteractions(accountService, accountMapper)
+        verifyZeroInteractions(roleRepository, accountValidator, passwordEncoder, accountProvider, uuidProvider)
+    }
+
+    /**
+     * Test method for [AccountFacade.get] with not existing data.
+     */
+    @Test
+    fun getNotExistingData() {
+        whenever(accountService.get(any())).thenReturn(Optional.empty())
+
+        val result = facade.get(Int.MAX_VALUE)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.OK)
+            it.assertThat(result.data).isNull()
+            it.assertThat(result.events()).isEmpty()
+        }
+
+        verify(accountService).get(Int.MAX_VALUE)
+        verifyNoMoreInteractions(accountService)
+        verifyZeroInteractions(roleRepository, accountMapper, accountValidator, passwordEncoder, accountProvider, uuidProvider)
     }
 
     /**
@@ -134,7 +197,7 @@ class AccountFacadeTest {
         verify(passwordEncoder).encode(accountDomain.password)
         verify(uuidProvider).getUuid()
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, uuidProvider)
-        verifyZeroInteractions(roleValidator, accountProvider)
+        verifyZeroInteractions(accountProvider)
 
         val argument = argumentCaptor.lastValue
         AccountUtils.assertAccountDeepEquals(accountDomain, argument)
@@ -155,7 +218,7 @@ class AccountFacadeTest {
 
         verify(accountValidator).validateNew(account)
         verifyNoMoreInteractions(accountValidator)
-        verifyZeroInteractions(accountService, roleRepository, accountMapper, roleValidator, passwordEncoder, accountProvider, uuidProvider)
+        verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, accountProvider, uuidProvider)
     }
 
     /**
@@ -190,7 +253,7 @@ class AccountFacadeTest {
         verify(passwordEncoder).encode(accountDomain.password)
         verify(uuidProvider).getUuid()
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, uuidProvider)
-        verifyZeroInteractions(roleValidator, accountProvider)
+        verifyZeroInteractions(accountProvider)
 
         val argument = argumentCaptor.lastValue
         AccountUtils.assertAccountDeepEquals(accountDomain, argument)
@@ -214,7 +277,7 @@ class AccountFacadeTest {
         verify(accountMapper).mapCredentials(credentials)
         verify(accountValidator).validateNew(account)
         verifyNoMoreInteractions(accountService, accountValidator)
-        verifyZeroInteractions(roleValidator, accountProvider)
+        verifyZeroInteractions(accountProvider)
     }
 
     /**
@@ -229,7 +292,7 @@ class AccountFacadeTest {
 
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
         whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountValidator.validateExist(any())).thenReturn(Result())
+        whenever(accountValidator.validateUpdate(any())).thenReturn(Result())
         whenever(passwordEncoder.encode(any())).thenReturn(password)
 
         val result = facade.update(account)
@@ -242,10 +305,10 @@ class AccountFacadeTest {
         verify(accountService).update(accountDomain)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verify(accountMapper).mapBack(account)
-        verify(accountValidator).validateExist(account)
+        verify(accountValidator).validateUpdate(account)
         verify(passwordEncoder).encode(accountDomain.password)
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder)
-        verifyZeroInteractions(roleValidator, accountProvider, uuidProvider)
+        verifyZeroInteractions(accountProvider, uuidProvider)
     }
 
     /**
@@ -255,15 +318,15 @@ class AccountFacadeTest {
     fun updateInvalidAccount() {
         val account = AccountUtils.newAccount(Int.MAX_VALUE)
 
-        whenever(accountValidator.validateExist(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateUpdate(any())).thenReturn(INVALID_DATA_RESULT)
 
         val result = facade.update(account)
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountValidator).validateExist(account)
+        verify(accountValidator).validateUpdate(account)
         verifyNoMoreInteractions(accountValidator)
-        verifyZeroInteractions(accountService, roleRepository, accountMapper, roleValidator, passwordEncoder, accountProvider, uuidProvider)
+        verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, accountProvider, uuidProvider)
     }
 
     /**
@@ -279,7 +342,7 @@ class AccountFacadeTest {
 
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
         whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountValidator.validateExist(any())).thenReturn(Result())
+        whenever(accountValidator.validateUpdate(any())).thenReturn(Result())
         whenever(accountProvider.getAccount()).thenReturn(account)
         whenever(passwordEncoder.encode(any())).thenReturn(password)
 
@@ -293,11 +356,11 @@ class AccountFacadeTest {
         verify(accountService).update(accountDomain)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verify(accountMapper).mapBack(account)
-        verify(accountValidator).validateExist(account)
+        verify(accountValidator).validateUpdate(account)
         verify(accountProvider).getAccount()
         verify(passwordEncoder).encode(accountDomain.password)
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, accountProvider, passwordEncoder)
-        verifyZeroInteractions(roleValidator, uuidProvider)
+        verifyZeroInteractions(uuidProvider)
     }
 
     /**
@@ -307,66 +370,17 @@ class AccountFacadeTest {
     fun updateInvalidCredentials() {
         val account = AccountUtils.newAccount(Int.MAX_VALUE)
 
-        whenever(accountValidator.validateExist(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateUpdate(any())).thenReturn(INVALID_DATA_RESULT)
         whenever(accountProvider.getAccount()).thenReturn(account)
 
         val result = facade.update(AccountUtils.newCredentials())
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountValidator).validateExist(account)
+        verify(accountValidator).validateUpdate(account)
         verify(accountProvider).getAccount()
         verifyNoMoreInteractions(accountValidator, accountProvider)
-        verifyZeroInteractions(accountService, roleRepository, accountMapper, roleValidator, passwordEncoder, uuidProvider)
-    }
-
-    /**
-     * Test method for [AccountFacade.updateRoles].
-     */
-    @Test
-    fun updateRoles() {
-        val roles = UpdateRoles(listOf("ROLE_USER"))
-        val accountDomain = AccountUtils.newAccountDomain(1)
-        val account = AccountUtils.newAccount(1)
-        val role = RoleUtils.getRole(1)
-
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountProvider.getAccount()).thenReturn(account)
-        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(Result())
-
-        val result = facade.updateRoles(roles)
-
-        assertSoftly {
-            it.assertThat(result.status).isEqualTo(Status.OK)
-            it.assertThat(result.events()).isEmpty()
-        }
-
-        verify(accountService).update(accountDomain)
-        roles.roles!!.forEach { verify(roleRepository).findByName(it!!) }
-        verify(accountMapper).mapBack(account)
-        verify(roleValidator).validateUpdateRoles(roles)
-        verify(accountProvider).getAccount()
-        verifyNoMoreInteractions(accountService, roleRepository, accountMapper, roleValidator, accountProvider)
-        verifyZeroInteractions(accountValidator, passwordEncoder, uuidProvider)
-    }
-
-    /**
-     * Test method for [AccountFacade.updateRoles] with invalid roles.
-     */
-    @Test
-    fun updateRolesInvalidRoles() {
-        val roles = UpdateRoles(listOf("ROLE_USER"))
-
-        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(INVALID_DATA_RESULT)
-
-        val result = facade.updateRoles(roles)
-
-        assertThat(result).isEqualTo(INVALID_DATA_RESULT)
-
-        verify(roleValidator).validateUpdateRoles(roles)
-        verifyNoMoreInteractions(roleValidator)
-        verifyZeroInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, accountProvider, uuidProvider)
+        verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, uuidProvider)
     }
 
     /**

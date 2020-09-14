@@ -28,7 +28,7 @@ interface AccountValidator {
     fun validateNew(account: Account?): Result<Unit>
 
     /**
-     * Validates existing account.
+     * Validates updating account.
      * <br></br>
      * Validation errors:
      *
@@ -39,6 +39,20 @@ interface AccountValidator {
      *  * Password is null
      *  * Account doesn't exist in data storage
      *  * Role doesn't exist in data storage
+     *
+     * @param account validating account
+     * @return result with validation errors
+     */
+    fun validateUpdate(account: Account?): Result<Unit>
+
+    /**
+     * Validates existing account.
+     * <br></br>
+     * Validation errors:
+     *
+     *  * Account is null
+     *  * ID is null
+     *  * Account doesn't exist in data storage
      *
      * @param account validating account
      * @return result with validation errors

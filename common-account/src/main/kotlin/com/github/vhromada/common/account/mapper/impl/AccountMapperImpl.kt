@@ -1,8 +1,10 @@
-package com.github.vhromada.common.account.mapper
+package com.github.vhromada.common.account.mapper.impl
 
 import com.github.vhromada.common.account.domain.Account
 import com.github.vhromada.common.account.domain.Role
 import com.github.vhromada.common.account.entity.Credentials
+import com.github.vhromada.common.account.mapper.AccountMapper
+import com.github.vhromada.common.mapper.Mapper
 import org.springframework.stereotype.Component
 
 /**
@@ -11,7 +13,7 @@ import org.springframework.stereotype.Component
  * @author Vladimir Hromada
  */
 @Component("accountMapper")
-class AccountMapperImpl : AccountMapper {
+class AccountMapperImpl(private val roleMapper: Mapper<Role, String>) : AccountMapper {
 
     override fun map(source: Account): com.github.vhromada.common.entity.Account {
         return com.github.vhromada.common.entity.Account(
@@ -19,7 +21,7 @@ class AccountMapperImpl : AccountMapper {
                 uuid = source.uuid,
                 username = source.username,
                 password = source.password,
-                roles = source.roles.map { it.name })
+                roles = roleMapper.map(source.roles))
     }
 
     override fun mapBack(source: com.github.vhromada.common.entity.Account): Account {
@@ -28,7 +30,7 @@ class AccountMapperImpl : AccountMapper {
                 uuid = source.uuid,
                 username = source.username!!,
                 password = source.password!!,
-                roles = source.roles!!.map { Role(id = null, name = it) })
+                roles = roleMapper.mapBack(source.roles!!))
     }
 
     override fun mapCredentials(source: Credentials): com.github.vhromada.common.entity.Account {

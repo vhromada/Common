@@ -19,6 +19,10 @@ class AccountServiceImpl(
         private val accountRepository: AccountRepository,
         private val accountMapper: AccountMapper) : AccountService {
 
+    override fun getAll(): List<Account> {
+        return accountRepository.findAll()
+    }
+
     override fun get(id: Int): Optional<Account> {
         return accountRepository.findById(id)
     }

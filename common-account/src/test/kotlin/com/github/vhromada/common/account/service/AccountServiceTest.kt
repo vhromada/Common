@@ -10,7 +10,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -50,6 +50,24 @@ class AccountServiceTest {
     @BeforeEach
     fun setUp() {
         accountService = AccountServiceImpl(accountRepository, accountMapper)
+    }
+
+    /**
+     * Test method for [AccountService.getAll]a.
+     */
+    @Test
+    fun getAll() {
+        val expectedAccounts = listOf(AccountUtils.newAccountDomain(1))
+
+        whenever(accountRepository.findAll()).thenReturn(expectedAccounts)
+
+        val accounts = accountService.getAll()
+
+        assertThat(accounts).isEqualTo(expectedAccounts)
+
+        verify(accountRepository).findAll()
+        verifyNoMoreInteractions(accountRepository)
+        verifyZeroInteractions(accountMapper)
     }
 
     /**
@@ -112,7 +130,7 @@ class AccountServiceTest {
         val account = accountService.loadUserByUsername(expectedAccount.username)
 
         assertThat(account).isInstanceOf(Account::class.java)
-        AccountUtils.assertAccountDeepEquals(expectedAccount, account as Account)
+        AccountUtils.assertAccountDeepEquals(account as Account, expectedAccount)
 
         verify(accountRepository).findByUsername(expectedAccount.username)
         verify(accountMapper).map(expectedAccount)
@@ -128,7 +146,7 @@ class AccountServiceTest {
 
         whenever(accountRepository.findByUsername(any())).thenReturn(Optional.empty())
 
-        Assertions.assertThrows(UsernameNotFoundException::class.java) { accountService.loadUserByUsername(username) }
+        assertThrows(UsernameNotFoundException::class.java) { accountService.loadUserByUsername(username) }
 
         verify(accountRepository).findByUsername(username)
         verifyNoMoreInteractions(accountRepository)

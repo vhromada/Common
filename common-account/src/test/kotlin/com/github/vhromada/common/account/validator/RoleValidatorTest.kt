@@ -12,7 +12,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -58,7 +58,7 @@ class RoleValidatorTest {
 
         val result = roleValidator.validateUpdateRoles(roles)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
@@ -74,7 +74,7 @@ class RoleValidatorTest {
     fun validateUpdateRolesNullUpdateRoles() {
         val result = roleValidator.validateUpdateRoles(null)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_NULL", "Roles mustn't be null.")))
         }
@@ -89,7 +89,7 @@ class RoleValidatorTest {
     fun validateUpdateRolesNullRoles() {
         val result = roleValidator.validateUpdateRoles(UpdateRoles(null))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_NULL", "Roles mustn't be null.")))
         }
@@ -104,7 +104,7 @@ class RoleValidatorTest {
     fun validateUpdateRolesNullRole() {
         val result = roleValidator.validateUpdateRoles(UpdateRoles(listOf(null)))
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_CONTAIN_NULL", "Roles mustn't contain null value.")))
         }
@@ -123,7 +123,7 @@ class RoleValidatorTest {
 
         val result = roleValidator.validateUpdateRoles(roles)
 
-        SoftAssertions.assertSoftly {
+        assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
