@@ -118,6 +118,43 @@ class AccountServiceTest {
     }
 
     /**
+     * Test method for [AccountService.findByUsername] with correct username.
+     */
+    @Test
+    fun findByUsername() {
+        val expectedAccount = AccountUtils.newAccountDomain(1)
+
+        whenever(accountRepository.findByUsername(any())).thenReturn(Optional.of(expectedAccount))
+
+        val account = accountService.findByUsername(expectedAccount.username)
+
+        assertThat(account).isPresent
+        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
+
+        verify(accountRepository).findByUsername(expectedAccount.username)
+        verifyNoMoreInteractions(accountRepository)
+        verifyZeroInteractions(accountMapper)
+    }
+
+    /**
+     * Test method for [AccountService.findByUsername] with invalid username.
+     */
+    @Test
+    fun findByUsernameByInvalidUsername() {
+        val username = "test"
+
+        whenever(accountRepository.findByUsername(any())).thenReturn(Optional.empty())
+
+        val account = accountService.findByUsername(username)
+
+        assertThat(account).isNotPresent
+
+        verify(accountRepository).findByUsername(username)
+        verifyNoMoreInteractions(accountRepository)
+        verifyZeroInteractions(accountMapper)
+    }
+
+    /**
      * Test method for [AccountService.loadUserByUsername] with correct username.
      */
     @Test

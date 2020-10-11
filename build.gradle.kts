@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
     group = "com.github.vhromada.common"
-    version = "6.0.2"
+    version = "6.0.3"
 
     apply(plugin = "kotlin")
     apply(plugin = "org.gradle.maven-publish")

@@ -40,4 +40,12 @@ interface AccountService : UserDetailsService {
      */
     fun update(account: Account)
 
+    /**
+     * Find account by username.
+     *
+     * @param username username
+     * @return account
+     */
+    fun findByUsername(username: String): Optional<Account>
+
 }

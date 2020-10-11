@@ -37,8 +37,12 @@ class AccountServiceImpl(
         accountRepository.save(account)
     }
 
+    override fun findByUsername(username: String): Optional<Account> {
+        return accountRepository.findByUsername(username)
+    }
+
     override fun loadUserByUsername(username: String): UserDetails {
-        val account = accountRepository.findByUsername(username)
+        val account = findByUsername(username)
         if (!account.isPresent) {
             throw UsernameNotFoundException("No account found for username $username")
         }

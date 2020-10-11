@@ -13,6 +13,7 @@ import com.github.vhromada.common.provider.UuidProvider
 import com.github.vhromada.common.result.Result
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.util.Optional
 
 /**
  * A class represents implementation of facade for accounts.
@@ -65,6 +66,11 @@ class AccountFacadeImpl(private val accountService: AccountService,
         val account = accountProvider.getAccount()
                 .copy(username = credentials.username, password = credentials.password)
         return update(account)
+    }
+
+    override fun findByUsername(username: String): Optional<Account> {
+        return accountService.findByUsername(username)
+                .map { accountMapper.map(it) }
     }
 
     /**

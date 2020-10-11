@@ -384,6 +384,45 @@ class AccountFacadeTest {
     }
 
     /**
+     * Test method for [AccountFacade.findByUsername] with correct username.
+     */
+    @Test
+    fun findByUsername() {
+        val expectedAccount = AccountUtils.newAccountDomain(1)
+
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.of(expectedAccount))
+        whenever(accountMapper.map(any<com.github.vhromada.common.account.domain.Account>())).thenReturn(AccountUtils.newAccount(1))
+
+        val account = facade.findByUsername(expectedAccount.username)
+
+        assertThat(account).isPresent
+        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
+
+        verify(accountService).findByUsername(expectedAccount.username)
+        verify(accountMapper).map(expectedAccount)
+        verifyNoMoreInteractions(accountService, accountMapper)
+        verifyZeroInteractions(roleRepository, accountValidator, accountProvider, passwordEncoder, uuidProvider)
+    }
+
+    /**
+     * Test method for [AccountFacade.findByUsername] with invalid username.
+     */
+    @Test
+    fun findByUsernameByInvalidUsername() {
+        val username = "test"
+
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
+
+        val account = facade.findByUsername(username)
+
+        assertThat(account).isNotPresent
+
+        verify(accountService).findByUsername(username)
+        verifyNoMoreInteractions(accountService)
+        verifyZeroInteractions(roleRepository, accountMapper, accountValidator, accountProvider, passwordEncoder, uuidProvider)
+    }
+
+    /**
      * Returns argument captor for account.
      *
      * @return argument captor for account

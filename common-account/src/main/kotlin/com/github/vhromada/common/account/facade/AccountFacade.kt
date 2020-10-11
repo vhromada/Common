@@ -3,6 +3,7 @@ package com.github.vhromada.common.account.facade
 import com.github.vhromada.common.account.entity.Credentials
 import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Result
+import java.util.Optional
 
 /**
  * An interface represents facade for accounts.
@@ -36,6 +37,7 @@ interface AccountFacade {
      *  * Username is null
      *  * Password is null
      *  * Role doesn't exist in data storage
+     *  * Username exists in data storage
      *
      * @param account account
      * @return result with validation errors
@@ -49,6 +51,7 @@ interface AccountFacade {
      *
      *  * Username is null
      *  * Password is null
+     *  * Username exists in data storage
      *
      * @param credentials credentials
      * @return result with validation errors
@@ -66,6 +69,7 @@ interface AccountFacade {
      *  * Password is null
      *  * Account doesn't exist in data storage
      *  * Role doesn't exist in data storage
+     *  * Username exists in data storage
      *
      * @param account new value of account
      * @return result with validation errors
@@ -79,10 +83,19 @@ interface AccountFacade {
      *
      *  * Username is null
      *  * Password is null
+     *  * Username exists in data storage
      *
      * @param credentials credentials
      * @return result with validation errors
      */
     fun update(credentials: Credentials): Result<Unit>
+
+    /**
+     * Find account by username.
+     *
+     * @param username username
+     * @return account
+     */
+    fun findByUsername(username: String): Optional<Account>
 
 }

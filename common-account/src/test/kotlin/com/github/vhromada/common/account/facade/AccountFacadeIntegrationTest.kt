@@ -186,6 +186,24 @@ class AccountFacadeIntegrationTest {
     }
 
     /**
+     * Test method for [AccountFacade.add] with account with existing username.
+     */
+    @Test
+    fun addExistingUsername() {
+        val account = newAccountNullUuid(null)
+                .copy(username = AccountUtils.getAccount(1).username)
+
+        val result = facade.add(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
      * Test method for [AccountFacade.add] with credentials.
      */
     @Test
@@ -236,6 +254,24 @@ class AccountFacadeIntegrationTest {
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.add] with credentials with existing username.
+     */
+    @Test
+    fun addCredentialsExistingUsername() {
+        val account = newAccountNullUuid(null)
+                .copy(username = AccountUtils.getAccount(1).username)
+
+        val result = facade.add(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
         }
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
@@ -358,6 +394,24 @@ class AccountFacadeIntegrationTest {
     }
 
     /**
+     * Test method for [AccountFacade.update] with account with existing username.
+     */
+    @Test
+    fun updateExistingUsername() {
+        val account = newAccount(1)
+                .copy(username = AccountUtils.getAccount(2).username)
+
+        val result = facade.update(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
      * Test method for [AccountFacade.update] with credentials.
      */
     @Test
@@ -406,6 +460,39 @@ class AccountFacadeIntegrationTest {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.update] with credentials with existing username.
+     */
+    @Test
+    fun updateCredentialsExistingUsername() {
+        val account = AccountUtils.newCredentials()
+                .copy(username = AccountUtils.getAccount(2).username)
+
+        val result = facade.update(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+        }
+
+        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+    }
+
+    /**
+     * Test method for [AccountFacade.findByUsername].
+     */
+    @Test
+    fun findByUsername() {
+        val expectedAccount = AccountUtils.getAccount(1)
+
+        val account = facade.findByUsername(expectedAccount.username)
+
+        assertThat(account).isPresent
+        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }

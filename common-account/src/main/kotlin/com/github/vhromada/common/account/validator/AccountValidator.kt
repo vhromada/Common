@@ -21,6 +21,7 @@ interface AccountValidator {
      *  * Username is null
      *  * Password is null
      *  * Role doesn't exist in data storage
+     *  * Username exists in data storage
      *
      * @param account validating account
      * @return result with validation errors
@@ -39,6 +40,7 @@ interface AccountValidator {
      *  * Password is null
      *  * Account doesn't exist in data storage
      *  * Role doesn't exist in data storage
+     *  * Username exists in data storage
      *
      * @param account validating account
      * @return result with validation errors

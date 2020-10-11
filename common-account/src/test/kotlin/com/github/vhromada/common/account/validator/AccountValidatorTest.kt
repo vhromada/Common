@@ -10,6 +10,7 @@ import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Severity
 import com.github.vhromada.common.result.Status
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -60,6 +61,7 @@ class AccountValidatorTest {
      */
     @Test
     fun validateNew() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null, null)
@@ -71,9 +73,9 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEmpty()
         }
 
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -96,6 +98,8 @@ class AccountValidatorTest {
      */
     @Test
     fun validateNewNotNullId() {
+        whenever(accountService.get(any())).thenReturn(Optional.empty())
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(Int.MAX_VALUE, uuid = null)
@@ -107,9 +111,10 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NOT_NULL", "ID must be null.")))
         }
 
+        verify(accountService).get(account.id!!)
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -117,6 +122,7 @@ class AccountValidatorTest {
      */
     @Test
     fun validateNewNotNullUuid() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null, uuid = "uuid")
@@ -128,9 +134,9 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NOT_NULL", "UUID must be null.")))
         }
 
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -160,6 +166,7 @@ class AccountValidatorTest {
      */
     @Test
     fun validateNewNullPassword() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null, null)
@@ -172,9 +179,9 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
 
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -182,6 +189,7 @@ class AccountValidatorTest {
      */
     @Test
     fun validateNewRoleNotExisting() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.empty())
 
         val account = getValidatingData(null, null)
@@ -193,9 +201,31 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
 
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
+    }
+
+    /**
+     * Test method for [AccountValidator.validateNew] with account with existing username.
+     */
+    @Test
+    fun validateNewExistingUsername() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.of(AccountUtils.newAccountDomain(null)))
+        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
+
+        val account = getValidatingData(null, null)
+
+        val result = accountValidator.validateNew(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+        }
+
+        verify(accountService).findByUsername(account.username!!)
+        account.roles!!.forEach { verify(roleRepository).findByName(it) }
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -215,7 +245,7 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
@@ -240,6 +270,7 @@ class AccountValidatorTest {
      */
     @Test
     fun validateUpdateNullId() {
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null)
@@ -251,9 +282,9 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null.")))
         }
 
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verifyNoMoreInteractions(roleRepository)
-        verifyZeroInteractions(accountService)
+        verifyNoMoreInteractions(accountService, roleRepository)
     }
 
     /**
@@ -273,7 +304,7 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NULL", "UUID mustn't be null.")))
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
@@ -296,7 +327,7 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
@@ -319,7 +350,7 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
@@ -330,6 +361,7 @@ class AccountValidatorTest {
     @Test
     fun validateUpdateAccountNotExisting() {
         whenever(accountService.get(any())).thenReturn(Optional.empty())
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(Int.MAX_VALUE)
@@ -341,7 +373,8 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist.")))
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
@@ -363,7 +396,32 @@ class AccountValidatorTest {
             it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
         }
 
-        verify(accountService).get(account.id!!)
+        verify(accountService, atLeastOnce()).get(account.id!!)
+        account.roles!!.forEach { verify(roleRepository).findByName(it) }
+        verifyNoMoreInteractions(accountService, roleRepository)
+    }
+
+    /**
+     * Test method for [AccountValidator.validateUpdate] with account with existing username.
+     */
+    @Test
+    fun validateUpdateExistingUsername() {
+        whenever(accountService.get(any())).thenReturn(Optional.of(AccountUtils.newAccountDomain(1)))
+        whenever(accountService.findByUsername(any())).thenReturn(Optional.of(AccountUtils.newAccountDomain(1)))
+        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
+
+        val account = getValidatingData(1)
+                .copy(username = "test")
+
+        val result = accountValidator.validateUpdate(account)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+        }
+
+        verify(accountService, atLeastOnce()).get(account.id!!)
+        verify(accountService).findByUsername(account.username!!)
         account.roles!!.forEach { verify(roleRepository).findByName(it) }
         verifyNoMoreInteractions(accountService, roleRepository)
     }
