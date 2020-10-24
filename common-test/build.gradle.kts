@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(platform("com.github.vhromada.project:project-parent:5.0.0"))
+    implementation(platform("com.github.vhromada.project:project-parent:5.0.1"))
     implementation(kotlin("stdlib-jdk8"))
     api(project(":common-core"))
     api("io.github.microutils:kotlin-logging")

@@ -102,13 +102,13 @@ class AbstractMovableServiceTest : MovableServiceTest<AuditEntity>() {
     }
 
     override fun assertDataDeepEquals(expected: AuditEntity, actual: AuditEntity) {
-        assertSoftly { softly ->
-            softly.assertThat(expected).isNotNull
-            softly.assertThat(actual).isNotNull()
+        assertSoftly {
+            it.assertThat(expected).isNotNull
+            it.assertThat(actual).isNotNull
         }
-        assertSoftly { softly ->
-            softly.assertThat(actual.id).isEqualTo(expected.id)
-            softly.assertThat(actual.position).isEqualTo(expected.position)
+        assertSoftly {
+            it.assertThat(actual.id).isEqualTo(expected.id)
+            it.assertThat(actual.position).isEqualTo(expected.position)
         }
     }
 

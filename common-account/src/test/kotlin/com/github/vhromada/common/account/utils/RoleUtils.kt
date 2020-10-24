@@ -91,8 +91,8 @@ object RoleUtils {
             it.assertThat(actual).isNotNull
         }
         assertSoftly {
-            it.assertThat(expected!!.id).isEqualTo(actual!!.id)
-            it.assertThat(expected.name).isEqualTo(actual.name)
+            it.assertThat(actual!!.id).isEqualTo(expected!!.id)
+            it.assertThat(actual.name).isEqualTo(expected.name)
         }
     }
 
@@ -127,7 +127,7 @@ object RoleUtils {
             it.assertThat(actual).isNotNull
         }
         assertSoftly {
-            it.assertThat(expected).isEqualTo(actual!!.name)
+            it.assertThat(actual!!.name).isEqualTo(expected)
         }
     }
 

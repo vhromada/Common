@@ -80,7 +80,6 @@ class RoleFacadeIntegrationTest {
         assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
-    //TODO vhromada 14.09.2020: invalid data test
     /**
      * Test method for [RoleFacade.updateRoles] with account with null ID.
      */

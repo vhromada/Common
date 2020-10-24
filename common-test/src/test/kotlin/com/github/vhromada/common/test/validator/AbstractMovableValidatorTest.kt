@@ -41,9 +41,9 @@ class AbstractMovableValidatorTest : MovableValidatorTest<Movable, AuditEntity>(
 
         val result = getValidator().validate(movable, ValidationType.DEEP)
 
-        assertSoftly { softly ->
-            softly.assertThat(result.status).isEqualTo(Status.WARN)
-            softly.assertThat(result.events()).isEqualTo(listOf(Event(Severity.WARN, KEY, VALUE)))
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.WARN)
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.WARN, KEY, VALUE)))
         }
 
         verifyDeepMock(movable)
