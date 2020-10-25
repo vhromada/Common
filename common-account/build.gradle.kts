@@ -5,7 +5,8 @@ plugins {
 }
 
 dependencies {
-    implementation(platform("com.github.vhromada.project:project-parent:5.0.1"))
+    val projectParentVersion: String by rootProject.extra
+    implementation(platform("com.github.vhromada.project:project-parent:$projectParentVersion"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     api(project(":common-core"))

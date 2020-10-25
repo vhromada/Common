@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(platform("com.github.vhromada.project:project-parent:5.0.1"))
+    val projectParentVersion: String by rootProject.extra
+    implementation(platform("com.github.vhromada.project:project-parent:$projectParentVersion"))
     implementation(kotlin("stdlib-jdk8"))
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")

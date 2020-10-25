@@ -10,9 +10,11 @@ plugins {
     `maven-publish`
 }
 
+val projectParentVersion by extra("5.0.1")
+
 allprojects {
     group = "com.github.vhromada.common"
-    version = "6.0.5"
+    version = "6.0.6"
 
     apply(plugin = "kotlin")
     apply(plugin = "org.gradle.maven-publish")
