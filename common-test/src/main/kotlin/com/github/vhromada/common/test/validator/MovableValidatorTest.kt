@@ -80,7 +80,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_ID_NOT_NULL", "ID must be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_ID_NOT_NULL", "ID must be null.")))
         }
 
         verifyZeroInteractions(service)
@@ -95,7 +95,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_POSITION_NOT_NULL", "Position must be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_POSITION_NOT_NULL", "Position must be null.")))
         }
 
         verifyZeroInteractions(service)
@@ -125,7 +125,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_POSITION_NULL", "Position mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_POSITION_NULL", "Position mustn't be null.")))
         }
 
         verifyZeroInteractions(service)
@@ -159,7 +159,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_ID_NULL", "ID mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_ID_NULL", "ID mustn't be null.")))
         }
 
         verifyZeroInteractions(service)
@@ -178,7 +178,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_NOT_EXIST", "${getName()} doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_NOT_EXIST", "${getName()} doesn't exist.")))
         }
 
         verifyExistsMock(validatingData)
@@ -188,7 +188,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      * Test method for [MovableValidator.validate] with [ValidationType.UP] with correct data.
      */
     @Test
-    fun validateUp() {
+    open fun validateUp() {
         val validatingData = getValidatingData(ID)
 
         initMovingMock(validatingData, up = true, valid = true)
@@ -207,7 +207,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      * Test method for [MovableValidator.validate] with [ValidationType.UP] with invalid data.
      */
     @Test
-    fun validateUpInvalid() {
+    open fun validateUpInvalid() {
         val validatingData = getValidatingData(Int.MAX_VALUE)
 
         initMovingMock(validatingData, up = true, valid = false)
@@ -216,7 +216,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_NOT_MOVABLE", "${getName()} can't be moved up.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_NOT_MOVABLE", "${getName()} can't be moved up.")))
         }
 
         verifyMovingMock(validatingData)
@@ -226,7 +226,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      * Test method for [MovableValidator.validate] with [ValidationType.DOWN] with correct data.
      */
     @Test
-    fun validateDown() {
+    open fun validateDown() {
         val validatingData = getValidatingData(ID)
 
         initMovingMock(validatingData, up = false, valid = true)
@@ -245,7 +245,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      * Test method for [MovableValidator.validate] with [ValidationType.DOWN] with invalid data.
      */
     @Test
-    fun validateDownInvalid() {
+    open fun validateDownInvalid() {
         val validatingData = getValidatingData(Int.MAX_VALUE)
 
         initMovingMock(validatingData, up = false, valid = false)
@@ -254,7 +254,7 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, getPrefix() + "_NOT_MOVABLE", "${getName()} can't be moved down.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "${getPrefix()}_NOT_MOVABLE", "${getName()} can't be moved down.")))
         }
 
         verifyMovingMock(validatingData)
@@ -351,6 +351,15 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
     }
 
     /**
+     * Returns prefix for validation keys.
+     *
+     * @return prefix for validation keys
+     */
+    protected open fun getPrefix(): String {
+        return getName().toUpperCase()
+    }
+
+    /**
      * Returns instance of [MovableValidator].
      *
      * @return instance of [MovableValidator]
@@ -402,14 +411,5 @@ abstract class MovableValidatorTest<T : Movable, U : AuditEntity> {
      * @return name of entity
      */
     protected abstract fun getName(): String
-
-    /**
-     * Returns prefix for validation keys.
-     *
-     * @return prefix for validation keys
-     */
-    private fun getPrefix(): String {
-        return getName().toUpperCase()
-    }
 
 }
