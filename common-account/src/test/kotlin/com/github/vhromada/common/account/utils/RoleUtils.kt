@@ -55,7 +55,6 @@ object RoleUtils {
      * @param entityManager entity manager
      * @return count of roles
      */
-    @Suppress("CheckStyle")
     fun getRolesCount(entityManager: EntityManager): Int {
         return entityManager.createQuery("SELECT COUNT(r.id) FROM Role r", java.lang.Long::class.java).singleResult.toInt()
     }

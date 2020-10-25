@@ -120,7 +120,6 @@ object AccountUtils {
      * @param entityManager entity manager
      * @return count of accounts
      */
-    @Suppress("CheckStyle")
     fun getAccountsCount(entityManager: EntityManager): Int {
         return entityManager.createQuery("SELECT COUNT(a.id) FROM Account a", java.lang.Long::class.java).singleResult.toInt()
     }
