@@ -21,7 +21,7 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
 
     override fun validate(data: T?, vararg validationTypes: ValidationType): Result<Unit> {
         if (data == null) {
-            return Result.error(getPrefix() + "_NULL", "$name mustn't be null.")
+            return Result.error("${getPrefix()}_NULL", "$name mustn't be null.")
         }
 
         val result = Result<Unit>()
@@ -98,10 +98,10 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
      */
     private fun validateNewData(data: T, result: Result<Unit>) {
         if (data.id != null) {
-            result.addEvent(Event(Severity.ERROR, getPrefix() + "_ID_NOT_NULL", "ID must be null."))
+            result.addEvent(Event(Severity.ERROR, "${getPrefix()}_ID_NOT_NULL", "ID must be null."))
         }
         if (data.position != null) {
-            result.addEvent(Event(Severity.ERROR, getPrefix() + "_POSITION_NOT_NULL", "Position must be null."))
+            result.addEvent(Event(Severity.ERROR, "${getPrefix()}_POSITION_NOT_NULL", "Position must be null."))
         }
     }
 
@@ -117,7 +117,7 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
      */
     private fun validateUpdateData(data: T, result: Result<Unit>) {
         if (data.position == null) {
-            result.addEvent(Event(Severity.ERROR, getPrefix() + "_POSITION_NULL", "Position mustn't be null."))
+            result.addEvent(Event(Severity.ERROR, "${getPrefix()}_POSITION_NULL", "Position mustn't be null."))
         }
     }
 
@@ -135,10 +135,10 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
     private fun validateExistingData(data: T, result: Result<Unit>) {
         when {
             data.id == null -> {
-                result.addEvent(Event(Severity.ERROR, getPrefix() + "_ID_NULL", "ID mustn't be null."))
+                result.addEvent(Event(Severity.ERROR, "${getPrefix()}_ID_NULL", "ID mustn't be null."))
             }
             getData(data).isEmpty -> {
-                result.addEvent(Event(Severity.ERROR, getPrefix() + "_NOT_EXIST", "$name doesn't exist."))
+                result.addEvent(Event(Severity.ERROR, "${getPrefix()}_NOT_EXIST", "$name doesn't exist."))
             }
         }
     }
@@ -162,10 +162,10 @@ abstract class AbstractMovableValidator<T : Movable, U : AuditEntity>(
                 val index = list.indexOf(domainData.get())
                 when {
                     up && index <= 0 -> {
-                        result.addEvent(Event(Severity.ERROR, getPrefix() + "_NOT_MOVABLE", "$name can't be moved up."))
+                        result.addEvent(Event(Severity.ERROR, "${getPrefix()}_NOT_MOVABLE", "$name can't be moved up."))
                     }
                     !up && (index < 0 || index >= list.size - 1) -> {
-                        result.addEvent(Event(Severity.ERROR, getPrefix() + "_NOT_MOVABLE", "$name can't be moved down."))
+                        result.addEvent(Event(Severity.ERROR, "${getPrefix()}_NOT_MOVABLE", "$name can't be moved down."))
                     }
                 }
             }

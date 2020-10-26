@@ -612,6 +612,15 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
     }
 
     /**
+     * Returns prefix for validation keys.
+     *
+     * @return prefix for validation keys
+     */
+    protected open fun getPrefix(): String {
+        return getName().toUpperCase()
+    }
+
+    /**
      * Asserts default repository data.
      */
     protected open fun assertDefaultRepositoryData() {
@@ -683,15 +692,6 @@ abstract class MovableParentFacadeIntegrationTest<T : Movable, U : AuditEntity> 
      */
     private fun getNotExistingDataEvent(): Event {
         return Event(Severity.ERROR, getPrefix() + "_NOT_EXIST", getName() + " doesn't exist.")
-    }
-
-    /**
-     * Returns prefix for validation keys.
-     *
-     * @return prefix for validation keys
-     */
-    private fun getPrefix(): String {
-        return getName().toUpperCase()
     }
 
 }

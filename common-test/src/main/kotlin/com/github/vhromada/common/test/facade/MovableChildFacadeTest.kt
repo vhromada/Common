@@ -143,7 +143,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.add].
      */
     @Test
-    fun add() {
+    open fun add() {
         val parentEntity = newParentEntity(1)
         val childEntity = newChildEntity(null)
         val childDomain = newChildDomain(null)
@@ -187,7 +187,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.add] with invalid data.
      */
     @Test
-    fun addInvalidData() {
+    open fun addInvalidData() {
         val parentEntity = newParentEntity(Int.MAX_VALUE)
         val childEntity = newChildEntity(null)
         val invalidParentResult = Result.error<Unit>("PARENT_INVALID", "Parent must be valid.")
@@ -312,7 +312,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.duplicate].
      */
     @Test
-    fun duplicate() {
+    open fun duplicate() {
         val childEntity = newChildEntity(1)
         val childDomain = newChildDomain(null)
         childDomain.position = 0
@@ -341,7 +341,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.duplicate] with invalid data.
      */
     @Test
-    fun duplicateInvalidData() {
+    open fun duplicateInvalidData() {
         val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
@@ -360,7 +360,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     @Suppress("DuplicatedCode")
-    fun moveUp() {
+    open fun moveUp() {
         val childEntity = newChildEntity(2)
         val childDomain1 = newChildDomain(1)
         childDomain1.position = 1
@@ -395,7 +395,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.moveUp] with invalid data.
      */
     @Test
-    fun moveUpInvalidData() {
+    open fun moveUpInvalidData() {
         val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)
@@ -414,7 +414,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      */
     @Test
     @Suppress("DuplicatedCode")
-    fun moveDown() {
+    open fun moveDown() {
         val childEntity = newChildEntity(1)
         val childDomain1 = newChildDomain(1)
         childDomain1.position = 1
@@ -449,7 +449,7 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
      * Test method for [MovableChildFacade.moveDown] with invalid data.
      */
     @Test
-    fun moveDownInvalidData() {
+    open fun moveDownInvalidData() {
         val childEntity = newChildEntity(Int.MAX_VALUE)
 
         whenever(childMovableValidator.validate(anyChildEntity(), any())).thenReturn(INVALID_DATA_RESULT)

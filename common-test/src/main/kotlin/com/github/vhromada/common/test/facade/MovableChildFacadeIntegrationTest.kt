@@ -122,7 +122,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.add] with child with not null position.
      */
     @Test
-    fun addNotNullPosition() {
+    open fun addNotNullPosition() {
         val result = getFacade().add(newParentData(1), newChildData(null, 0))
 
         assertSoftly {
@@ -171,7 +171,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.update] with data with null position.
      */
     @Test
-    fun updateNullPosition() {
+    open fun updateNullPosition() {
         val result = getFacade().update(newChildData(1, null))
 
         assertSoftly {
@@ -249,7 +249,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     @Test
     @DirtiesContext
-    fun duplicate() {
+    open fun duplicate() {
         val result = getFacade().duplicate(newChildData(1))
 
         assertSoftly {
@@ -265,7 +265,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.duplicate] with data with null ID.
      */
     @Test
-    fun duplicateNullId() {
+    open fun duplicateNullId() {
         val result = getFacade().duplicate(newChildData(null))
 
         assertSoftly {
@@ -280,7 +280,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.duplicate] with data with bad ID.
      */
     @Test
-    fun duplicateBadId() {
+    open fun duplicateBadId() {
         val result = getFacade().duplicate(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
@@ -297,7 +297,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
     @Test
     @DirtiesContext
     @Suppress("DuplicatedCode")
-    fun moveUp() {
+    open fun moveUp() {
         val result = getFacade().moveUp(newChildData(2))
 
         assertSoftly {
@@ -323,7 +323,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveUp] with data with null ID.
      */
     @Test
-    fun moveUpNullId() {
+    open fun moveUpNullId() {
         val result = getFacade().moveUp(newChildData(null))
 
         assertSoftly {
@@ -338,7 +338,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveUp] with not movable data.
      */
     @Test
-    fun moveUpNotMovableData() {
+    open fun moveUpNotMovableData() {
         val result = getFacade().moveUp(newChildData(1))
 
         assertSoftly {
@@ -353,7 +353,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveUp] with data with bad ID.
      */
     @Test
-    fun moveUpBadId() {
+    open fun moveUpBadId() {
         val result = getFacade().moveUp(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
@@ -370,7 +370,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
     @Test
     @DirtiesContext
     @Suppress("DuplicatedCode")
-    fun moveDown() {
+    open fun moveDown() {
         val result = getFacade().moveDown(newChildData(1))
 
         assertSoftly {
@@ -396,7 +396,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveDown] with data with null ID.
      */
     @Test
-    fun moveDownNullId() {
+    open fun moveDownNullId() {
         val result = getFacade().moveDown(newChildData(null))
 
         assertSoftly {
@@ -411,7 +411,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveDown] with not movable data.
      */
     @Test
-    fun moveDownNotMovableData() {
+    open fun moveDownNotMovableData() {
         val result = getFacade().moveDown(newChildData(getDefaultChildDataCount()))
 
         assertSoftly {
@@ -426,7 +426,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.moveDown] with data with bad ID.
      */
     @Test
-    fun moveDownBadId() {
+    open fun moveDownBadId() {
         val result = getFacade().moveDown(newChildData(Int.MAX_VALUE))
 
         assertSoftly {
@@ -441,7 +441,7 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      * Test method for [MovableChildFacade.find].
      */
     @Test
-    fun find() {
+    open fun find() {
         for (i in 1..getDefaultParentDataCount()) {
             val result = getFacade().find(newParentData(i))
 
@@ -609,6 +609,21 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
     protected abstract fun assertDataDomainDeepEquals(expected: U, actual: U)
 
     /**
+     * Returns new child data.
+     *
+     * @param id       ID
+     * @param position position
+     * @return new child data
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    protected fun newChildData(id: Int?, position: Int?): T {
+        val childData = newChildData(id)
+        childData.position = position
+
+        return childData
+    }
+
+    /**
      * Returns expected duplicated data.
      *
      * @return expected duplicated data
@@ -621,11 +636,40 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
     }
 
     /**
+     * Returns parent prefix for validation keys.
+     *
+     * @return parent prefix for validation keys
+     */
+    protected open fun getParentPrefix(): String {
+        return getParentName().toUpperCase()
+    }
+
+    /**
+     * Returns child prefix for validation keys.
+     *
+     * @return child prefix for validation keys
+     */
+    protected open fun getChildPrefix(): String {
+        return getChildName().toUpperCase()
+    }
+
+    /**
      * Asserts default repository data.
      */
     protected open fun assertDefaultRepositoryData() {
         assertSoftly {
             it.assertThat(getRepositoryChildDataCount()).isEqualTo(getDefaultChildDataCount())
+            assertReferences()
+        }
+    }
+
+    /**
+     * Asserts repository data for [MovableChildFacade.add].
+     */
+    @Suppress("MemberVisibilityCanBePrivate")
+    protected fun assertAddRepositoryData() {
+        assertSoftly {
+            it.assertThat(getRepositoryChildDataCount()).isEqualTo(getDefaultChildDataCount() + 1)
             assertReferences()
         }
     }
@@ -665,20 +709,6 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     protected open fun assertReferences() {
         assertThat(getRepositoryParentDataCount()).isEqualTo(getDefaultParentDataCount())
-    }
-
-    /**
-     * Returns new child data.
-     *
-     * @param id       ID
-     * @param position position
-     * @return new child data
-     */
-    private fun newChildData(id: Int?, position: Int?): T {
-        val childData = newChildData(id)
-        childData.position = position
-
-        return childData
     }
 
     /**
@@ -724,34 +754,6 @@ abstract class MovableChildFacadeIntegrationTest<T : Movable, U : AuditEntity, V
      */
     private fun getNotExistingChildDataEvent(): Event {
         return Event(Severity.ERROR, getChildPrefix() + "_NOT_EXIST", getChildName() + " doesn't exist.")
-    }
-
-    /**
-     * Returns parent prefix for validation keys.
-     *
-     * @return parent prefix for validation keys
-     */
-    private fun getParentPrefix(): String {
-        return getParentName().toUpperCase()
-    }
-
-    /**
-     * Returns child prefix for validation keys.
-     *
-     * @return child prefix for validation keys
-     */
-    private fun getChildPrefix(): String {
-        return getChildName().toUpperCase()
-    }
-
-    /**
-     * Asserts repository data for [MovableChildFacade.add].
-     */
-    private fun assertAddRepositoryData() {
-        assertSoftly {
-            it.assertThat(getRepositoryChildDataCount()).isEqualTo(getDefaultChildDataCount() + 1)
-            assertReferences()
-        }
     }
 
 }

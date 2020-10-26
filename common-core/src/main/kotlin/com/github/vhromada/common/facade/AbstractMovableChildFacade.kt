@@ -37,6 +37,7 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
     override fun add(parent: U, data: S): Result<Unit> {
         val result = parentValidator.validate(parent, ValidationType.EXISTS)
         result.addEvents(childValidator.validate(data, ValidationType.NEW, ValidationType.DEEP).events())
+        customAddDataValidation(parentValidator, childValidator, parent, data, result)
         if (result.isOk()) {
             service.update(getForAdd(parent, getDataForAdd(data)))
         }
@@ -110,6 +111,19 @@ abstract class AbstractMovableChildFacade<S : Movable, T : AuditEntity, U : Mova
      */
     protected open fun getAudit(): Audit {
         return Audit(accountProvider.getAccount().uuid!!, timeProvider.getTime())
+    }
+
+    /**
+     * Custom validation for adding data.
+     *
+     * @param parentValidator validator for parent
+     * @param dataValidator   validator for data
+     * @param parent          parent
+     * @param data            data
+     * @param result          result with validation errors
+     */
+    protected open fun customAddDataValidation(parentValidator: MovableValidator<U>, dataValidator: MovableValidator<S>, parent: U, data: S, result: Result<Unit>) {
+        // nothing
     }
 
     /**
