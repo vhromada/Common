@@ -14,7 +14,7 @@ val projectParentVersion by extra("5.0.1")
 
 allprojects {
     group = "com.github.vhromada.common"
-    version = "6.0.8"
+    version = "6.0.9"
 
     apply(plugin = "kotlin")
     apply(plugin = "org.gradle.maven-publish")

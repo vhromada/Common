@@ -232,10 +232,10 @@ abstract class MovableChildFacadeTest<S : Movable, T : AuditEntity, U : Movable,
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).getAll()
+        verify(service, atLeastOnce()).getAll()
         verify(service).update(argumentCaptor.capture())
-        verify(accountProvider).getAccount()
-        verify(timeProvider).getTime()
+        verify(accountProvider, atLeastOnce()).getAccount()
+        verify(timeProvider, atLeastOnce()).getTime()
         verify(mapper).map(childEntity)
         verify(childMovableValidator).validate(childEntity, ValidationType.UPDATE, ValidationType.EXISTS, ValidationType.DEEP)
         verifyNoMoreInteractions(service, accountProvider, timeProvider, mapper, childMovableValidator)
