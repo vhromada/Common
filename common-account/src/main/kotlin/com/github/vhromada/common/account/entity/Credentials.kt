@@ -6,13 +6,13 @@ package com.github.vhromada.common.account.entity
  * @author Vladimir Hromada
  */
 data class Credentials(
+    /**
+     * Username
+     */
+    val username: String?,
 
-        /**
-         * Username
-         */
-        val username: String?,
-
-        /**
-         * Password
-         */
-        val password: String?)
+    /**
+     * Password
+     */
+    val password: String?
+)

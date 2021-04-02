@@ -8,6 +8,7 @@ import java.io.Serializable
  * @author Vladimir Hromada
  */
 data class Event(
-        val severity: Severity,
-        val key: String,
-        val message: String) : Serializable
+    val severity: Severity,
+    val key: String,
+    val message: String
+) : Serializable

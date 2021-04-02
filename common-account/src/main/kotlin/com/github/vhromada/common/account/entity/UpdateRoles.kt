@@ -6,8 +6,8 @@ package com.github.vhromada.common.account.entity
  * @author Vladimir Hromada
  */
 data class UpdateRoles(
-        /**
-         * Roles
-         */
-        val roles: List<String?>?
+    /**
+     * Roles
+     */
+    val roles: List<String?>?
 )

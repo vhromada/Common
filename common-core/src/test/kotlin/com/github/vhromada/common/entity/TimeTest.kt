@@ -62,8 +62,8 @@ class TimeTest {
      */
     @BeforeEach
     fun setUp() {
-        timeLength = Time(LENGTH)
-        timeHMS = Time(HOURS, MINUTES, SECONDS)
+        timeLength = Time(length = LENGTH)
+        timeHMS = Time(hours = HOURS, minutes = MINUTES, seconds = SECONDS)
     }
 
     /**
@@ -71,7 +71,7 @@ class TimeTest {
      */
     @Test
     fun constructorBadLength() {
-        assertThatThrownBy { Time(-1) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(length = -1) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**
@@ -79,7 +79,7 @@ class TimeTest {
      */
     @Test
     fun constructorBadHours() {
-        assertThatThrownBy { Time(-1, MINUTES, SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(hours = -1, minutes = MINUTES, seconds = SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**
@@ -87,7 +87,7 @@ class TimeTest {
      */
     @Test
     fun constructorNegativeMinutes() {
-        assertThatThrownBy { Time(HOURS, -1, SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(hours = HOURS, minutes = -1, seconds = SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**
@@ -95,7 +95,7 @@ class TimeTest {
      */
     @Test
     fun constructorBadMinutes() {
-        assertThatThrownBy { Time(HOURS, BAD_MAX_TIME, SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(hours = HOURS, minutes = BAD_MAX_TIME, seconds = SECONDS) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**
@@ -103,7 +103,7 @@ class TimeTest {
      */
     @Test
     fun constructorNegativeSeconds() {
-        assertThatThrownBy { Time(HOURS, MINUTES, -1) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(hours = HOURS, minutes = MINUTES, seconds = -1) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**
@@ -111,7 +111,7 @@ class TimeTest {
      */
     @Test
     fun constructorBadSeconds() {
-        assertThatThrownBy { Time(HOURS, MINUTES, BAD_MAX_TIME) }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThatThrownBy { Time(hours = HOURS, minutes = MINUTES, seconds = BAD_MAX_TIME) }.isInstanceOf(IllegalArgumentException::class.java)
     }
 
     /**

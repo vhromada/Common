@@ -60,7 +60,7 @@ class AccountRepositoryIntegrationTest {
             AccountUtils.assertAccountDeepEquals(AccountUtils.getAccount(i), account)
         }
 
-        assertThat(accountRepository.findById(Int.MAX_VALUE).isPresent).isFalse()
+        assertThat(accountRepository.findById(Int.MAX_VALUE)).isNotPresent
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
@@ -77,7 +77,7 @@ class AccountRepositoryIntegrationTest {
             AccountUtils.assertAccountDeepEquals(expectedAccount, account)
         }
 
-        assertThat(accountRepository.findByUsername("TEST").isPresent).isFalse()
+        assertThat(accountRepository.findByUsername("TEST")).isNotPresent
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
@@ -94,7 +94,7 @@ class AccountRepositoryIntegrationTest {
             AccountUtils.assertAccountDeepEquals(expectedAccount, account)
         }
 
-        assertThat(accountRepository.findByUuid("TEST").isPresent).isFalse()
+        assertThat(accountRepository.findByUuid("TEST")).isNotPresent
 
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }

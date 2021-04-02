@@ -12,12 +12,12 @@ dependencies {
     api("org.springframework.data:spring-data-jpa")
     api("jakarta.persistence:jakarta.persistence-api")
     api("org.springframework.security:spring-security-core")
-    api("org.springframework.boot:spring-boot-starter-cache")
-    api("net.sf.ehcache:ehcache")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation(kotlin("test-junit5"))
+    testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin")
 }
 
 tasks.jar {

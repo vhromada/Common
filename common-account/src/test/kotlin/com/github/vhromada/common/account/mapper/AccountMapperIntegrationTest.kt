@@ -2,7 +2,6 @@ package com.github.vhromada.common.account.mapper
 
 import com.github.vhromada.common.account.AccountTestConfiguration
 import com.github.vhromada.common.account.utils.AccountUtils
-import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -55,7 +54,6 @@ class AccountMapperIntegrationTest {
         val credentials = AccountUtils.newCredentials()
         val account = mapper.mapCredentials(credentials)
 
-        assertThat(account).isNotNull
         assertSoftly {
             it.assertThat(account.id).isNull()
             it.assertThat(account.uuid).isNull()

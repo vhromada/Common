@@ -147,7 +147,7 @@ class AccountValidatorTest {
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null, null)
-                .copy(username = null)
+            .copy(username = null)
 
         val result = accountValidator.validateNew(account)
 
@@ -170,7 +170,7 @@ class AccountValidatorTest {
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(null, null)
-                .copy(password = null)
+            .copy(password = null)
 
         val result = accountValidator.validateNew(account)
 
@@ -318,7 +318,7 @@ class AccountValidatorTest {
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(1)
-                .copy(username = null)
+            .copy(username = null)
 
         val result = accountValidator.validateUpdate(account)
 
@@ -341,7 +341,7 @@ class AccountValidatorTest {
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(1)
-                .copy(password = null)
+            .copy(password = null)
 
         val result = accountValidator.validateUpdate(account)
 
@@ -411,7 +411,7 @@ class AccountValidatorTest {
         whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
 
         val account = getValidatingData(1)
-                .copy(username = "test")
+            .copy(username = "test")
 
         val result = accountValidator.validateUpdate(account)
 
@@ -517,7 +517,7 @@ class AccountValidatorTest {
      */
     private fun getValidatingData(id: Int?, uuid: String?): Account {
         return getValidatingData(id)
-                .copy(uuid = uuid)
+            .copy(uuid = uuid)
     }
 
 }

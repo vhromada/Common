@@ -60,7 +60,7 @@ class RoleRepositoryIntegrationTest {
             RoleUtils.assertRoleDeepEquals(RoleUtils.getRole(i), role)
         }
 
-        assertThat(roleRepository.findById(Int.MAX_VALUE).isPresent).isFalse()
+        assertThat(roleRepository.findById(Int.MAX_VALUE)).isNotPresent
 
         assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
@@ -77,7 +77,7 @@ class RoleRepositoryIntegrationTest {
             RoleUtils.assertRoleDeepEquals(expectedRole, role)
         }
 
-        assertThat(roleRepository.findByName("TEST").isPresent).isFalse()
+        assertThat(roleRepository.findByName("TEST")).isNotPresent
 
         assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }

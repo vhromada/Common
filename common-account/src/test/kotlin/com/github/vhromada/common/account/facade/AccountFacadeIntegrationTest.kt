@@ -137,7 +137,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addNullUsername() {
         val account = newAccountNullUuid(null)
-                .copy(username = null)
+            .copy(username = null)
 
         val result = facade.add(account)
 
@@ -155,7 +155,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addNullPassword() {
         val account = newAccountNullUuid(null)
-                .copy(password = null)
+            .copy(password = null)
 
         val result = facade.add(account)
 
@@ -173,7 +173,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addRoleNotExisting() {
         val account = newAccountNullUuid(null)
-                .copy(roles = listOf("ROLE_TEST"))
+            .copy(roles = listOf("ROLE_TEST"))
 
         val result = facade.add(account)
 
@@ -191,7 +191,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addExistingUsername() {
         val account = newAccountNullUuid(null)
-                .copy(username = AccountUtils.getAccount(1).username)
+            .copy(username = AccountUtils.getAccount(1).username)
 
         val result = facade.add(account)
 
@@ -217,7 +217,7 @@ class AccountFacadeIntegrationTest {
         }
 
         val expectedAccount = AccountUtils.newAccountDomain(AccountUtils.ACCOUNTS_COUNT + 1)
-                .copy(roles = listOf(RoleUtils.getRole(2)))
+            .copy(roles = listOf(RoleUtils.getRole(2)))
         val repositoryData = AccountUtils.getAccount(entityManager, AccountUtils.ACCOUNTS_COUNT + 1)
         AccountUtils.assertAccountDeepEquals(expectedAccount, repositoryData)
         assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
@@ -229,7 +229,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addCredentialsNullUsername() {
         val account = AccountUtils.newCredentials()
-                .copy(username = null)
+            .copy(username = null)
 
         val result = facade.add(account)
 
@@ -247,7 +247,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addCredentialsNullPassword() {
         val account = AccountUtils.newCredentials()
-                .copy(password = null)
+            .copy(password = null)
 
         val result = facade.add(account)
 
@@ -265,7 +265,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun addCredentialsExistingUsername() {
         val account = newAccountNullUuid(null)
-                .copy(username = AccountUtils.getAccount(1).username)
+            .copy(username = AccountUtils.getAccount(1).username)
 
         val result = facade.add(account)
 
@@ -330,7 +330,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateNullUsername() {
         val account = newAccount(1)
-                .copy(username = null)
+            .copy(username = null)
 
         val result = facade.update(account)
 
@@ -348,7 +348,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateNullPassword() {
         val account = newAccount(1)
-                .copy(password = null)
+            .copy(password = null)
 
         val result = facade.update(account)
 
@@ -381,7 +381,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateRoleNotExisting() {
         val account = newAccount(1)
-                .copy(roles = listOf("ROLE_TEST"))
+            .copy(roles = listOf("ROLE_TEST"))
 
         val result = facade.update(account)
 
@@ -399,7 +399,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateExistingUsername() {
         val account = newAccount(1)
-                .copy(username = AccountUtils.getAccount(2).username)
+            .copy(username = AccountUtils.getAccount(2).username)
 
         val result = facade.update(account)
 
@@ -434,7 +434,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateCredentialsNullUsername() {
         val account = AccountUtils.newCredentials()
-                .copy(username = null)
+            .copy(username = null)
 
         val result = facade.update(account)
 
@@ -452,7 +452,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateCredentialsNullPassword() {
         val account = AccountUtils.newCredentials()
-                .copy(password = null)
+            .copy(password = null)
 
         val result = facade.add(account)
 
@@ -470,7 +470,7 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateCredentialsExistingUsername() {
         val account = AccountUtils.newCredentials()
-                .copy(username = AccountUtils.getAccount(2).username)
+            .copy(username = AccountUtils.getAccount(2).username)
 
         val result = facade.update(account)
 
@@ -515,7 +515,7 @@ class AccountFacadeIntegrationTest {
      */
     private fun newAccountNullUuid(id: Int?): Account {
         return newAccount(id)
-                .copy(uuid = null)
+            .copy(uuid = null)
     }
 
 }

@@ -10,30 +10,31 @@ import org.springframework.security.core.userdetails.UserDetails
  * @author Vladimir Hromada
  */
 data class Account(
-        /**
-         * ID
-         */
-        val id: Int?,
+    /**
+     * ID
+     */
+    val id: Int?,
 
-        /**
-         * UUID
-         */
-        val uuid: String?,
+    /**
+     * UUID
+     */
+    val uuid: String?,
 
-        /**
-         * Username
-         */
-        private val username: String?,
+    /**
+     * Username
+     */
+    private val username: String?,
 
-        /**
-         * Password
-         */
-        private val password: String?,
+    /**
+     * Password
+     */
+    private val password: String?,
 
-        /**
-         * Roles
-         */
-        val roles: List<String>?) : UserDetails {
+    /**
+     * Roles
+     */
+    val roles: List<String>?
+) : UserDetails {
 
     override fun getAuthorities(): List<GrantedAuthority> {
         return roles!!.map { SimpleGrantedAuthority(it) }

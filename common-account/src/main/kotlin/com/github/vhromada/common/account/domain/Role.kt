@@ -18,20 +18,20 @@ import javax.persistence.Table
 @Entity
 @Table(name = "roles")
 data class Role(
+    /**
+     * ID
+     */
+    @Id
+    @SequenceGenerator(name = "role_generator", sequenceName = "roles_sq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_generator")
+    val id: Int?,
 
-        /**
-         * ID
-         */
-        @Id
-        @SequenceGenerator(name = "role_generator", sequenceName = "roles_sq", allocationSize = 1)
-        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_generator")
-        val id: Int?,
-
-        /**
-         * Name
-         */
-        @Column(name = "role_name")
-        val name: String) : Serializable {
+    /**
+     * Name
+     */
+    @Column(name = "role_name")
+    val name: String
+) : Serializable {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) {

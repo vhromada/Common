@@ -10,6 +10,7 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     api(project(":common-core"))
+    api("org.springframework.boot:spring-boot-autoconfigure")
     api("org.hibernate:hibernate-core")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")

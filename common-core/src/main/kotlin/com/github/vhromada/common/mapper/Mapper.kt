@@ -31,7 +31,6 @@ interface Mapper<T, U> {
      * @param source source
      * @return converted list of movable data
      */
-    @Suppress("unused")
     fun map(source: List<T>): List<U> {
         return source.map { map(it) }
     }

@@ -30,9 +30,9 @@ class AccountTestConfiguration {
     @Bean
     fun dataSource(): DataSource {
         return EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScripts("data.sql")
-                .build()
+            .setType(EmbeddedDatabaseType.H2)
+            .addScripts("data.sql")
+            .build()
     }
 
     @Bean

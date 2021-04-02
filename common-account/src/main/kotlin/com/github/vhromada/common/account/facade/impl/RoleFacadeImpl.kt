@@ -18,28 +18,26 @@ import org.springframework.stereotype.Component
  * @author Vladimir Hromada
  */
 @Component("roleFacade")
-class RoleFacadeImpl(private val accountService: AccountService,
-                     private val roleRepository: RoleRepository,
-                     private val roleMapper: Mapper<Role, String>,
-                     private val accountValidator: AccountValidator,
-                     private val roleValidator: RoleValidator) : RoleFacade {
+class RoleFacadeImpl(
+    private val accountService: AccountService,
+    private val roleRepository: RoleRepository,
+    private val roleMapper: Mapper<Role, String>,
+    private val accountValidator: AccountValidator,
+    private val roleValidator: RoleValidator
+) : RoleFacade {
 
     override fun getAll(): Result<List<String>> {
         return Result.of(roleMapper.map(roleRepository.findAll()))
     }
 
     override fun updateRoles(account: Account, roles: UpdateRoles): Result<Unit> {
-        val result = accountValidator.validateExist(account)
-        if (result.isError()) {
-            return result
-        }
-        result.addEvents(roleValidator.validateUpdateRoles(roles).events())
+        val result = Result.of<Unit>(accountValidator.validateExist(account), roleValidator.validateUpdateRoles(roles))
         if (result.isError()) {
             return result
         }
         val domainAccount = accountService.get(account.id!!)
-                .map { it.copy(roles = mapRoles(roles.roles)) }
-                .get()
+            .map { it.copy(roles = mapRoles(roles.roles)) }
+            .get()
         accountService.update(domainAccount)
         return result
     }
@@ -52,8 +50,8 @@ class RoleFacadeImpl(private val accountService: AccountService,
      */
     private fun mapRoles(roles: List<String?>?): List<Role> {
         return roles!!
-                .filterNotNull()
-                .map { roleRepository.findByName(it).get() }
+            .filterNotNull()
+            .map { roleRepository.findByName(it).get() }
     }
 
 }

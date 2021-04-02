@@ -24,7 +24,7 @@ abstract class AbstractController {
             return result.data
         }
         if (result.events().stream().anyMatch { it.key.contains("NOT_EXIST") }) {
-            throw InputException(result, HttpStatus.NOT_FOUND)
+            throw InputException(result = result, httpStatus = HttpStatus.NOT_FOUND)
         }
         throw InputException(result)
     }

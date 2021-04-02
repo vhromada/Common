@@ -16,8 +16,9 @@ import java.util.Optional
  */
 @Service("accountService")
 class AccountServiceImpl(
-        private val accountRepository: AccountRepository,
-        private val accountMapper: AccountMapper) : AccountService {
+    private val accountRepository: AccountRepository,
+    private val accountMapper: AccountMapper
+) : AccountService {
 
     override fun getAll(): List<Account> {
         return accountRepository.findAll()

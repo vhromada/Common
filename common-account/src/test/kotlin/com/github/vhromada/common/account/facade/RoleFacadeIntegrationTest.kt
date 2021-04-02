@@ -66,7 +66,7 @@ class RoleFacadeIntegrationTest {
         val roles = domainRoles.map { it.name }
         val account = AccountUtils.newAccount(1)
         val domainAccount = AccountUtils.getAccount(1)
-                .copy(roles = domainRoles)
+            .copy(roles = domainRoles)
 
         val result = facade.updateRoles(account, UpdateRoles(roles))
 

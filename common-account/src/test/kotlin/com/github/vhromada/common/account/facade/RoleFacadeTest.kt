@@ -17,7 +17,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
 import com.nhaarman.mockitokotlin2.whenever
-import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -149,14 +148,19 @@ class RoleFacadeTest {
         val roles = UpdateRoles(listOf(RoleUtils.getRole(1).name))
 
         whenever(accountValidator.validateExist(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(Result())
 
         val result = facade.updateRoles(account, roles)
 
-        assertThat(result).isEqualTo(INVALID_DATA_RESULT)
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.events()).isEqualTo(INVALID_DATA_RESULT.events())
+        }
 
         verify(accountValidator).validateExist(account)
-        verifyNoMoreInteractions(accountValidator)
-        verifyZeroInteractions(accountService, roleRepository, roleMapper, roleValidator)
+        verify(roleValidator).validateUpdateRoles(roles)
+        verifyNoMoreInteractions(accountValidator, roleValidator)
+        verifyZeroInteractions(accountService, roleRepository, roleMapper)
     }
 
     /**

@@ -4,21 +4,6 @@ import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.jupiter.api.Test
 
 /**
- * Data
- */
-private const val DATA = "data"
-
-/**
- * Key
- */
-private const val KEY = "key"
-
-/**
- * Message
- */
-private const val MESSAGE = "message"
-
-/**
  * A class represents test for class [Result].
  *
  * @author Vladimir Hromada
@@ -33,17 +18,17 @@ class ResultTest {
     /**
      * Instance of [Event] with severity information
      */
-    private val infoEvent: Event = Event(Severity.INFO, KEY, MESSAGE)
+    private val infoEvent: Event = Event(severity = Severity.INFO, key = KEY, message = MESSAGE)
 
     /**
      * Instance of [Event] with severity warning
      */
-    private val warnEvent: Event = Event(Severity.WARN, KEY, MESSAGE)
+    private val warnEvent: Event = Event(severity = Severity.WARN, key = KEY, message = MESSAGE)
 
     /**
      * Instance of [Event] with severity error
      */
-    private val errorEvent: Event = Event(Severity.ERROR, KEY, MESSAGE)
+    private val errorEvent: Event = Event(severity = Severity.ERROR, key = KEY, message = MESSAGE)
 
     /**
      * Test method for [Result.addEvent].
@@ -130,10 +115,10 @@ class ResultTest {
     }
 
     /**
-     * Test method for [Result.of].
+     * Test method for [Result.of] from data.
      */
     @Test
-    fun of() {
+    fun ofData() {
         result = Result.of(DATA)
 
         assertSoftly {
@@ -146,11 +131,35 @@ class ResultTest {
     }
 
     /**
+     * Test method for [Result.of] from result.
+     */
+    @Test
+    fun ofResult() {
+        val result1 = Result.of(DATA)
+        val result2 = Result.of(1)
+        result2.addEvent(infoEvent)
+        val result3 = Result.of('c')
+        result3.addEvent(warnEvent)
+        val result4 = Result<Unit>()
+        result4.addEvent(errorEvent)
+
+        val result = Result.of<Unit>(result1, result2, result3, result4)
+
+        assertSoftly {
+            it.assertThat(result.status).isEqualTo(Status.ERROR)
+            it.assertThat(result.data).isNull()
+            it.assertThat(result.events()).isEqualTo(listOf(infoEvent, warnEvent, errorEvent))
+            it.assertThat(result.isOk()).isFalse
+            it.assertThat(result.isError()).isTrue
+        }
+    }
+
+    /**
      * Test method for [Result.info].
      */
     @Test
     fun info() {
-        result = Result.info(KEY, MESSAGE)
+        result = Result.info(key = KEY, message = MESSAGE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -166,7 +175,7 @@ class ResultTest {
      */
     @Test
     fun warn() {
-        result = Result.warn(KEY, MESSAGE)
+        result = Result.warn(key = KEY, message = MESSAGE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.WARN)
@@ -182,7 +191,7 @@ class ResultTest {
      */
     @Test
     fun error() {
-        result = Result.error(KEY, MESSAGE)
+        result = Result.error(key = KEY, message = MESSAGE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -191,6 +200,25 @@ class ResultTest {
             it.assertThat(result.isOk()).isFalse
             it.assertThat(result.isError()).isTrue
         }
+    }
+
+    companion object {
+
+        /**
+         * Data
+         */
+        private const val DATA = "data"
+
+        /**
+         * Key
+         */
+        private const val KEY = "key"
+
+        /**
+         * Message
+         */
+        private const val MESSAGE = "message"
+
     }
 
 }

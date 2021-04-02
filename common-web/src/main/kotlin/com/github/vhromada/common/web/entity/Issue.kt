@@ -6,13 +6,13 @@ package com.github.vhromada.common.web.entity
  * @author Vladimir Hromada
  */
 data class Issue(
+    /**
+     * Code
+     */
+    val code: String,
 
-        /**
-         * Code
-         */
-        val code: String,
-
-        /**
-         * Message
-         */
-        val message: String)
+    /**
+     * Message
+     */
+    val message: String
+)

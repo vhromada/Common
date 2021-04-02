@@ -4,31 +4,6 @@ import java.io.Serializable
 import java.util.Objects
 
 /**
- * Count of hours in day
- */
-private const val DAY_HOURS = 24
-
-/**
- * Count of seconds in hour
- */
-private const val HOUR_SECONDS = 3600
-
-/**
- * Count of seconds in minute
- */
-private const val MINUTE_SECONDS = 60
-
-/**
- * Minimum minutes or seconds
- */
-private const val MIN_TIME = 0
-
-/**
- * Maximum minutes or seconds
- */
-private const val MAX_TIME = 59
-
-/**
  * A class represents time.
  *
  * @author Vladimir Hromada
@@ -89,6 +64,35 @@ class Time : Serializable {
      */
     fun getData(dataType: TimeData): Int {
         return data[dataType]!!
+    }
+
+    companion object {
+
+        /**
+         * Count of hours in day
+         */
+        private const val DAY_HOURS = 24
+
+        /**
+         * Count of seconds in hour
+         */
+        private const val HOUR_SECONDS = 3600
+
+        /**
+         * Count of seconds in minute
+         */
+        private const val MINUTE_SECONDS = 60
+
+        /**
+         * Minimum minutes or seconds
+         */
+        private const val MIN_TIME = 0
+
+        /**
+         * Maximum minutes or seconds
+         */
+        private const val MAX_TIME = 59
+
     }
 
     override fun equals(other: Any?): Boolean {

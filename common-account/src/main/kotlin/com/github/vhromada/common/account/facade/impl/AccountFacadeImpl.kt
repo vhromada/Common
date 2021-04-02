@@ -21,13 +21,15 @@ import java.util.Optional
  * @author Vladimir Hromada
  */
 @Component("accountFacade")
-class AccountFacadeImpl(private val accountService: AccountService,
-                        private val roleRepository: RoleRepository,
-                        private val accountMapper: AccountMapper,
-                        private val accountValidator: AccountValidator,
-                        private val passwordEncoder: PasswordEncoder,
-                        private val accountProvider: AccountProvider,
-                        private val uuidProvider: UuidProvider) : AccountFacade {
+class AccountFacadeImpl(
+    private val accountService: AccountService,
+    private val roleRepository: RoleRepository,
+    private val accountMapper: AccountMapper,
+    private val accountValidator: AccountValidator,
+    private val passwordEncoder: PasswordEncoder,
+    private val accountProvider: AccountProvider,
+    private val uuidProvider: UuidProvider
+) : AccountFacade {
 
     override fun getAll(): Result<List<Account>> {
         return Result.of(accountMapper.map(accountService.getAll()))
@@ -64,13 +66,13 @@ class AccountFacadeImpl(private val accountService: AccountService,
 
     override fun update(credentials: Credentials): Result<Unit> {
         val account = accountProvider.getAccount()
-                .copy(username = credentials.username, password = credentials.password)
+            .copy(username = credentials.username, password = credentials.password)
         return update(account)
     }
 
     override fun findByUsername(username: String): Optional<Account> {
         return accountService.findByUsername(username)
-                .map { accountMapper.map(it) }
+            .map { accountMapper.map(it) }
     }
 
     /**

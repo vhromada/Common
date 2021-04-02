@@ -7,7 +7,6 @@ import com.github.vhromada.common.entity.Account
 import com.github.vhromada.common.result.Event
 import com.github.vhromada.common.result.Result
 import com.github.vhromada.common.result.Severity
-import com.github.vhromada.common.validator.ValidationType
 import org.springframework.stereotype.Component
 
 /**
@@ -16,8 +15,10 @@ import org.springframework.stereotype.Component
  * @author Vladimir Hromada
  */
 @Component("accountValidator")
-class AccountValidatorImpl(private val accountService: AccountService,
-                           private val roleRepository: RoleRepository) : AccountValidator {
+class AccountValidatorImpl(
+    private val accountService: AccountService,
+    private val roleRepository: RoleRepository
+) : AccountValidator {
 
     override fun validateNew(account: Account?): Result<Unit> {
         return validate(account, ValidationType.NEW)
@@ -118,6 +119,28 @@ class AccountValidatorImpl(private val accountService: AccountService,
             return true
         }
         return !account.username.equals(storedAccount.get().username)
+    }
+
+    /**
+     * An enum represents type of validation.
+     */
+    enum class ValidationType {
+
+        /**
+         * New entity validation
+         */
+        NEW,
+
+        /**
+         * Update entity validation
+         */
+        UPDATE,
+
+        /**
+         * Existing entity validation
+         */
+        EXISTS
+
     }
 
 }

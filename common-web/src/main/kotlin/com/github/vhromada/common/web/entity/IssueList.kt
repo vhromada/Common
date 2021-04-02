@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
  * @author Vladimir Hromada
  */
 data class IssueList(
-
-        /**
-         * Issues
-         */
-        @JsonProperty("errors")
-        val issues: List<Issue>)
+    /**
+     * Issues
+     */
+    @JsonProperty("errors")
+    val issues: List<Issue>
+)

@@ -98,7 +98,7 @@ class Result<T> : Serializable {
      */
     private fun getStatus(severity: Severity): Status {
         return Status.values()
-                .first { it.ordinal == severity.ordinal }
+            .first { it.ordinal == severity.ordinal }
     }
 
     override fun toString(): String {
@@ -117,6 +117,19 @@ class Result<T> : Serializable {
         fun <T> of(data: T): Result<T> {
             val result = Result<T>()
             result.data = data
+            return result
+        }
+
+        /**
+         * Returns result merged from other result.
+         *
+         * @param results results
+         * @param <T>     type of data
+         * @return result merged from other result
+         */
+        fun <T> of(vararg results: Result<*>): Result<T> {
+            val result = Result<T>()
+            results.forEach { result.addEvents(it.events) }
             return result
         }
 

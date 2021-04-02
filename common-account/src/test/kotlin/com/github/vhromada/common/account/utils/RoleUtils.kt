@@ -45,8 +45,9 @@ object RoleUtils {
         }
 
         return Role(
-                id = index,
-                name = "ROLE_$name")
+            id = index,
+            name = "ROLE_$name"
+        )
     }
 
     /**

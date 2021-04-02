@@ -65,11 +65,12 @@ object AccountUtils {
         }
 
         return Account(
-                id = index,
-                uuid = uuid,
-                username = "$ACCOUNT$index username",
-                password = "$ACCOUNT$index password",
-                roles = roles)
+            id = index,
+            uuid = uuid,
+            username = "$ACCOUNT$index username",
+            password = "$ACCOUNT$index password",
+            roles = roles
+        )
     }
 
     /**
@@ -80,11 +81,12 @@ object AccountUtils {
      */
     fun newAccountDomain(id: Int?): Account {
         return Account(
-                id = id,
-                uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
-                username = "username",
-                password = "password",
-                roles = listOf(RoleUtils.getRole(1)))
+            id = id,
+            uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
+            username = "username",
+            password = "password",
+            roles = listOf(RoleUtils.getRole(1))
+        )
     }
 
 
@@ -96,11 +98,12 @@ object AccountUtils {
      */
     fun newAccount(id: Int?): com.github.vhromada.common.entity.Account {
         return com.github.vhromada.common.entity.Account(
-                id = id,
-                uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
-                username = "username",
-                password = "password",
-                roles = listOf(RoleUtils.getRole(1).name))
+            id = id,
+            uuid = "c01cb46d-0acf-402b-9d76-d12a75b98f8a",
+            username = "username",
+            password = "password",
+            roles = listOf(RoleUtils.getRole(1).name)
+        )
     }
 
     /**
@@ -110,8 +113,9 @@ object AccountUtils {
      */
     fun newCredentials(): Credentials {
         return Credentials(
-                username = "username",
-                password = "password")
+            username = "username",
+            password = "password"
+        )
     }
 
     /**

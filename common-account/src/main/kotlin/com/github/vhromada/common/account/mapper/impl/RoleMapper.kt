@@ -5,7 +5,7 @@ import com.github.vhromada.common.mapper.Mapper
 import org.springframework.stereotype.Component
 
 /**
- * A class represents implementation of mapper forrole.
+ * A class represents implementation of mapper for role.
  *
  * @author Vladimir Hromada
  */
