@@ -69,11 +69,11 @@ class ParentFacadeMovableTest {
         val entity = MovableStub(id = 1, position = 1)
         val domain = MovableStub(id = 1, position = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
-        whenever(mapper.mapBack(any<Movable>())).thenReturn(entity)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
+        whenever(mapper.mapBack(source = any<Movable>())).thenReturn(entity)
 
-        val result = facade.get(entity.id!!)
+        val result = facade.get(id = entity.id!!)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -81,9 +81,9 @@ class ParentFacadeMovableTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(entity.id!!)
-        verify(validator).validateExists(Optional.of(domain))
-        verify(mapper).mapBack(domain)
+        verify(service).get(id = entity.id!!)
+        verify(validator).validateExists(data = Optional.of(domain))
+        verify(mapper).mapBack(source = domain)
         verifyNoMoreInteractions(service, mapper, validator)
     }
 
@@ -92,18 +92,18 @@ class ParentFacadeMovableTest {
      */
     @Test
     fun getNotExistingData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.get(Int.MAX_VALUE)
+        val result = facade.get(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -117,17 +117,17 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(Result())
-        whenever(mapper.map(any<Movable>())).thenReturn(domain)
+        whenever(mapper.map(source = any<Movable>())).thenReturn(domain)
 
-        val result = facade.update(entity)
+        val result = facade.update(data = entity)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).update(domain)
-        verify(mapper).map(entity)
+        verify(service).update(data = domain)
+        verify(mapper).map(source = entity)
         verify(validator).validate(data = entity, update = true)
         verifyNoMoreInteractions(service, mapper, validator)
     }
@@ -141,7 +141,7 @@ class ParentFacadeMovableTest {
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.update(entity)
+        val result = facade.update(data = entity)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -160,14 +160,14 @@ class ParentFacadeMovableTest {
     fun remove() {
         val domain = MovableStub(id = 1, position = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
 
-        facade.remove(1)
+        facade.remove(id = 1)
 
-        verify(service).get(1)
-        verify(service).remove(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(service).remove(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -177,18 +177,18 @@ class ParentFacadeMovableTest {
      */
     @Test
     fun removeInvalidData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.remove(Int.MAX_VALUE)
+        val result = facade.remove(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -200,14 +200,14 @@ class ParentFacadeMovableTest {
     fun duplicate() {
         val domain = MovableStub(id = 1, position = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
 
-        facade.duplicate(1)
+        facade.duplicate(id = 1)
 
-        verify(service).get(1)
-        verify(service).duplicate(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(service).duplicate(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -217,18 +217,18 @@ class ParentFacadeMovableTest {
      */
     @Test
     fun duplicateInvalidData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.duplicate(Int.MAX_VALUE)
+        val result = facade.duplicate(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -241,22 +241,22 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
         val dataList = listOf(domain, MovableStub(id = 2, position = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(Result())
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(service).moveUp(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).moveUp(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = true)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -269,18 +269,18 @@ class ParentFacadeMovableTest {
     fun moveUpNotExisting() {
         val domain = MovableStub(id = 1, position = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -293,21 +293,21 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
         val dataList = listOf(domain, MovableStub(id = 2, position = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(validator).validateExists(Optional.of(domain))
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = true)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -321,22 +321,22 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
         val dataList = listOf(domain, MovableStub(id = 2, position = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(Result())
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(service).moveDown(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).moveDown(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = false)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -349,18 +349,18 @@ class ParentFacadeMovableTest {
     fun moveDownNotExisting() {
         val domain = MovableStub(id = 1, position = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -373,21 +373,21 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
         val dataList = listOf(domain, MovableStub(id = 2, position = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(validator).validateExists(Optional.of(domain))
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = false)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -419,7 +419,7 @@ class ParentFacadeMovableTest {
         val domainList = listOf(MovableStub(id = 1, position = 1), MovableStub(id = 2, position = 2))
 
         whenever(service.getAll()).thenReturn(domainList)
-        whenever(mapper.mapBack(any<List<Movable>>())).thenReturn(entityList)
+        whenever(mapper.mapBack(source = any<List<Movable>>())).thenReturn(entityList)
 
         val result = facade.getAll()
 
@@ -430,7 +430,7 @@ class ParentFacadeMovableTest {
         }
 
         verify(service).getAll()
-        verify(mapper).mapBack(domainList)
+        verify(mapper).mapBack(source = domainList)
         verifyNoMoreInteractions(service, mapper)
         verifyZeroInteractions(validator)
     }
@@ -444,7 +444,7 @@ class ParentFacadeMovableTest {
         val domain = MovableStub(id = 1, position = 1)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(Result())
-        whenever(mapper.map(any<Movable>())).thenReturn(domain)
+        whenever(mapper.map(source = any<Movable>())).thenReturn(domain)
 
         val result = facade.add(entity)
 
@@ -453,8 +453,8 @@ class ParentFacadeMovableTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).add(domain)
-        verify(mapper).map(entity)
+        verify(service).add(data = domain)
+        verify(mapper).map(source = entity)
         verify(validator).validate(data = entity, update = false)
         verifyNoMoreInteractions(service, mapper, validator)
     }

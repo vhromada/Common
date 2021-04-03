@@ -21,7 +21,7 @@ class RestExceptionHandler(private val mapper: IssueMapper) : ResponseEntityExce
 
     @ExceptionHandler(InputException::class)
     fun handleInputException(ex: Exception, request: WebRequest): ResponseEntity<Any>? {
-        return ResponseEntity(mapper.map((ex as InputException).result), ex.httpStatus)
+        return ResponseEntity(mapper.map(result = (ex as InputException).result), ex.httpStatus)
     }
 
 }

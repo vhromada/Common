@@ -66,14 +66,14 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun getExistingData() {
-        val entity = IdentifiableStub(1)
-        val domain = IdentifiableStub(1)
+        val entity = IdentifiableStub(id = 1)
+        val domain = IdentifiableStub(id = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
-        whenever(mapper.mapBack(any<Identifiable>())).thenReturn(entity)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
+        whenever(mapper.mapBack(source = any<Identifiable>())).thenReturn(entity)
 
-        val result = facade.get(entity.id!!)
+        val result = facade.get(id = entity.id!!)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -81,9 +81,9 @@ class ParentFacadeIdentifiableTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(entity.id!!)
-        verify(validator).validateExists(Optional.of(domain))
-        verify(mapper).mapBack(domain)
+        verify(service).get(id = entity.id!!)
+        verify(validator).validateExists(data = Optional.of(domain))
+        verify(mapper).mapBack(source = domain)
         verifyNoMoreInteractions(service, mapper, validator)
     }
 
@@ -92,18 +92,18 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun getNotExistingData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.get(Int.MAX_VALUE)
+        val result = facade.get(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -113,21 +113,21 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun update() {
-        val entity = IdentifiableStub(1)
-        val domain = IdentifiableStub(1)
+        val entity = IdentifiableStub(id = 1)
+        val domain = IdentifiableStub(id = 1)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(Result())
-        whenever(mapper.map(any<Identifiable>())).thenReturn(domain)
+        whenever(mapper.map(source = any<Identifiable>())).thenReturn(domain)
 
-        val result = facade.update(entity)
+        val result = facade.update(data = entity)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).update(domain)
-        verify(mapper).map(entity)
+        verify(service).update(data = domain)
+        verify(mapper).map(source = entity)
         verify(validator).validate(data = entity, update = true)
         verifyNoMoreInteractions(service, mapper, validator)
     }
@@ -137,11 +137,11 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun updateInvalidData() {
-        val entity = IdentifiableStub(Int.MAX_VALUE)
+        val entity = IdentifiableStub(id = Int.MAX_VALUE)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.update(entity)
+        val result = facade.update(data = entity)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -158,16 +158,16 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun remove() {
-        val domain = IdentifiableStub(1)
+        val domain = IdentifiableStub(id = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
 
-        facade.remove(1)
+        facade.remove(id = 1)
 
-        verify(service).get(1)
-        verify(service).remove(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(service).remove(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -177,18 +177,18 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun removeInvalidData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.remove(Int.MAX_VALUE)
+        val result = facade.remove(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -198,16 +198,16 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun duplicate() {
-        val domain = IdentifiableStub(1)
+        val domain = IdentifiableStub(id = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
 
-        facade.duplicate(1)
+        facade.duplicate(id = 1)
 
-        verify(service).get(1)
-        verify(service).duplicate(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(service).duplicate(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -217,18 +217,18 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun duplicateInvalidData() {
-        whenever(service.get(any())).thenReturn(Optional.empty())
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.empty())
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.duplicate(Int.MAX_VALUE)
+        val result = facade.duplicate(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(Int.MAX_VALUE)
-        verify(validator).validateExists(Optional.empty())
+        verify(service).get(id = Int.MAX_VALUE)
+        verify(validator).validateExists(data = Optional.empty())
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -238,25 +238,25 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveUp() {
-        val domain = IdentifiableStub(1)
-        val dataList = listOf(domain, IdentifiableStub(2))
+        val domain = IdentifiableStub(id = 1)
+        val dataList = listOf(domain, IdentifiableStub(id = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(Result())
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(service).moveUp(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).moveUp(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = true)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -267,20 +267,20 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveUpNotExisting() {
-        val domain = IdentifiableStub(1)
+        val domain = IdentifiableStub(id = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -290,24 +290,24 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveUpNotIdentifiable() {
-        val domain = IdentifiableStub(1)
-        val dataList = listOf(domain, IdentifiableStub(2))
+        val domain = IdentifiableStub(id = 1)
+        val dataList = listOf(domain, IdentifiableStub(id = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveUp(1)
+        val result = facade.moveUp(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(validator).validateExists(Optional.of(domain))
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = true)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -318,25 +318,25 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveDown() {
-        val domain = IdentifiableStub(1)
-        val dataList = listOf(domain, IdentifiableStub(2))
+        val domain = IdentifiableStub(id = 1)
+        val dataList = listOf(domain, IdentifiableStub(id = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(Result())
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(service).moveDown(domain)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).moveDown(data = domain)
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = false)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -347,20 +347,20 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveDownNotExisting() {
-        val domain = IdentifiableStub(1)
+        val domain = IdentifiableStub(id = 1)
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
-        whenever(validator.validateExists(any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(validator.validateExists(data = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
-        verify(validator).validateExists(Optional.of(domain))
+        verify(service).get(id = 1)
+        verify(validator).validateExists(data = Optional.of(domain))
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
     }
@@ -370,24 +370,24 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun moveDownNotIdentifiable() {
-        val domain = IdentifiableStub(1)
-        val dataList = listOf(domain, IdentifiableStub(2))
+        val domain = IdentifiableStub(id = 1)
+        val dataList = listOf(domain, IdentifiableStub(id = 2))
 
-        whenever(service.get(any())).thenReturn(Optional.of(domain))
+        whenever(service.get(id = any())).thenReturn(Optional.of(domain))
         whenever(service.getAll()).thenReturn(dataList)
-        whenever(validator.validateExists(any())).thenReturn(Result())
+        whenever(validator.validateExists(data = any())).thenReturn(Result())
         whenever(validator.validateMovingData(data = any(), list = any(), up = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 
-        val result = facade.moveDown(1)
+        val result = facade.moveDown(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(TestConstants.INVALID_DATA_RESULT.events())
         }
 
-        verify(service).get(1)
+        verify(service).get(id = 1)
         verify(service).getAll()
-        verify(validator).validateExists(Optional.of(domain))
+        verify(validator).validateExists(data = Optional.of(domain))
         verify(validator).validateMovingData(data = domain, list = dataList, up = false)
         verifyNoMoreInteractions(service, validator)
         verifyZeroInteractions(mapper)
@@ -415,11 +415,11 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun getAll() {
-        val entityList = listOf(IdentifiableStub(1), IdentifiableStub(2))
-        val domainList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val entityList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
+        val domainList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(service.getAll()).thenReturn(domainList)
-        whenever(mapper.mapBack(any<List<Identifiable>>())).thenReturn(entityList)
+        whenever(mapper.mapBack(source = any<List<Identifiable>>())).thenReturn(entityList)
 
         val result = facade.getAll()
 
@@ -430,7 +430,7 @@ class ParentFacadeIdentifiableTest {
         }
 
         verify(service).getAll()
-        verify(mapper).mapBack(domainList)
+        verify(mapper).mapBack(source = domainList)
         verifyNoMoreInteractions(service, mapper)
         verifyZeroInteractions(validator)
     }
@@ -440,11 +440,11 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun add() {
-        val entity = IdentifiableStub(1)
-        val domain = IdentifiableStub(1)
+        val entity = IdentifiableStub(id = 1)
+        val domain = IdentifiableStub(id = 1)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(Result())
-        whenever(mapper.map(any<Identifiable>())).thenReturn(domain)
+        whenever(mapper.map(source = any<Identifiable>())).thenReturn(domain)
 
         val result = facade.add(entity)
 
@@ -453,8 +453,8 @@ class ParentFacadeIdentifiableTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(service).add(domain)
-        verify(mapper).map(entity)
+        verify(service).add(data = domain)
+        verify(mapper).map(source = entity)
         verify(validator).validate(data = entity, update = false)
         verifyNoMoreInteractions(service, mapper, validator)
     }
@@ -464,7 +464,7 @@ class ParentFacadeIdentifiableTest {
      */
     @Test
     fun addInvalidData() {
-        val entity = IdentifiableStub(Int.MAX_VALUE)
+        val entity = IdentifiableStub(id = Int.MAX_VALUE)
 
         whenever(validator.validate(data = any(), update = any())).thenReturn(TestConstants.INVALID_DATA_RESULT)
 

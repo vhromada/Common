@@ -28,7 +28,7 @@ import java.util.Optional
 /**
  * Result for invalid data
  */
-private val INVALID_DATA_RESULT = Result.error<Unit>("DATA_INVALID", "Data must be valid.")
+private val INVALID_DATA_RESULT = Result.error<Unit>(key = "DATA_INVALID", message = "Data must be valid.")
 
 /**
  * A class represents test for class [RoleFacade].
@@ -78,7 +78,7 @@ class RoleFacadeTest {
      */
     @BeforeEach
     fun setUp() {
-        facade = RoleFacadeImpl(accountService, roleRepository, roleMapper, accountValidator, roleValidator)
+        facade = RoleFacadeImpl(accountService = accountService, roleRepository = roleRepository, roleMapper = roleMapper, accountValidator = accountValidator, roleValidator = roleValidator)
     }
 
     /**
@@ -86,11 +86,11 @@ class RoleFacadeTest {
      */
     @Test
     fun getAll() {
-        val domainList = listOf(RoleUtils.getRole(1), RoleUtils.getRole(2))
+        val domainList = listOf(RoleUtils.getRole(index = 1), RoleUtils.getRole(index = 2))
         val entityList = domainList.map { it.name }
 
         whenever(roleRepository.findAll()).thenReturn(domainList)
-        whenever(roleMapper.map(any<List<Role>>())).thenReturn(entityList)
+        whenever(roleMapper.map(source = any<List<Role>>())).thenReturn(entityList)
 
         val result = facade.getAll()
 
@@ -101,7 +101,7 @@ class RoleFacadeTest {
         }
 
         verify(roleRepository).findAll()
-        verify(roleMapper).map(domainList)
+        verify(roleMapper).map(source = domainList)
         verifyNoMoreInteractions(roleRepository, roleMapper)
         verifyZeroInteractions(accountService, accountValidator, roleValidator)
     }
@@ -111,30 +111,30 @@ class RoleFacadeTest {
      */
     @Test
     fun updateRoles() {
-        val role = RoleUtils.getRole(2)
+        val role = RoleUtils.getRole(index = 2)
         val domainRoles = listOf(role)
         val roles = domainRoles.map { it.name }
-        val account = AccountUtils.newAccount(1)
-        val domainAccount = AccountUtils.newAccountDomain(1)
-        val updateRoles = UpdateRoles(roles)
+        val account = AccountUtils.newAccount(id = 1)
+        val domainAccount = AccountUtils.newAccountDomain(id = 1)
+        val updateRoles = UpdateRoles(roles = roles)
 
-        whenever(accountService.get(any())).thenReturn(Optional.of(domainAccount))
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountValidator.validateExist(any())).thenReturn(Result())
-        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(Result())
+        whenever(accountService.get(id = any())).thenReturn(Optional.of(domainAccount))
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(role))
+        whenever(accountValidator.validateExist(account = any())).thenReturn(Result())
+        whenever(roleValidator.validateUpdateRoles(roles = any())).thenReturn(Result())
 
-        val result = facade.updateRoles(account, updateRoles)
+        val result = facade.updateRoles(account = account, roles = updateRoles)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).get(account.id!!)
-        verify(accountService).update(domainAccount)
-        roles.forEach { verify(roleRepository).findByName(it) }
-        verify(accountValidator).validateExist(account)
-        verify(roleValidator).validateUpdateRoles(updateRoles)
+        verify(accountService).get(id = account.id!!)
+        verify(accountService).update(account = domainAccount)
+        roles.forEach { verify(roleRepository).findByName(name = it) }
+        verify(accountValidator).validateExist(account = account)
+        verify(roleValidator).validateUpdateRoles(roles = updateRoles)
         verifyNoMoreInteractions(accountService, roleRepository, accountValidator, roleValidator)
         verifyZeroInteractions(roleMapper)
     }
@@ -144,21 +144,21 @@ class RoleFacadeTest {
      */
     @Test
     fun updateRolesInvalidAccount() {
-        val account = AccountUtils.newAccount(Int.MAX_VALUE)
-        val roles = UpdateRoles(listOf(RoleUtils.getRole(1).name))
+        val account = AccountUtils.newAccount(id = Int.MAX_VALUE)
+        val roles = UpdateRoles(roles = listOf(RoleUtils.getRole(index = 1).name))
 
-        whenever(accountValidator.validateExist(any())).thenReturn(INVALID_DATA_RESULT)
-        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(Result())
+        whenever(accountValidator.validateExist(account = any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(roleValidator.validateUpdateRoles(roles = any())).thenReturn(Result())
 
-        val result = facade.updateRoles(account, roles)
+        val result = facade.updateRoles(account = account, roles = roles)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(INVALID_DATA_RESULT.events())
         }
 
-        verify(accountValidator).validateExist(account)
-        verify(roleValidator).validateUpdateRoles(roles)
+        verify(accountValidator).validateExist(account = account)
+        verify(roleValidator).validateUpdateRoles(roles = roles)
         verifyNoMoreInteractions(accountValidator, roleValidator)
         verifyZeroInteractions(accountService, roleRepository, roleMapper)
     }
@@ -168,21 +168,21 @@ class RoleFacadeTest {
      */
     @Test
     fun updateRolesInvalidRoles() {
-        val account = AccountUtils.newAccount(1)
-        val roles = UpdateRoles(listOf("ROLE_TEST"))
+        val account = AccountUtils.newAccount(id = 1)
+        val roles = UpdateRoles(roles = listOf("ROLE_TEST"))
 
-        whenever(accountValidator.validateExist(any())).thenReturn(Result())
-        whenever(roleValidator.validateUpdateRoles(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateExist(account = any())).thenReturn(Result())
+        whenever(roleValidator.validateUpdateRoles(roles = any())).thenReturn(INVALID_DATA_RESULT)
 
-        val result = facade.updateRoles(account, roles)
+        val result = facade.updateRoles(account = account, roles = roles)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
             it.assertThat(result.events()).isEqualTo(INVALID_DATA_RESULT.events())
         }
 
-        verify(accountValidator).validateExist(account)
-        verify(roleValidator).validateUpdateRoles(roles)
+        verify(accountValidator).validateExist(account = account)
+        verify(roleValidator).validateUpdateRoles(roles = roles)
         verifyNoMoreInteractions(accountValidator, roleValidator)
         verifyZeroInteractions(accountService, roleRepository, roleMapper)
     }

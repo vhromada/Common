@@ -27,18 +27,18 @@ class RoleFacadeImpl(
 ) : RoleFacade {
 
     override fun getAll(): Result<List<String>> {
-        return Result.of(roleMapper.map(roleRepository.findAll()))
+        return Result.of(data = roleMapper.map(source = roleRepository.findAll()))
     }
 
     override fun updateRoles(account: Account, roles: UpdateRoles): Result<Unit> {
-        val result = Result.of<Unit>(accountValidator.validateExist(account), roleValidator.validateUpdateRoles(roles))
+        val result = Result.of<Unit>(accountValidator.validateExist(account = account), roleValidator.validateUpdateRoles(roles = roles))
         if (result.isError()) {
             return result
         }
-        val domainAccount = accountService.get(account.id!!)
-            .map { it.copy(roles = mapRoles(roles.roles)) }
+        val domainAccount = accountService.get(id = account.id!!)
+            .map { it.copy(roles = mapRoles(roles = roles.roles)) }
             .get()
-        accountService.update(domainAccount)
+        accountService.update(account = domainAccount)
         return result
     }
 
@@ -51,7 +51,7 @@ class RoleFacadeImpl(
     private fun mapRoles(roles: List<String?>?): List<Role> {
         return roles!!
             .filterNotNull()
-            .map { roleRepository.findByName(it).get() }
+            .map { roleRepository.findByName(name = it).get() }
     }
 
 }

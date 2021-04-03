@@ -53,11 +53,11 @@ class AccountServiceTest {
     }
 
     /**
-     * Test method for [AccountService.getAll]a.
+     * Test method for [AccountService.getAll].
      */
     @Test
     fun getAll() {
-        val expectedAccounts = listOf(AccountUtils.newAccountDomain(1))
+        val expectedAccounts = listOf(AccountUtils.newAccountDomain(id = 1))
 
         whenever(accountRepository.findAll()).thenReturn(expectedAccounts)
 
@@ -75,14 +75,14 @@ class AccountServiceTest {
      */
     @Test
     fun get() {
-        val expectedAccount = AccountUtils.newAccountDomain(1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = 1)
 
         whenever(accountRepository.findById(any())).thenReturn(Optional.of(expectedAccount))
 
-        val account = accountService.get(expectedAccount.id!!)
+        val account = accountService.get(id = expectedAccount.id!!)
 
         assertThat(account).isPresent
-        AccountUtils.assertAccountDeepEquals(expectedAccount, account.get())
+        AccountUtils.assertAccountDeepEquals(expected = expectedAccount, actual = account.get())
 
         verify(accountRepository).findById(expectedAccount.id!!)
         verifyNoMoreInteractions(accountRepository)
@@ -94,9 +94,9 @@ class AccountServiceTest {
      */
     @Test
     fun update() {
-        val account = AccountUtils.newAccountDomain(1)
+        val account = AccountUtils.newAccountDomain(id = 1)
 
-        accountService.update(account)
+        accountService.update(account = account)
 
         verify(accountRepository).save(account)
         verifyNoMoreInteractions(accountRepository)
@@ -108,9 +108,9 @@ class AccountServiceTest {
      */
     @Test
     fun add() {
-        val account = AccountUtils.newAccountDomain(1)
+        val account = AccountUtils.newAccountDomain(id = 1)
 
-        accountService.add(account)
+        accountService.add(account = account)
 
         verify(accountRepository).save(account)
         verifyNoMoreInteractions(accountRepository)
@@ -122,16 +122,16 @@ class AccountServiceTest {
      */
     @Test
     fun findByUsername() {
-        val expectedAccount = AccountUtils.newAccountDomain(1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = 1)
 
-        whenever(accountRepository.findByUsername(any())).thenReturn(Optional.of(expectedAccount))
+        whenever(accountRepository.findByUsername(username = any())).thenReturn(Optional.of(expectedAccount))
 
-        val account = accountService.findByUsername(expectedAccount.username)
+        val account = accountService.findByUsername(username = expectedAccount.username)
 
         assertThat(account).isPresent
-        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
+        AccountUtils.assertAccountDeepEquals(expected = account.get(), actual = expectedAccount)
 
-        verify(accountRepository).findByUsername(expectedAccount.username)
+        verify(accountRepository).findByUsername(username = expectedAccount.username)
         verifyNoMoreInteractions(accountRepository)
         verifyZeroInteractions(accountMapper)
     }
@@ -143,13 +143,13 @@ class AccountServiceTest {
     fun findByUsernameByInvalidUsername() {
         val username = "test"
 
-        whenever(accountRepository.findByUsername(any())).thenReturn(Optional.empty())
+        whenever(accountRepository.findByUsername(username = any())).thenReturn(Optional.empty())
 
-        val account = accountService.findByUsername(username)
+        val account = accountService.findByUsername(username = username)
 
         assertThat(account).isNotPresent
 
-        verify(accountRepository).findByUsername(username)
+        verify(accountRepository).findByUsername(username = username)
         verifyNoMoreInteractions(accountRepository)
         verifyZeroInteractions(accountMapper)
     }
@@ -159,18 +159,18 @@ class AccountServiceTest {
      */
     @Test
     fun loadUserByUsername() {
-        val expectedAccount = AccountUtils.newAccountDomain(1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = 1)
 
-        whenever(accountRepository.findByUsername(any())).thenReturn(Optional.of(expectedAccount))
-        whenever(accountMapper.map(any<com.github.vhromada.common.account.domain.Account>())).thenReturn(AccountUtils.newAccount(1))
+        whenever(accountRepository.findByUsername(username = any())).thenReturn(Optional.of(expectedAccount))
+        whenever(accountMapper.map(source = any<com.github.vhromada.common.account.domain.Account>())).thenReturn(AccountUtils.newAccount(id = 1))
 
         val account = accountService.loadUserByUsername(expectedAccount.username)
 
         assertThat(account).isInstanceOf(Account::class.java)
-        AccountUtils.assertAccountDeepEquals(account as Account, expectedAccount)
+        AccountUtils.assertAccountDeepEquals(expected = account as Account, actual = expectedAccount)
 
         verify(accountRepository).findByUsername(expectedAccount.username)
-        verify(accountMapper).map(expectedAccount)
+        verify(accountMapper).map(source = expectedAccount)
         verifyNoMoreInteractions(accountRepository, accountMapper)
     }
 

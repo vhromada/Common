@@ -32,7 +32,7 @@ import java.util.Optional
 /**
  * Result for invalid data
  */
-private val INVALID_DATA_RESULT = Result.error<Unit>("DATA_INVALID", "Data must be valid.")
+private val INVALID_DATA_RESULT = Result.error<Unit>(key = "DATA_INVALID", message = "Data must be valid.")
 
 /**
  * A class represents test for class [AccountFacade].
@@ -94,7 +94,15 @@ class AccountFacadeTest {
      */
     @BeforeEach
     fun setUp() {
-        facade = AccountFacadeImpl(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, accountProvider, uuidProvider)
+        facade = AccountFacadeImpl(
+            accountService = accountService,
+            roleRepository = roleRepository,
+            accountMapper = accountMapper,
+            accountValidator = accountValidator,
+            passwordEncoder = passwordEncoder,
+            accountProvider = accountProvider,
+            uuidProvider = uuidProvider
+        )
     }
 
     /**
@@ -102,11 +110,11 @@ class AccountFacadeTest {
      */
     @Test
     fun getAll() {
-        val domainList = listOf(AccountUtils.newAccountDomain(1), AccountUtils.newAccountDomain(2))
-        val entityList = listOf(AccountUtils.newAccount(1), AccountUtils.newAccount(2))
+        val domainList = listOf(AccountUtils.newAccountDomain(id = 1), AccountUtils.newAccountDomain(id = 2))
+        val entityList = listOf(AccountUtils.newAccount(id = 1), AccountUtils.newAccount(id = 2))
 
         whenever(accountService.getAll()).thenReturn(domainList)
-        whenever(accountMapper.map(any<List<com.github.vhromada.common.account.domain.Account>>())).thenReturn(entityList)
+        whenever(accountMapper.map(source = any<List<com.github.vhromada.common.account.domain.Account>>())).thenReturn(entityList)
 
         val result = facade.getAll()
 
@@ -117,7 +125,7 @@ class AccountFacadeTest {
         }
 
         verify(accountService).getAll()
-        verify(accountMapper).map(domainList)
+        verify(accountMapper).map(source = domainList)
         verifyNoMoreInteractions(accountService, accountMapper)
         verifyZeroInteractions(roleRepository, accountValidator, passwordEncoder, accountProvider, uuidProvider)
     }
@@ -127,13 +135,13 @@ class AccountFacadeTest {
      */
     @Test
     fun getExistingData() {
-        val domain = AccountUtils.newAccountDomain(1)
-        val entity = AccountUtils.newAccount(1)
+        val domain = AccountUtils.newAccountDomain(id = 1)
+        val entity = AccountUtils.newAccount(id = 1)
 
-        whenever(accountService.get(any())).thenReturn(Optional.of(domain))
-        whenever(accountMapper.map(any<com.github.vhromada.common.account.domain.Account>())).thenReturn(entity)
+        whenever(accountService.get(id = any())).thenReturn(Optional.of(domain))
+        whenever(accountMapper.map(source = any<com.github.vhromada.common.account.domain.Account>())).thenReturn(entity)
 
-        val result = facade.get(1)
+        val result = facade.get(id = 1)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -141,8 +149,8 @@ class AccountFacadeTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).get(1)
-        verify(accountMapper).map(domain)
+        verify(accountService).get(id = 1)
+        verify(accountMapper).map(source = domain)
         verifyNoMoreInteractions(accountService, accountMapper)
         verifyZeroInteractions(roleRepository, accountValidator, passwordEncoder, accountProvider, uuidProvider)
     }
@@ -152,9 +160,9 @@ class AccountFacadeTest {
      */
     @Test
     fun getNotExistingData() {
-        whenever(accountService.get(any())).thenReturn(Optional.empty())
+        whenever(accountService.get(id = any())).thenReturn(Optional.empty())
 
-        val result = facade.get(Int.MAX_VALUE)
+        val result = facade.get(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -162,7 +170,7 @@ class AccountFacadeTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).get(Int.MAX_VALUE)
+        verify(accountService).get(id = Int.MAX_VALUE)
         verifyNoMoreInteractions(accountService)
         verifyZeroInteractions(roleRepository, accountMapper, accountValidator, passwordEncoder, accountProvider, uuidProvider)
     }
@@ -172,35 +180,35 @@ class AccountFacadeTest {
      */
     @Test
     fun add() {
-        val account = AccountUtils.newAccount(null)
-        val accountDomain = AccountUtils.newAccountDomain(null)
-        val role = RoleUtils.getRole(1)
+        val account = AccountUtils.newAccount(id = null)
+        val accountDomain = AccountUtils.newAccountDomain(id = null)
+        val role = RoleUtils.getRole(index = 1)
         val argumentCaptor = argumentCaptorAccount()
 
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountValidator.validateNew(any())).thenReturn(Result())
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(role))
+        whenever(accountMapper.mapBack(source = any<Account>())).thenReturn(accountDomain)
+        whenever(accountValidator.validateNew(account = any())).thenReturn(Result())
         whenever(passwordEncoder.encode(any())).thenReturn(account.password)
         whenever(uuidProvider.getUuid()).thenReturn(account.uuid)
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).add(argumentCaptor.capture())
-        account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verify(accountMapper).mapBack(account)
-        verify(accountValidator).validateNew(account)
+        verify(accountService).add(account = argumentCaptor.capture())
+        account.roles!!.forEach { verify(roleRepository).findByName(name = it) }
+        verify(accountMapper).mapBack(source = account)
+        verify(accountValidator).validateNew(account = account)
         verify(passwordEncoder).encode(accountDomain.password)
         verify(uuidProvider).getUuid()
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, uuidProvider)
         verifyZeroInteractions(accountProvider)
 
         val argument = argumentCaptor.lastValue
-        AccountUtils.assertAccountDeepEquals(accountDomain, argument)
+        AccountUtils.assertAccountDeepEquals(expected = accountDomain, actual = argument)
     }
 
     /**
@@ -208,15 +216,15 @@ class AccountFacadeTest {
      */
     @Test
     fun addInvalidAccount() {
-        val account = AccountUtils.newAccount(Int.MAX_VALUE)
+        val account = AccountUtils.newAccount(id = Int.MAX_VALUE)
 
-        whenever(accountValidator.validateNew(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateNew(account = any())).thenReturn(INVALID_DATA_RESULT)
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountValidator).validateNew(account)
+        verify(accountValidator).validateNew(account = account)
         verifyNoMoreInteractions(accountValidator)
         verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, accountProvider, uuidProvider)
     }
@@ -227,36 +235,36 @@ class AccountFacadeTest {
     @Test
     fun addCredentials() {
         val credentials = AccountUtils.newCredentials()
-        val account = AccountUtils.newAccount(null)
-        val accountDomain = AccountUtils.newAccountDomain(null)
-        val role = RoleUtils.getRole(1)
+        val account = AccountUtils.newAccount(id = null)
+        val accountDomain = AccountUtils.newAccountDomain(id = null)
+        val role = RoleUtils.getRole(index = 1)
         val argumentCaptor = argumentCaptorAccount()
 
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountMapper.mapCredentials(any())).thenReturn(account)
-        whenever(accountValidator.validateNew(any())).thenReturn(Result())
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(role))
+        whenever(accountMapper.mapBack(source = any<Account>())).thenReturn(accountDomain)
+        whenever(accountMapper.mapCredentials(source = any())).thenReturn(account)
+        whenever(accountValidator.validateNew(account = any())).thenReturn(Result())
         whenever(passwordEncoder.encode(any())).thenReturn(credentials.password)
         whenever(uuidProvider.getUuid()).thenReturn(account.uuid)
 
-        val result = facade.add(credentials)
+        val result = facade.add(credentials = credentials)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).add(argumentCaptor.capture())
-        verify(accountMapper).mapBack(account)
-        verify(accountMapper).mapCredentials(credentials)
-        verify(accountValidator).validateNew(account)
+        verify(accountService).add(account = argumentCaptor.capture())
+        verify(accountMapper).mapBack(source = account)
+        verify(accountMapper).mapCredentials(source = credentials)
+        verify(accountValidator).validateNew(account = account)
         verify(passwordEncoder).encode(accountDomain.password)
         verify(uuidProvider).getUuid()
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder, uuidProvider)
         verifyZeroInteractions(accountProvider)
 
         val argument = argumentCaptor.lastValue
-        AccountUtils.assertAccountDeepEquals(accountDomain, argument)
+        AccountUtils.assertAccountDeepEquals(expected = accountDomain, actual = argument)
     }
 
     /**
@@ -265,17 +273,17 @@ class AccountFacadeTest {
     @Test
     fun addInvalidCredentials() {
         val credentials = AccountUtils.newCredentials()
-        val account = AccountUtils.newAccount(null)
+        val account = AccountUtils.newAccount(id = null)
 
-        whenever(accountMapper.mapCredentials(any())).thenReturn(account)
-        whenever(accountValidator.validateNew(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountMapper.mapCredentials(source = any())).thenReturn(account)
+        whenever(accountValidator.validateNew(account = any())).thenReturn(INVALID_DATA_RESULT)
 
-        val result = facade.add(credentials)
+        val result = facade.add(credentials = credentials)
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountMapper).mapCredentials(credentials)
-        verify(accountValidator).validateNew(account)
+        verify(accountMapper).mapCredentials(source = credentials)
+        verify(accountValidator).validateNew(account = account)
         verifyNoMoreInteractions(accountService, accountValidator)
         verifyZeroInteractions(accountProvider)
     }
@@ -285,27 +293,27 @@ class AccountFacadeTest {
      */
     @Test
     fun update() {
-        val account = AccountUtils.newAccount(1)
-        val accountDomain = AccountUtils.newAccountDomain(1)
-        val role = RoleUtils.getRole(1)
+        val account = AccountUtils.newAccount(id = 1)
+        val accountDomain = AccountUtils.newAccountDomain(id = 1)
+        val role = RoleUtils.getRole(index = 1)
         val password = "password"
 
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountValidator.validateUpdate(any())).thenReturn(Result())
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(role))
+        whenever(accountMapper.mapBack(source = any<Account>())).thenReturn(accountDomain)
+        whenever(accountValidator.validateUpdate(account = any())).thenReturn(Result())
         whenever(passwordEncoder.encode(any())).thenReturn(password)
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).update(accountDomain)
-        account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verify(accountMapper).mapBack(account)
-        verify(accountValidator).validateUpdate(account)
+        verify(accountService).update(account = accountDomain)
+        account.roles!!.forEach { verify(roleRepository).findByName(name = it) }
+        verify(accountMapper).mapBack(source = account)
+        verify(accountValidator).validateUpdate(account = account)
         verify(passwordEncoder).encode(accountDomain.password)
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, passwordEncoder)
         verifyZeroInteractions(accountProvider, uuidProvider)
@@ -316,15 +324,15 @@ class AccountFacadeTest {
      */
     @Test
     fun updateInvalidAccount() {
-        val account = AccountUtils.newAccount(Int.MAX_VALUE)
+        val account = AccountUtils.newAccount(id = Int.MAX_VALUE)
 
-        whenever(accountValidator.validateUpdate(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateUpdate(account = any())).thenReturn(INVALID_DATA_RESULT)
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountValidator).validateUpdate(account)
+        verify(accountValidator).validateUpdate(account = account)
         verifyNoMoreInteractions(accountValidator)
         verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, accountProvider, uuidProvider)
     }
@@ -335,28 +343,28 @@ class AccountFacadeTest {
     @Test
     fun updateCredentials() {
         val credentials = AccountUtils.newCredentials()
-        val account = AccountUtils.newAccount(1)
-        val accountDomain = AccountUtils.newAccountDomain(1)
-        val role = RoleUtils.getRole(1)
+        val account = AccountUtils.newAccount(id = 1)
+        val accountDomain = AccountUtils.newAccountDomain(id = 1)
+        val role = RoleUtils.getRole(index = 1)
         val password = "password"
 
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(role))
-        whenever(accountMapper.mapBack(any<Account>())).thenReturn(accountDomain)
-        whenever(accountValidator.validateUpdate(any())).thenReturn(Result())
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(role))
+        whenever(accountMapper.mapBack(source = any<Account>())).thenReturn(accountDomain)
+        whenever(accountValidator.validateUpdate(account = any())).thenReturn(Result())
         whenever(accountProvider.getAccount()).thenReturn(account)
         whenever(passwordEncoder.encode(any())).thenReturn(password)
 
-        val result = facade.update(credentials)
+        val result = facade.update(credentials = credentials)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        verify(accountService).update(accountDomain)
-        account.roles!!.forEach { verify(roleRepository).findByName(it) }
-        verify(accountMapper).mapBack(account)
-        verify(accountValidator).validateUpdate(account)
+        verify(accountService).update(account = accountDomain)
+        account.roles!!.forEach { verify(roleRepository).findByName(name = it) }
+        verify(accountMapper).mapBack(source = account)
+        verify(accountValidator).validateUpdate(account = account)
         verify(accountProvider).getAccount()
         verify(passwordEncoder).encode(accountDomain.password)
         verifyNoMoreInteractions(accountService, roleRepository, accountMapper, accountValidator, accountProvider, passwordEncoder)
@@ -368,16 +376,16 @@ class AccountFacadeTest {
      */
     @Test
     fun updateInvalidCredentials() {
-        val account = AccountUtils.newAccount(Int.MAX_VALUE)
+        val account = AccountUtils.newAccount(id = Int.MAX_VALUE)
 
-        whenever(accountValidator.validateUpdate(any())).thenReturn(INVALID_DATA_RESULT)
+        whenever(accountValidator.validateUpdate(account = any())).thenReturn(INVALID_DATA_RESULT)
         whenever(accountProvider.getAccount()).thenReturn(account)
 
-        val result = facade.update(AccountUtils.newCredentials())
+        val result = facade.update(credentials = AccountUtils.newCredentials())
 
         assertThat(result).isEqualTo(INVALID_DATA_RESULT)
 
-        verify(accountValidator).validateUpdate(account)
+        verify(accountValidator).validateUpdate(account = account)
         verify(accountProvider).getAccount()
         verifyNoMoreInteractions(accountValidator, accountProvider)
         verifyZeroInteractions(accountService, roleRepository, accountMapper, passwordEncoder, uuidProvider)
@@ -388,18 +396,18 @@ class AccountFacadeTest {
      */
     @Test
     fun findByUsername() {
-        val expectedAccount = AccountUtils.newAccountDomain(1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = 1)
 
-        whenever(accountService.findByUsername(any())).thenReturn(Optional.of(expectedAccount))
-        whenever(accountMapper.map(any<com.github.vhromada.common.account.domain.Account>())).thenReturn(AccountUtils.newAccount(1))
+        whenever(accountService.findByUsername(username = any())).thenReturn(Optional.of(expectedAccount))
+        whenever(accountMapper.map(source = any<com.github.vhromada.common.account.domain.Account>())).thenReturn(AccountUtils.newAccount(id = 1))
 
-        val account = facade.findByUsername(expectedAccount.username)
+        val account = facade.findByUsername(username = expectedAccount.username)
 
         assertThat(account).isPresent
-        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
+        AccountUtils.assertAccountDeepEquals(expected = account.get(), actual = expectedAccount)
 
-        verify(accountService).findByUsername(expectedAccount.username)
-        verify(accountMapper).map(expectedAccount)
+        verify(accountService).findByUsername(username = expectedAccount.username)
+        verify(accountMapper).map(source = expectedAccount)
         verifyNoMoreInteractions(accountService, accountMapper)
         verifyZeroInteractions(roleRepository, accountValidator, accountProvider, passwordEncoder, uuidProvider)
     }
@@ -411,13 +419,13 @@ class AccountFacadeTest {
     fun findByUsernameByInvalidUsername() {
         val username = "test"
 
-        whenever(accountService.findByUsername(any())).thenReturn(Optional.empty())
+        whenever(accountService.findByUsername(username = any())).thenReturn(Optional.empty())
 
-        val account = facade.findByUsername(username)
+        val account = facade.findByUsername(username = username)
 
         assertThat(account).isNotPresent
 
-        verify(accountService).findByUsername(username)
+        verify(accountService).findByUsername(username = username)
         verifyNoMoreInteractions(accountService)
         verifyZeroInteractions(roleRepository, accountMapper, accountValidator, accountProvider, passwordEncoder, uuidProvider)
     }

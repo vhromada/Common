@@ -17,6 +17,7 @@ import javax.persistence.MappedSuperclass
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
+@Suppress("unused")
 abstract class Audit {
 
     /**

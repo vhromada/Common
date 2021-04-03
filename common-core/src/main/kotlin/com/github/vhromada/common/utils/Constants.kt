@@ -7,6 +7,7 @@ import java.time.LocalDate
  *
  * @author Vladimir Hromada
  */
+@Suppress("unused")
 object Constants {
 
     /**

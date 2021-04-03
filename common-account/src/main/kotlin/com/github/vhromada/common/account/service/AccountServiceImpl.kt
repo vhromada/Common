@@ -39,7 +39,7 @@ class AccountServiceImpl(
     }
 
     override fun findByUsername(username: String): Optional<Account> {
-        return accountRepository.findByUsername(username)
+        return accountRepository.findByUsername(username = username)
     }
 
     override fun loadUserByUsername(username: String): UserDetails {
@@ -47,7 +47,7 @@ class AccountServiceImpl(
         if (!account.isPresent) {
             throw UsernameNotFoundException("No account found for username $username")
         }
-        return accountMapper.map(account.get())
+        return accountMapper.map(source = account.get())
     }
 
 }

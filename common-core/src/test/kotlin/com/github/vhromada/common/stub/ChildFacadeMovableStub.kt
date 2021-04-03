@@ -30,12 +30,12 @@ class ChildFacadeMovableStub(
 ) {
 
     override fun updateData(data: Movable): Result<Unit> {
-        service.update(mapper.map(data))
+        service.update(data = mapper.map(source = data))
         return Result()
     }
 
     override fun addData(parent: Movable, data: Movable): Result<Unit> {
-        service.add(mapper.map(data))
+        service.add(data = mapper.map(source = data))
         return Result()
     }
 

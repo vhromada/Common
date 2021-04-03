@@ -62,8 +62,8 @@ class ChildServiceIdentifiableTest {
      */
     @BeforeEach
     fun setUp() {
-        copyItem = IdentifiableStub(10)
-        parentItem = IdentifiableStub(20)
+        copyItem = IdentifiableStub(id = 10)
+        parentItem = IdentifiableStub(id = 20)
         service = ChildServiceIdentifiableStub(
             repository = repository,
             accountProvider = accountProvider,
@@ -79,12 +79,12 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun getExistingAdminData() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.findById(any())).thenReturn(Optional.of(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -98,12 +98,12 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun getExistingAccountData() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.findById(any())).thenReturn(Optional.ofNullable(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -120,7 +120,7 @@ class ChildServiceIdentifiableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -137,7 +137,7 @@ class ChildServiceIdentifiableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -155,7 +155,7 @@ class ChildServiceIdentifiableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(setId())
 
-        val result = service.add(data)
+        val result = service.add(data = data)
 
         assertSoftly {
             it.assertThat(data.id).isEqualTo(1)
@@ -172,11 +172,11 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun update() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.update(data)
+        val result = service.update(data = data)
 
         verify(repository).save(data)
         verifyNoMoreInteractions(repository)
@@ -189,9 +189,9 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun remove() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
-        service.remove(data)
+        service.remove(data = data)
 
         verify(repository).delete(data)
         verifyNoMoreInteractions(repository)
@@ -207,7 +207,7 @@ class ChildServiceIdentifiableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.duplicate(IdentifiableStub(1))
+        val result = service.duplicate(data = IdentifiableStub(id = 1))
 
         verify(repository).save(copyArgumentCaptor.capture())
         verifyNoMoreInteractions(repository)
@@ -220,7 +220,7 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun moveUp() {
-        service.moveUp(IdentifiableStub(1))
+        service.moveUp(data = IdentifiableStub(id = 1))
 
         verifyZeroInteractions(repository, accountProvider)
     }
@@ -230,7 +230,7 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun moveDown() {
-        service.moveDown(IdentifiableStub(1))
+        service.moveDown(data = IdentifiableStub(id = 1))
 
         verifyZeroInteractions(repository, accountProvider)
     }
@@ -240,12 +240,12 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun findAdminData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.find(parentItem.id!!)
+        val result = service.find(parent = parentItem.id!!)
 
         assertThat(result).isEqualTo(dataList)
 
@@ -259,12 +259,12 @@ class ChildServiceIdentifiableTest {
      */
     @Test
     fun findAccountData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.find(parentItem.id!!)
+        val result = service.find(parent = parentItem.id!!)
 
         assertThat(result).isEqualTo(dataList)
 

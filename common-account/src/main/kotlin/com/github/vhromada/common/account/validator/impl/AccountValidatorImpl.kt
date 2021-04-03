@@ -21,15 +21,15 @@ class AccountValidatorImpl(
 ) : AccountValidator {
 
     override fun validateNew(account: Account?): Result<Unit> {
-        return validate(account, ValidationType.NEW)
+        return validate(account = account, ValidationType.NEW)
     }
 
     override fun validateUpdate(account: Account?): Result<Unit> {
-        return validate(account, ValidationType.EXISTS, ValidationType.UPDATE)
+        return validate(account = account, ValidationType.EXISTS, ValidationType.UPDATE)
     }
 
     override fun validateExist(account: Account?): Result<Unit> {
-        return validate(account, ValidationType.EXISTS)
+        return validate(account = account, ValidationType.EXISTS)
     }
 
     /**
@@ -41,30 +41,30 @@ class AccountValidatorImpl(
      */
     private fun validate(account: Account?, vararg validationTypes: ValidationType): Result<Unit> {
         if (account == null) {
-            return Result.error("ACCOUNT_NULL", "Account mustn't be null.")
+            return Result.error(key = "ACCOUNT_NULL", message = "Account mustn't be null.")
         }
 
         val result = Result<Unit>()
         if (validationTypes.contains(ValidationType.NEW)) {
             if (account.id != null) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_ID_NOT_NULL", "ID must be null."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_ID_NOT_NULL", message = "ID must be null."))
             }
             if (account.uuid != null) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_UUID_NOT_NULL", "UUID must be null."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_UUID_NOT_NULL", message = "UUID must be null."))
             }
-            validateDeep(account, result)
+            validateDeep(account = account, result = result)
         }
         if (validationTypes.contains(ValidationType.UPDATE)) {
             if (account.uuid == null) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_UUID_NULL", "UUID mustn't be null."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_UUID_NULL", message = "UUID mustn't be null."))
             }
-            validateDeep(account, result)
+            validateDeep(account = account, result = result)
         }
         if (validationTypes.contains(ValidationType.EXISTS)) {
             if (account.id == null) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_ID_NULL", message = "ID mustn't be null."))
             } else if (accountService.get(account.id!!).isEmpty) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_NOT_EXIST", message = "Account doesn't exist."))
             }
         }
         return result
@@ -85,20 +85,20 @@ class AccountValidatorImpl(
      */
     private fun validateDeep(account: Account, result: Result<Unit>) {
         if (account.username == null) {
-            result.addEvent(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null."))
-        } else if (hasDifferentUsername(account)) {
-            val storedAccount = accountService.findByUsername(account.username!!)
+            result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_NULL", message = "Username mustn't be null."))
+        } else if (hasDifferentUsername(account = account)) {
+            val storedAccount = accountService.findByUsername(username = account.username!!)
             if (storedAccount.isPresent) {
-                result.addEvent(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_ALREADY_EXIST", message = "Username already exists."))
             }
         }
         if (account.password == null) {
-            result.addEvent(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null."))
+            result.addEvent(Event(severity = Severity.ERROR, key = "ACCOUNT_PASSWORD_NULL", message = "Password mustn't be null."))
         }
         if (account.roles != null) {
             account.roles!!.forEach {
-                if (roleRepository.findByName(it).isEmpty) {
-                    result.addEvent(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist."))
+                if (roleRepository.findByName(name = it).isEmpty) {
+                    result.addEvent(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist."))
                 }
             }
         }
@@ -114,7 +114,7 @@ class AccountValidatorImpl(
         if (account.id == null || account.username == null) {
             return true
         }
-        val storedAccount = accountService.get(account.id!!)
+        val storedAccount = accountService.get(id = account.id!!)
         if (storedAccount.isEmpty) {
             return true
         }

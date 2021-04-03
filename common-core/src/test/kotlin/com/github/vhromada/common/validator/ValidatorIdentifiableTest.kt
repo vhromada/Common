@@ -73,7 +73,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateNewNotNullId() {
-        val result = validator.validate(data = IdentifiableStub(Int.MAX_VALUE), update = false)
+        val result = validator.validate(data = IdentifiableStub(id = Int.MAX_VALUE), update = false)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -101,7 +101,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateUpdate() {
-        val result = validator.validate(data = IdentifiableStub(1), update = true)
+        val result = validator.validate(data = IdentifiableStub(id = 1), update = true)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -142,7 +142,7 @@ class ValidatorIdentifiableTest {
     fun validateUpdateInvalidDeepData() {
         validator = ValidatorIdentifiableStub(name = name, deepValidation = { _, result -> run { result.addEvent(TestConstants.INVALID_DATA_EVENT) } })
 
-        val result = validator.validate(data = IdentifiableStub(1), update = true)
+        val result = validator.validate(data = IdentifiableStub(id = 1), update = true)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -155,7 +155,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateExists() {
-        val result = validator.validateExists(Optional.of(IdentifiableStub(1)))
+        val result = validator.validateExists(Optional.of(IdentifiableStub(id = 1)))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -181,7 +181,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateMovingDataUp() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         val result = validator.validateMovingData(data = dataList[1], list = dataList, up = true)
 
@@ -196,7 +196,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateMovingDataUpInvalid() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         val result = validator.validateMovingData(data = dataList[0], list = dataList, up = true)
 
@@ -211,7 +211,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateMovingDataDown() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         val result = validator.validateMovingData(data = dataList[0], list = dataList, up = false)
 
@@ -226,7 +226,7 @@ class ValidatorIdentifiableTest {
      */
     @Test
     fun validateMovingDataDownInvalid() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         val result = validator.validateMovingData(data = dataList[1], list = dataList, up = false)
 

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 class IssueMapperImpl : IssueMapper {
 
     override fun map(result: Result<*>): IssueList {
-        return IssueList(result.events().map { mapIssue(it) })
+        return IssueList(result.events().map { mapIssue(event = it) })
     }
 
     /**

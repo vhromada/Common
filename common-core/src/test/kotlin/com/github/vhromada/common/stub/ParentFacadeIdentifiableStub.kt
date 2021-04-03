@@ -20,12 +20,12 @@ class ParentFacadeIdentifiableStub(
 ) : AbstractParentFacade<Identifiable, Identifiable>(parentService = service, mapper = mapper, validator = validator) {
 
     override fun updateData(data: Identifiable): Result<Unit> {
-        service.update(mapper.map(data))
+        service.update(data = mapper.map(source = data))
         return Result()
     }
 
     override fun addData(data: Identifiable): Result<Unit> {
-        service.add(mapper.map(data))
+        service.add(data = mapper.map(source = data))
         return Result()
     }
 

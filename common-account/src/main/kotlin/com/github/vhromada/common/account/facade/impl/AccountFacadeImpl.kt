@@ -21,6 +21,7 @@ import java.util.Optional
  * @author Vladimir Hromada
  */
 @Component("accountFacade")
+@Suppress("SpringJavaInjectionPointsAutowiringInspection")
 class AccountFacadeImpl(
     private val accountService: AccountService,
     private val roleRepository: RoleRepository,
@@ -32,34 +33,34 @@ class AccountFacadeImpl(
 ) : AccountFacade {
 
     override fun getAll(): Result<List<Account>> {
-        return Result.of(accountMapper.map(accountService.getAll()))
+        return Result.of(data = accountMapper.map(source = accountService.getAll()))
     }
 
     override fun get(id: Int): Result<Account> {
-        val item = accountService.get(id)
+        val item = accountService.get(id = id)
         if (item.isPresent) {
-            return Result.of(accountMapper.map(item.get()))
+            return Result.of(data = accountMapper.map(source = item.get()))
         }
         return Result()
     }
 
     override fun add(account: Account): Result<Unit> {
-        val result = accountValidator.validateNew(account)
+        val result = accountValidator.validateNew(account = account)
         if (result.isOk()) {
-            accountService.add(getForAdd(account))
+            accountService.add(account = getForAdd(account = account))
         }
         return result
     }
 
     override fun add(credentials: Credentials): Result<Unit> {
-        val account = accountMapper.mapCredentials(credentials)
-        return add(account)
+        val account = accountMapper.mapCredentials(source = credentials)
+        return add(account = account)
     }
 
     override fun update(account: Account): Result<Unit> {
-        val result = accountValidator.validateUpdate(account)
+        val result = accountValidator.validateUpdate(account = account)
         if (result.isOk()) {
-            accountService.update(getForUpdate(account))
+            accountService.update(account = getForUpdate(account = account))
         }
         return result
     }
@@ -67,12 +68,12 @@ class AccountFacadeImpl(
     override fun update(credentials: Credentials): Result<Unit> {
         val account = accountProvider.getAccount()
             .copy(username = credentials.username, password = credentials.password)
-        return update(account)
+        return update(account = account)
     }
 
     override fun findByUsername(username: String): Optional<Account> {
-        return accountService.findByUsername(username)
-            .map { accountMapper.map(it) }
+        return accountService.findByUsername(username = username)
+            .map { accountMapper.map(source = it) }
     }
 
     /**
@@ -82,8 +83,8 @@ class AccountFacadeImpl(
      * @return account for adding
      */
     private fun getForAdd(account: Account): com.github.vhromada.common.account.domain.Account {
-        val domainAccount = accountMapper.mapBack(account.copy(roles = account.roles ?: emptyList()))
-        return domainAccount.copy(uuid = uuidProvider.getUuid(), password = getEncodedPassword(domainAccount.password), roles = mapRoles(account.roles))
+        val domainAccount = accountMapper.mapBack(source = account.copy(roles = account.roles ?: emptyList()))
+        return domainAccount.copy(uuid = uuidProvider.getUuid(), password = getEncodedPassword(password = domainAccount.password), roles = mapRoles(roles = account.roles))
     }
 
     /**
@@ -93,8 +94,8 @@ class AccountFacadeImpl(
      * @return account for updating
      */
     private fun getForUpdate(account: Account): com.github.vhromada.common.account.domain.Account {
-        val domainAccount = accountMapper.mapBack(account)
-        return domainAccount.copy(password = getEncodedPassword(domainAccount.password), roles = mapRoles(account.roles))
+        val domainAccount = accountMapper.mapBack(source = account)
+        return domainAccount.copy(password = getEncodedPassword(password = domainAccount.password), roles = mapRoles(roles = account.roles))
     }
 
     /**
@@ -115,7 +116,7 @@ class AccountFacadeImpl(
      */
     private fun mapRoles(roles: List<String>?): List<Role> {
         val values = roles ?: listOf("ROLE_USER")
-        return values.map { roleRepository.findByName(it).get() }
+        return values.map { roleRepository.findByName(name = it).get() }
     }
 
 }

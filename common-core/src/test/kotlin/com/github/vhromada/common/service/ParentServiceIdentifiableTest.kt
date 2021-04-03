@@ -57,7 +57,7 @@ class ParentServiceIdentifiableTest {
      */
     @BeforeEach
     fun setUp() {
-        copyItem = IdentifiableStub(10)
+        copyItem = IdentifiableStub(id = 10)
         service = ParentServiceIdentifiableStub(
             repository = repository,
             accountProvider = accountProvider,
@@ -71,12 +71,12 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun getExistingAdminData() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.findById(any())).thenReturn(Optional.of(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -90,12 +90,12 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun getExistingAccountData() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.findById(any())).thenReturn(Optional.of(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -112,7 +112,7 @@ class ParentServiceIdentifiableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -129,7 +129,7 @@ class ParentServiceIdentifiableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -147,7 +147,7 @@ class ParentServiceIdentifiableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(setId())
 
-        val result = service.add(data)
+        val result = service.add(data = data)
 
         assertSoftly {
             it.assertThat(data.id).isEqualTo(1)
@@ -164,11 +164,11 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun update() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.update(data)
+        val result = service.update(data = data)
 
         verify(repository).save(data)
         verifyNoMoreInteractions(repository)
@@ -181,9 +181,9 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun remove() {
-        val data = IdentifiableStub(1)
+        val data = IdentifiableStub(id = 1)
 
-        service.remove(data)
+        service.remove(data = data)
 
         verify(repository).delete(data)
         verifyNoMoreInteractions(repository)
@@ -199,7 +199,7 @@ class ParentServiceIdentifiableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.duplicate(IdentifiableStub(1))
+        val result = service.duplicate(data = IdentifiableStub(id = 1))
 
         verify(repository).save(copyArgumentCaptor.capture())
         verifyNoMoreInteractions(repository)
@@ -212,7 +212,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun moveUp() {
-        service.moveUp(IdentifiableStub(1))
+        service.moveUp(data = IdentifiableStub(id = 1))
 
         verifyZeroInteractions(repository, accountProvider)
     }
@@ -222,7 +222,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun moveDown() {
-        service.moveDown(IdentifiableStub(1))
+        service.moveDown(data = IdentifiableStub(id = 1))
 
         verifyZeroInteractions(repository, accountProvider)
     }
@@ -232,7 +232,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun newDataAdminData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
@@ -250,7 +250,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun newDataAccountData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
@@ -268,7 +268,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun getAllAdminData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
@@ -287,7 +287,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun getAllAccountData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
@@ -306,7 +306,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun updatePositionsAdminData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
@@ -324,7 +324,7 @@ class ParentServiceIdentifiableTest {
      */
     @Test
     fun updatePositionsAccountData() {
-        val dataList = listOf(IdentifiableStub(1), IdentifiableStub(2))
+        val dataList = listOf(IdentifiableStub(id = 1), IdentifiableStub(id = 2))
 
         whenever(repository.findAll()).thenReturn(dataList)
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)

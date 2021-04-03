@@ -79,7 +79,7 @@ class AccountTestConfiguration {
         return object : AccountProvider {
 
             override fun getAccount(): Account {
-                return AccountUtils.newAccount(1)
+                return AccountUtils.newAccount(id = 1)
             }
 
         }

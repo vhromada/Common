@@ -29,10 +29,10 @@ class AccountMapperIntegrationTest {
      */
     @Test
     fun map() {
-        val accountDomain = AccountUtils.newAccountDomain(1)
-        val account = mapper.map(accountDomain)
+        val accountDomain = AccountUtils.newAccountDomain(id = 1)
+        val account = mapper.map(source = accountDomain)
 
-        AccountUtils.assertAccountDeepEquals(account, accountDomain)
+        AccountUtils.assertAccountDeepEquals(expected = account, actual = accountDomain)
     }
 
     /**
@@ -40,10 +40,10 @@ class AccountMapperIntegrationTest {
      */
     @Test
     fun mapBack() {
-        val account = AccountUtils.newAccount(1)
-        val accountDomain = mapper.mapBack(account)
+        val account = AccountUtils.newAccount(id = 1)
+        val accountDomain = mapper.mapBack(source = account)
 
-        AccountUtils.assertAccountDeepEquals(account, accountDomain)
+        AccountUtils.assertAccountDeepEquals(expected = account, actual = accountDomain)
     }
 
     /**
@@ -52,7 +52,7 @@ class AccountMapperIntegrationTest {
     @Test
     fun mapCredentials() {
         val credentials = AccountUtils.newCredentials()
-        val account = mapper.mapCredentials(credentials)
+        val account = mapper.mapCredentials(source = credentials)
 
         assertSoftly {
             it.assertThat(account.id).isNull()

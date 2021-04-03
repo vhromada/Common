@@ -51,9 +51,9 @@ class RoleFacadeIntegrationTest {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
-        RoleUtils.assertRolesListDeepEquals(result.data!!, RoleUtils.getRoles())
+        RoleUtils.assertRolesListDeepEquals(expected = result.data!!, actual = RoleUtils.getRoles())
 
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -62,22 +62,22 @@ class RoleFacadeIntegrationTest {
     @Test
     @DirtiesContext
     fun updateRoles() {
-        val domainRoles = listOf(RoleUtils.getRole(2))
+        val domainRoles = listOf(RoleUtils.getRole(index = 2))
         val roles = domainRoles.map { it.name }
-        val account = AccountUtils.newAccount(1)
-        val domainAccount = AccountUtils.getAccount(1)
+        val account = AccountUtils.newAccount(id = 1)
+        val domainAccount = AccountUtils.getAccount(index = 1)
             .copy(roles = domainRoles)
 
-        val result = facade.updateRoles(account, UpdateRoles(roles))
+        val result = facade.updateRoles(account = account, roles = UpdateRoles(roles = roles))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        AccountUtils.assertAccountDeepEquals(domainAccount, AccountUtils.getAccount(entityManager, 1))
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        AccountUtils.assertAccountDeepEquals(expected = domainAccount, actual = AccountUtils.getAccount(entityManager = entityManager, id = 1))
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -85,15 +85,15 @@ class RoleFacadeIntegrationTest {
      */
     @Test
     fun updateRolesAccountNullId() {
-        val result = facade.updateRoles(AccountUtils.newAccount(null), UpdateRoles(listOf(RoleUtils.getRole(2).name)))
+        val result = facade.updateRoles(account = AccountUtils.newAccount(id = null), roles = UpdateRoles(roles = listOf(RoleUtils.getRole(index = 2).name)))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_ID_NULL", message = "ID mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -101,15 +101,15 @@ class RoleFacadeIntegrationTest {
      */
     @Test
     fun updateRolesNotExistAccount() {
-        val result = facade.updateRoles(AccountUtils.newAccount(Int.MAX_VALUE), UpdateRoles(listOf(RoleUtils.getRole(2).name)))
+        val result = facade.updateRoles(account = AccountUtils.newAccount(id = Int.MAX_VALUE), roles = UpdateRoles(roles = listOf(RoleUtils.getRole(index = 2).name)))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_NOT_EXIST", message = "Account doesn't exist.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
 
@@ -118,15 +118,15 @@ class RoleFacadeIntegrationTest {
      */
     @Test
     fun updateRolesNullRoles() {
-        val result = facade.updateRoles(AccountUtils.newAccount(1), UpdateRoles(null))
+        val result = facade.updateRoles(account = AccountUtils.newAccount(id = 1), roles = UpdateRoles(roles = null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_NULL", "Roles mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLES_NULL", message = "Roles mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -134,15 +134,15 @@ class RoleFacadeIntegrationTest {
      */
     @Test
     fun updateRolesRolesWithNullRole() {
-        val result = facade.updateRoles(AccountUtils.newAccount(1), UpdateRoles(listOf(null)))
+        val result = facade.updateRoles(account = AccountUtils.newAccount(id = 1), roles = UpdateRoles(roles = listOf(null)))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_CONTAIN_NULL", "Roles mustn't contain null value.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLES_CONTAIN_NULL", message = "Roles mustn't contain null value.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -150,15 +150,15 @@ class RoleFacadeIntegrationTest {
      */
     @Test
     fun updateRolesNotExistRole() {
-        val result = facade.updateRoles(AccountUtils.newAccount(1), UpdateRoles(listOf("ROLE_TEST")))
+        val result = facade.updateRoles(account = AccountUtils.newAccount(id = 1), roles = UpdateRoles(roles = listOf("ROLE_TEST")))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
 }

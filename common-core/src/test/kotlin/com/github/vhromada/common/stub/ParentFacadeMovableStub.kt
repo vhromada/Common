@@ -20,12 +20,12 @@ class ParentFacadeMovableStub(
 ) : AbstractParentFacade<Movable, Movable>(parentService = service, mapper = mapper, validator = validator) {
 
     override fun updateData(data: Movable): Result<Unit> {
-        service.update(mapper.map(data))
+        service.update(data = mapper.map(source = data))
         return Result()
     }
 
     override fun addData(data: Movable): Result<Unit> {
-        service.add(mapper.map(data))
+        service.add(data = mapper.map(source = data))
         return Result()
     }
 

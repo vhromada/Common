@@ -17,6 +17,7 @@ interface Movable : Identifiable {
      *
      * @param position position
      */
+    @Suppress("RedundantModalityModifier")
     open fun updatePosition(position: Int) {
         this.position = position
     }

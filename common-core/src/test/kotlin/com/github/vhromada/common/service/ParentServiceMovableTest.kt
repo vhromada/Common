@@ -77,7 +77,7 @@ class ParentServiceMovableTest {
         whenever(repository.findById(any())).thenReturn(Optional.of(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -96,7 +96,7 @@ class ParentServiceMovableTest {
         whenever(repository.findById(any())).thenReturn(Optional.of(data))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(data.id!!)
+        val result = service.get(id = data.id!!)
 
         assertThat(result).contains(data)
 
@@ -113,7 +113,7 @@ class ParentServiceMovableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -130,7 +130,7 @@ class ParentServiceMovableTest {
         whenever(repository.findById(any())).thenReturn(Optional.empty())
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        val result = service.get(Int.MAX_VALUE)
+        val result = service.get(id = Int.MAX_VALUE)
 
         assertThat(result).isNotPresent
 
@@ -148,7 +148,7 @@ class ParentServiceMovableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(setIdAndPosition())
 
-        val result = service.add(data)
+        val result = service.add(data = data)
 
         assertSoftly {
             it.assertThat(data.id).isEqualTo(1)
@@ -170,7 +170,7 @@ class ParentServiceMovableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.update(data)
+        val result = service.update(data = data)
 
         verify(repository).save(data)
         verifyNoMoreInteractions(repository)
@@ -185,7 +185,7 @@ class ParentServiceMovableTest {
     fun remove() {
         val data = MovableStub(id = 1, position = 1)
 
-        service.remove(data)
+        service.remove(data = data)
 
         verify(repository).delete(data)
         verifyNoMoreInteractions(repository)
@@ -201,7 +201,7 @@ class ParentServiceMovableTest {
 
         whenever(repository.save(anyDomain())).thenAnswer(copy())
 
-        val result = service.duplicate(MovableStub(id = 1, position = 1))
+        val result = service.duplicate(data = MovableStub(id = 1, position = 1))
 
         verify(repository).save(copyArgumentCaptor.capture())
         verifyNoMoreInteractions(repository)
@@ -222,7 +222,7 @@ class ParentServiceMovableTest {
         whenever(repository.findAll()).thenReturn(listOf(data1, data2))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        service.moveUp(data2)
+        service.moveUp(data = data2)
 
         assertSoftly {
             it.assertThat(data1.position).isEqualTo(position2)
@@ -248,7 +248,7 @@ class ParentServiceMovableTest {
         whenever(repository.findAll()).thenReturn(listOf(data1, data2))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        service.moveUp(data2)
+        service.moveUp(data = data2)
 
         assertSoftly {
             it.assertThat(data1.position).isEqualTo(position2)
@@ -274,7 +274,7 @@ class ParentServiceMovableTest {
         whenever(repository.findAll()).thenReturn(listOf(data1, data2))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ADMIN)
 
-        service.moveDown(data1)
+        service.moveDown(data = data1)
 
         assertSoftly {
             it.assertThat(data1.position).isEqualTo(position2)
@@ -300,7 +300,7 @@ class ParentServiceMovableTest {
         whenever(repository.findAll()).thenReturn(listOf(data1, data2))
         whenever(accountProvider.getAccount()).thenReturn(TestConstants.ACCOUNT)
 
-        service.moveDown(data1)
+        service.moveDown(data = data1)
 
         assertSoftly {
             it.assertThat(data1.position).isEqualTo(position2)

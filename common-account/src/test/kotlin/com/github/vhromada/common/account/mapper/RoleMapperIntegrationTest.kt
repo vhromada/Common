@@ -30,10 +30,10 @@ class RoleMapperIntegrationTest {
      */
     @Test
     fun map() {
-        val roleDomain = RoleUtils.getRole(1)
-        val role = mapper.map(roleDomain)
+        val roleDomain = RoleUtils.getRole(index = 1)
+        val role = mapper.map(source = roleDomain)
 
-        RoleUtils.assertRoleDeepEquals(role, roleDomain)
+        RoleUtils.assertRoleDeepEquals(expected = role, actual = roleDomain)
     }
 
     /**
@@ -41,10 +41,10 @@ class RoleMapperIntegrationTest {
      */
     @Test
     fun mapBack() {
-        val role = RoleUtils.getRole(1).name
-        val roleDomain = mapper.mapBack(role)
+        val role = RoleUtils.getRole(index = 1).name
+        val roleDomain = mapper.mapBack(source = role)
 
-        RoleUtils.assertRoleDeepEquals(role, roleDomain)
+        RoleUtils.assertRoleDeepEquals(expected = role, actual = roleDomain)
     }
 
 }

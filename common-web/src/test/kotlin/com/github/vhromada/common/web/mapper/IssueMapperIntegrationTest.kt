@@ -36,9 +36,9 @@ class IssueMapperIntegrationTest {
     fun map() {
         val result = createResult()
 
-        val issues = mapper.map(result)
+        val issues = mapper.map(result = result)
 
-        assertIssuesDeepEquals(result, issues)
+        assertIssuesDeepEquals(result = result, issues = issues)
     }
 
     /**
@@ -47,8 +47,8 @@ class IssueMapperIntegrationTest {
      * @return result
      */
     private fun createResult(): Result<String> {
-        val result = Result.of("test")
-        result.addEvent(Event(severity = Severity.ERROR, key = "key", message = "message"))
+        val result = Result.of(data = "test")
+        result.addEvent(event = Event(severity = Severity.ERROR, key = "key", message = "message"))
         return result
     }
 
@@ -61,7 +61,7 @@ class IssueMapperIntegrationTest {
     private fun assertIssuesDeepEquals(result: Result<*>, issues: IssueList) {
         assertThat(issues.issues).hasSameSizeAs(result.events())
         for (i in issues.issues.indices) {
-            assertIssueDeepEquals(result.events()[i], issues.issues[i])
+            assertIssueDeepEquals(event = result.events()[i], issue = issues.issues[i])
         }
     }
 

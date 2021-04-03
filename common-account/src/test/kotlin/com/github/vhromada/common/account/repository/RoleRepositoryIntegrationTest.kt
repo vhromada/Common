@@ -44,9 +44,9 @@ class RoleRepositoryIntegrationTest {
     fun getRoles() {
         val roles = roleRepository.findAll()
 
-        RoleUtils.assertRolesDeepEquals(RoleUtils.getRoles(), roles)
+        RoleUtils.assertRolesDeepEquals(expected = RoleUtils.getRoles(), actual = roles)
 
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -57,12 +57,12 @@ class RoleRepositoryIntegrationTest {
         for (i in 1..RoleUtils.ROLES_COUNT) {
             val role = roleRepository.findById(i).orElse(null)
 
-            RoleUtils.assertRoleDeepEquals(RoleUtils.getRole(i), role)
+            RoleUtils.assertRoleDeepEquals(expected = RoleUtils.getRole(index = i), actual = role)
         }
 
         assertThat(roleRepository.findById(Int.MAX_VALUE)).isNotPresent
 
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
     /**
@@ -71,15 +71,15 @@ class RoleRepositoryIntegrationTest {
     @Test
     fun findByName() {
         for (i in 1..RoleUtils.ROLES_COUNT) {
-            val expectedRole = RoleUtils.getRole(i)
-            val role = roleRepository.findByName(expectedRole.name).orElse(null)
+            val expectedRole = RoleUtils.getRole(index = i)
+            val role = roleRepository.findByName(name = expectedRole.name).orElse(null)
 
-            RoleUtils.assertRoleDeepEquals(expectedRole, role)
+            RoleUtils.assertRoleDeepEquals(expected = expectedRole, actual = role)
         }
 
-        assertThat(roleRepository.findByName("TEST")).isNotPresent
+        assertThat(roleRepository.findByName(name = "TEST")).isNotPresent
 
-        assertThat(RoleUtils.getRolesCount(entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
+        assertThat(RoleUtils.getRolesCount(entityManager = entityManager)).isEqualTo(RoleUtils.ROLES_COUNT)
     }
 
 }

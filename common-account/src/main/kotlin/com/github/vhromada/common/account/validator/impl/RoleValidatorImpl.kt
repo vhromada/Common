@@ -18,15 +18,15 @@ class RoleValidatorImpl(private val roleRepository: RoleRepository) : RoleValida
 
     override fun validateUpdateRoles(roles: UpdateRoles?): Result<Unit> {
         if (roles?.roles == null) {
-            return Result.error("ROLES_NULL", "Roles mustn't be null.")
+            return Result.error(key = "ROLES_NULL", message = "Roles mustn't be null.")
         }
         if (roles.roles.contains(null)) {
-            return Result.error("ROLES_CONTAIN_NULL", "Roles mustn't contain null value.")
+            return Result.error(key = "ROLES_CONTAIN_NULL", message = "Roles mustn't contain null value.")
         }
         val result = Result<Unit>()
         roles.roles.forEach {
             if (roleRepository.findByName(it!!).isEmpty) {
-                result.addEvent(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist."))
+                result.addEvent(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist."))
             }
         }
         return result

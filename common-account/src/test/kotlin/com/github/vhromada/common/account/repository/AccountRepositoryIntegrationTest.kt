@@ -44,9 +44,9 @@ class AccountRepositoryIntegrationTest {
     fun getAccounts() {
         val accounts = accountRepository.findAll()
 
-        AccountUtils.assertAccountsDeepEquals(AccountUtils.getAccounts(), accounts)
+        AccountUtils.assertAccountsDeepEquals(expected = AccountUtils.getAccounts(), actual = accounts)
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -57,12 +57,12 @@ class AccountRepositoryIntegrationTest {
         for (i in 1..AccountUtils.ACCOUNTS_COUNT) {
             val account = accountRepository.findById(i).orElse(null)
 
-            AccountUtils.assertAccountDeepEquals(AccountUtils.getAccount(i), account)
+            AccountUtils.assertAccountDeepEquals(expected = AccountUtils.getAccount(index = i), actual = account)
         }
 
         assertThat(accountRepository.findById(Int.MAX_VALUE)).isNotPresent
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -71,15 +71,15 @@ class AccountRepositoryIntegrationTest {
     @Test
     fun findByUsername() {
         for (i in 1..AccountUtils.ACCOUNTS_COUNT) {
-            val expectedAccount = AccountUtils.getAccount(i)
-            val account = accountRepository.findByUsername(expectedAccount.username).orElse(null)
+            val expectedAccount = AccountUtils.getAccount(index = i)
+            val account = accountRepository.findByUsername(username = expectedAccount.username).orElse(null)
 
-            AccountUtils.assertAccountDeepEquals(expectedAccount, account)
+            AccountUtils.assertAccountDeepEquals(expected = expectedAccount, actual = account)
         }
 
-        assertThat(accountRepository.findByUsername("TEST")).isNotPresent
+        assertThat(accountRepository.findByUsername(username = "TEST")).isNotPresent
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -88,15 +88,15 @@ class AccountRepositoryIntegrationTest {
     @Test
     fun findByUuid() {
         for (i in 1..AccountUtils.ACCOUNTS_COUNT) {
-            val expectedAccount = AccountUtils.getAccount(i)
-            val account = accountRepository.findByUuid(expectedAccount.uuid!!).orElse(null)
+            val expectedAccount = AccountUtils.getAccount(index = i)
+            val account = accountRepository.findByUuid(uuid = expectedAccount.uuid!!).orElse(null)
 
-            AccountUtils.assertAccountDeepEquals(expectedAccount, account)
+            AccountUtils.assertAccountDeepEquals(expected = expectedAccount, actual = account)
         }
 
-        assertThat(accountRepository.findByUuid("TEST")).isNotPresent
+        assertThat(accountRepository.findByUuid(uuid = "TEST")).isNotPresent
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
 }

@@ -51,9 +51,9 @@ class AccountFacadeIntegrationTest {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
-        AccountUtils.assertAccountListDeepEquals(result.data!!, AccountUtils.getAccounts())
+        AccountUtils.assertAccountListDeepEquals(expected = result.data!!, actual = AccountUtils.getAccounts())
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -62,16 +62,16 @@ class AccountFacadeIntegrationTest {
     @Test
     fun get() {
         for (i in 1..AccountUtils.ACCOUNTS_COUNT) {
-            val result = facade.get(i)
+            val result = facade.get(id = i)
 
             assertSoftly {
                 it.assertThat(result.status).isEqualTo(Status.OK)
                 it.assertThat(result.events()).isEmpty()
             }
-            AccountUtils.assertAccountDeepEquals(result.data!!, AccountUtils.getAccount(i))
+            AccountUtils.assertAccountDeepEquals(expected = result.data!!, actual = AccountUtils.getAccount(index = i))
         }
 
-        val result = facade.get(Int.MAX_VALUE)
+        val result = facade.get(id = Int.MAX_VALUE)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -79,7 +79,7 @@ class AccountFacadeIntegrationTest {
             it.assertThat(result.events()).isEmpty()
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -88,17 +88,17 @@ class AccountFacadeIntegrationTest {
     @Test
     @DirtiesContext
     fun add() {
-        val result = facade.add(newAccountNullUuid(null))
+        val result = facade.add(account = newAccountNullUuid(id = null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        val expectedAccount = AccountUtils.newAccountDomain(AccountUtils.ACCOUNTS_COUNT + 1)
-        val repositoryData = AccountUtils.getAccount(entityManager, AccountUtils.ACCOUNTS_COUNT + 1)
-        AccountUtils.assertAccountDeepEquals(expectedAccount, repositoryData)
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = AccountUtils.ACCOUNTS_COUNT + 1)
+        val repositoryData = AccountUtils.getAccount(entityManager = entityManager, id = AccountUtils.ACCOUNTS_COUNT + 1)
+        AccountUtils.assertAccountDeepEquals(expected = expectedAccount, actual = repositoryData)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
     }
 
     /**
@@ -106,14 +106,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addNotNullId() {
-        val result = facade.add(newAccountNullUuid(Int.MAX_VALUE))
+        val result = facade.add(account = newAccountNullUuid(id = Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NOT_NULL", "ID must be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_ID_NOT_NULL", message = "ID must be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -121,14 +121,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addNotNullUuid() {
-        val result = facade.add(newAccount(null))
+        val result = facade.add(account = newAccount(id = null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NOT_NULL", "UUID must be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_UUID_NOT_NULL", message = "UUID must be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -136,17 +136,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addNullUsername() {
-        val account = newAccountNullUuid(null)
+        val account = newAccountNullUuid(id = null)
             .copy(username = null)
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_NULL", message = "Username mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -154,17 +154,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addNullPassword() {
-        val account = newAccountNullUuid(null)
+        val account = newAccountNullUuid(id = null)
             .copy(password = null)
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_PASSWORD_NULL", message = "Password mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -172,17 +172,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addRoleNotExisting() {
-        val account = newAccountNullUuid(null)
+        val account = newAccountNullUuid(id = null)
             .copy(roles = listOf("ROLE_TEST"))
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -190,17 +190,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addExistingUsername() {
-        val account = newAccountNullUuid(null)
-            .copy(username = AccountUtils.getAccount(1).username)
+        val account = newAccountNullUuid(id = null)
+            .copy(username = AccountUtils.getAccount(index = 1).username)
 
-        val result = facade.add(account)
+        val result = facade.add(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_ALREADY_EXIST", message = "Username already exists.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -209,18 +209,18 @@ class AccountFacadeIntegrationTest {
     @Test
     @DirtiesContext
     fun addCredentials() {
-        val result = facade.add(AccountUtils.newCredentials())
+        val result = facade.add(credentials = AccountUtils.newCredentials())
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        val expectedAccount = AccountUtils.newAccountDomain(AccountUtils.ACCOUNTS_COUNT + 1)
-            .copy(roles = listOf(RoleUtils.getRole(2)))
-        val repositoryData = AccountUtils.getAccount(entityManager, AccountUtils.ACCOUNTS_COUNT + 1)
-        AccountUtils.assertAccountDeepEquals(expectedAccount, repositoryData)
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
+        val expectedAccount = AccountUtils.newAccountDomain(id = AccountUtils.ACCOUNTS_COUNT + 1)
+            .copy(roles = listOf(RoleUtils.getRole(index = 2)))
+        val repositoryData = AccountUtils.getAccount(entityManager = entityManager, id = AccountUtils.ACCOUNTS_COUNT + 1)
+        AccountUtils.assertAccountDeepEquals(expected = expectedAccount, actual = repositoryData)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT + 1)
     }
 
     /**
@@ -231,14 +231,14 @@ class AccountFacadeIntegrationTest {
         val account = AccountUtils.newCredentials()
             .copy(username = null)
 
-        val result = facade.add(account)
+        val result = facade.add(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_NULL", message = "Username mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -249,14 +249,14 @@ class AccountFacadeIntegrationTest {
         val account = AccountUtils.newCredentials()
             .copy(password = null)
 
-        val result = facade.add(account)
+        val result = facade.add(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_PASSWORD_NULL", message = "Password mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -264,17 +264,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun addCredentialsExistingUsername() {
-        val account = newAccountNullUuid(null)
-            .copy(username = AccountUtils.getAccount(1).username)
+        val account = AccountUtils.newCredentials()
+            .copy(username = AccountUtils.getAccount(index = 2).username)
 
-        val result = facade.add(account)
+        val result = facade.add(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_ALREADY_EXIST", message = "Username already exists.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -283,15 +283,15 @@ class AccountFacadeIntegrationTest {
     @Test
     @DirtiesContext
     fun update() {
-        val result = facade.update(newAccount(1))
+        val result = facade.update(account = newAccount(id = 1))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        AccountUtils.assertAccountDeepEquals(AccountUtils.newAccountDomain(1), AccountUtils.getAccount(entityManager, 1))
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        AccountUtils.assertAccountDeepEquals(expected = AccountUtils.newAccountDomain(id = 1), actual = AccountUtils.getAccount(entityManager = entityManager, id = 1))
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -299,14 +299,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateNullId() {
-        val result = facade.update(newAccount(null))
+        val result = facade.update(account = newAccount(id = null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_ID_NULL", "ID mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_ID_NULL", message = "ID mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -314,14 +314,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateNullUuid() {
-        val result = facade.update(newAccountNullUuid(1))
+        val result = facade.update(account = newAccountNullUuid(id = 1))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_UUID_NULL", "UUID mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_UUID_NULL", message = "UUID mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -329,17 +329,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateNullUsername() {
-        val account = newAccount(1)
+        val account = newAccount(id = 1)
             .copy(username = null)
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_NULL", message = "Username mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -347,17 +347,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateNullPassword() {
-        val account = newAccount(1)
+        val account = newAccount(id = 1)
             .copy(password = null)
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_PASSWORD_NULL", message = "Password mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -365,14 +365,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateAccountNotExisting() {
-        val result = facade.update(newAccount(Int.MAX_VALUE))
+        val result = facade.update(account = newAccount(id = Int.MAX_VALUE))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_NOT_EXIST", "Account doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_NOT_EXIST", message = "Account doesn't exist.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -380,17 +380,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateRoleNotExisting() {
-        val account = newAccount(1)
+        val account = newAccount(id = 1)
             .copy(roles = listOf("ROLE_TEST"))
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -398,17 +398,17 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun updateExistingUsername() {
-        val account = newAccount(1)
-            .copy(username = AccountUtils.getAccount(2).username)
+        val account = newAccount(id = 1)
+            .copy(username = AccountUtils.getAccount(index = 2).username)
 
-        val result = facade.update(account)
+        val result = facade.update(account = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_ALREADY_EXIST", message = "Username already exists.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -417,15 +417,15 @@ class AccountFacadeIntegrationTest {
     @Test
     @DirtiesContext
     fun updateCredentials() {
-        val result = facade.update(AccountUtils.newCredentials())
+        val result = facade.update(credentials = AccountUtils.newCredentials())
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        AccountUtils.assertAccountDeepEquals(AccountUtils.newAccountDomain(1), AccountUtils.getAccount(entityManager, 1))
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        AccountUtils.assertAccountDeepEquals(expected = AccountUtils.newAccountDomain(id = 1), AccountUtils.getAccount(entityManager = entityManager, id = 1))
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -436,14 +436,14 @@ class AccountFacadeIntegrationTest {
         val account = AccountUtils.newCredentials()
             .copy(username = null)
 
-        val result = facade.update(account)
+        val result = facade.update(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_NULL", "Username mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_NULL", message = "Username mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -454,14 +454,14 @@ class AccountFacadeIntegrationTest {
         val account = AccountUtils.newCredentials()
             .copy(password = null)
 
-        val result = facade.add(account)
+        val result = facade.add(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_PASSWORD_NULL", "Password mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_PASSWORD_NULL", message = "Password mustn't be null.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -470,16 +470,16 @@ class AccountFacadeIntegrationTest {
     @Test
     fun updateCredentialsExistingUsername() {
         val account = AccountUtils.newCredentials()
-            .copy(username = AccountUtils.getAccount(2).username)
+            .copy(username = AccountUtils.getAccount(index = 2).username)
 
-        val result = facade.update(account)
+        val result = facade.update(credentials = account)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ACCOUNT_USERNAME_ALREADY_EXIST", "Username already exists.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ACCOUNT_USERNAME_ALREADY_EXIST", message = "Username already exists.")))
         }
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -487,14 +487,14 @@ class AccountFacadeIntegrationTest {
      */
     @Test
     fun findByUsername() {
-        val expectedAccount = AccountUtils.getAccount(1)
+        val expectedAccount = AccountUtils.getAccount(index = 1)
 
-        val account = facade.findByUsername(expectedAccount.username)
+        val account = facade.findByUsername(username = expectedAccount.username)
 
         assertThat(account).isPresent
-        AccountUtils.assertAccountDeepEquals(account.get(), expectedAccount)
+        AccountUtils.assertAccountDeepEquals(expected = account.get(), actual = expectedAccount)
 
-        assertThat(AccountUtils.getAccountsCount(entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
+        assertThat(AccountUtils.getAccountsCount(entityManager = entityManager)).isEqualTo(AccountUtils.ACCOUNTS_COUNT)
     }
 
     /**
@@ -504,7 +504,7 @@ class AccountFacadeIntegrationTest {
      * @return instance of [Account]
      */
     private fun newAccount(id: Int?): Account {
-        return AccountUtils.newAccount(id)
+        return AccountUtils.newAccount(id = id)
     }
 
     /**
@@ -514,7 +514,7 @@ class AccountFacadeIntegrationTest {
      * @return instance of [Account]
      */
     private fun newAccountNullUuid(id: Int?): Account {
-        return newAccount(id)
+        return newAccount(id = id)
             .copy(uuid = null)
     }
 

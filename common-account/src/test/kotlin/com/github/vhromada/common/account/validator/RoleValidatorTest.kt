@@ -44,7 +44,7 @@ class RoleValidatorTest {
      */
     @BeforeEach
     fun setUp() {
-        roleValidator = RoleValidatorImpl(roleRepository)
+        roleValidator = RoleValidatorImpl(roleRepository = roleRepository)
     }
 
     /**
@@ -52,18 +52,18 @@ class RoleValidatorTest {
      */
     @Test
     fun validateUpdateRoles() {
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.of(RoleUtils.getRole(1)))
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.of(RoleUtils.getRole(index = 1)))
 
-        val roles = UpdateRoles(listOf("USER_ROLE"))
+        val roles = UpdateRoles(roles = listOf("USER_ROLE"))
 
-        val result = roleValidator.validateUpdateRoles(roles)
+        val result = roleValidator.validateUpdateRoles(roles = roles)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
             it.assertThat(result.events()).isEmpty()
         }
 
-        roles.roles!!.forEach { verify(roleRepository).findByName(it!!) }
+        roles.roles!!.forEach { verify(roleRepository).findByName(name = it!!) }
         verifyNoMoreInteractions(roleRepository)
     }
 
@@ -72,11 +72,11 @@ class RoleValidatorTest {
      */
     @Test
     fun validateUpdateRolesNullUpdateRoles() {
-        val result = roleValidator.validateUpdateRoles(null)
+        val result = roleValidator.validateUpdateRoles(roles = null)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_NULL", "Roles mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLES_NULL", message = "Roles mustn't be null.")))
         }
 
         verifyZeroInteractions(roleRepository)
@@ -87,11 +87,11 @@ class RoleValidatorTest {
      */
     @Test
     fun validateUpdateRolesNullRoles() {
-        val result = roleValidator.validateUpdateRoles(UpdateRoles(null))
+        val result = roleValidator.validateUpdateRoles(UpdateRoles(roles = null))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_NULL", "Roles mustn't be null.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLES_NULL", message = "Roles mustn't be null.")))
         }
 
         verifyZeroInteractions(roleRepository)
@@ -102,11 +102,11 @@ class RoleValidatorTest {
      */
     @Test
     fun validateUpdateRolesNullRole() {
-        val result = roleValidator.validateUpdateRoles(UpdateRoles(listOf(null)))
+        val result = roleValidator.validateUpdateRoles(roles = UpdateRoles(roles = listOf(null)))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLES_CONTAIN_NULL", "Roles mustn't contain null value.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLES_CONTAIN_NULL", message = "Roles mustn't contain null value.")))
         }
 
         verifyZeroInteractions(roleRepository)
@@ -117,18 +117,18 @@ class RoleValidatorTest {
      */
     @Test
     fun validateUpdateNotExistRole() {
-        whenever(roleRepository.findByName(any())).thenReturn(Optional.empty())
+        whenever(roleRepository.findByName(name = any())).thenReturn(Optional.empty())
 
-        val roles = UpdateRoles(listOf("ROLE_TEST"))
+        val roles = UpdateRoles(roles = listOf("ROLE_TEST"))
 
-        val result = roleValidator.validateUpdateRoles(roles)
+        val result = roleValidator.validateUpdateRoles(roles = roles)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
-            it.assertThat(result.events()).isEqualTo(listOf(Event(Severity.ERROR, "ROLE_NOT_EXIST", "Role doesn't exist.")))
+            it.assertThat(result.events()).isEqualTo(listOf(Event(severity = Severity.ERROR, key = "ROLE_NOT_EXIST", message = "Role doesn't exist.")))
         }
 
-        roles.roles!!.forEach { verify(roleRepository).findByName(it!!) }
+        roles.roles!!.forEach { verify(roleRepository).findByName(name = it!!) }
         verifyNoMoreInteractions(roleRepository)
     }
 
