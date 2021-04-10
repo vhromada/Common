@@ -5,6 +5,7 @@ package com.github.vhromada.common.provider
  *
  * @author Vladimir Hromada
  */
+@Suppress("unused")
 interface UuidProvider {
 
     /**

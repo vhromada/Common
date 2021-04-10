@@ -18,7 +18,7 @@ class Time : Serializable {
     /**
      * Data
      */
-    private val data: MutableMap<TimeData, Int>
+    private val data: Map<TimeData, Int>
 
     /**
      * Creates a new instance of Time.
@@ -30,11 +30,8 @@ class Time : Serializable {
         require(length >= 0L) { "Length mustn't be negative number." }
 
         this.length = length
-        this.data = mutableMapOf()
-        this.data[TimeData.HOUR] = length / HOUR_SECONDS
         val temp = length % HOUR_SECONDS
-        this.data[TimeData.MINUTE] = temp / MINUTE_SECONDS
-        this.data[TimeData.SECOND] = temp % MINUTE_SECONDS
+        this.data = mapOf(TimeData.HOUR to length / HOUR_SECONDS, TimeData.MINUTE to temp / MINUTE_SECONDS, TimeData.SECOND to temp % MINUTE_SECONDS)
     }
 
     /**
@@ -53,7 +50,7 @@ class Time : Serializable {
         require(seconds in MIN_TIME..MAX_TIME) { "Seconds must be between $MIN_TIME and $MAX_TIME." }
 
         this.length = hours * HOUR_SECONDS + minutes * MINUTE_SECONDS + seconds
-        this.data = mutableMapOf(TimeData.HOUR to hours, TimeData.MINUTE to minutes, TimeData.SECOND to seconds)
+        this.data = mapOf(TimeData.HOUR to hours, TimeData.MINUTE to minutes, TimeData.SECOND to seconds)
     }
 
     /**
@@ -64,6 +61,31 @@ class Time : Serializable {
      */
     fun getData(dataType: TimeData): Int {
         return data[dataType]!!
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
+            return true
+        }
+        return if (other !is Time) {
+            false
+        } else {
+            length == other.length
+        }
+    }
+
+    override fun hashCode(): Int {
+        return Objects.hashCode(length)
+    }
+
+    override fun toString(): String {
+        val days = data[TimeData.HOUR]!! / DAY_HOURS
+        val hours = data[TimeData.HOUR]!! % DAY_HOURS
+        return if (days > 0) {
+            "%d:%02d:%02d:%02d".format(days, hours, data[TimeData.MINUTE], data[TimeData.SECOND])
+        } else {
+            "%d:%02d:%02d".format(hours, data[TimeData.MINUTE], data[TimeData.SECOND])
+        }
     }
 
     companion object {
@@ -93,29 +115,6 @@ class Time : Serializable {
          */
         private const val MAX_TIME = 59
 
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) {
-            return true
-        }
-        return if (other !is Time) {
-            false
-        } else {
-            length == other.length
-        }
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hashCode(length)
-    }
-
-    override fun toString(): String {
-        val days = data[TimeData.HOUR]!! / DAY_HOURS
-        val hours = data[TimeData.HOUR]!! % DAY_HOURS
-        return if (days > 0) {
-            "%d:%02d:%02d:%02d".format(days, hours, data[TimeData.MINUTE], data[TimeData.SECOND])
-        } else "%d:%02d:%02d".format(hours, data[TimeData.MINUTE], data[TimeData.SECOND])
     }
 
     /**

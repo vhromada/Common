@@ -10,8 +10,10 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api(project(":common-result"))
     api("org.springframework.data:spring-data-jpa")
-    api("jakarta.persistence:jakarta.persistence-api")
     api("org.springframework.security:spring-security-core")
+    api("org.springframework:spring-webmvc")
+    api("jakarta.persistence:jakarta.persistence-api")
+    api("com.fasterxml.jackson.core:jackson-annotations")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
@@ -22,6 +24,6 @@ dependencies {
 
 tasks.jar {
     manifest {
-        attributes["Implementation-Title"] = "Core"
+        attributes["Implementation-Title"] = "Common-core"
     }
 }

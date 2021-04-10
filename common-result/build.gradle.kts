@@ -14,6 +14,6 @@ dependencies {
 
 tasks.jar {
     manifest {
-        attributes["Implementation-Title"] = "Result"
+        attributes["Implementation-Title"] = "Common-result"
     }
 }

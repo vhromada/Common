@@ -11,44 +11,44 @@ import org.springframework.security.core.userdetails.UserDetails
  */
 data class Account(
     /**
-     * ID
-     */
-    val id: Int?,
-
-    /**
      * UUID
      */
-    val uuid: String?,
+    val uuid: String,
 
     /**
      * Username
      */
-    private val username: String?,
+    private val username: String,
 
     /**
      * Password
      */
-    private val password: String?,
+    private val password: String,
 
     /**
      * Roles
      */
-    val roles: List<String>?
+    val roles: List<String>,
+
+    /**
+     * True if account is locked
+     */
+    val locked: Boolean
 ) : UserDetails {
 
     override fun getAuthorities(): List<GrantedAuthority> {
-        return roles!!.map { SimpleGrantedAuthority(it) }
+        return roles.map { SimpleGrantedAuthority(it) }
     }
 
     override fun isEnabled(): Boolean {
         return true
     }
 
-    override fun getUsername(): String? {
+    override fun getUsername(): String {
         return username
     }
 
-    override fun getPassword(): String? {
+    override fun getPassword(): String {
         return password
     }
 
@@ -61,7 +61,7 @@ data class Account(
     }
 
     override fun isAccountNonLocked(): Boolean {
-        return true
+        return locked
     }
 
 }

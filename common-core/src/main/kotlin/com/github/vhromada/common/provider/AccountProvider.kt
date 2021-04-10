@@ -7,6 +7,7 @@ import com.github.vhromada.common.entity.Account
  *
  * @author Vladimir Hromada
  */
+@Suppress("unused")
 interface AccountProvider {
 
     /**

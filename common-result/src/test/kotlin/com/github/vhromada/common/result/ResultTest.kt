@@ -36,7 +36,7 @@ class ResultTest {
     @Test
     fun addEvent() {
         result = Result()
-        result.addEvent(infoEvent)
+        result.addEvent(event = infoEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -46,7 +46,7 @@ class ResultTest {
             it.assertThat(result.isError()).isFalse
         }
 
-        result.addEvent(warnEvent)
+        result.addEvent(event = warnEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.WARN)
@@ -56,7 +56,7 @@ class ResultTest {
             it.assertThat(result.isError()).isFalse
         }
 
-        result.addEvent(infoEvent)
+        result.addEvent(event = infoEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.WARN)
@@ -66,7 +66,7 @@ class ResultTest {
             it.assertThat(result.isError()).isFalse
         }
 
-        result.addEvent(errorEvent)
+        result.addEvent(event = errorEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -76,7 +76,7 @@ class ResultTest {
             it.assertThat(result.isError()).isTrue
         }
 
-        result.addEvent(infoEvent)
+        result.addEvent(event = infoEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -86,7 +86,7 @@ class ResultTest {
             it.assertThat(result.isError()).isTrue
         }
 
-        result.addEvent(warnEvent)
+        result.addEvent(event = warnEvent)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -103,7 +103,7 @@ class ResultTest {
     @Test
     fun addEvents() {
         result = Result()
-        result.addEvents(listOf(infoEvent, warnEvent, errorEvent))
+        result.addEvents(eventList = listOf(infoEvent, warnEvent, errorEvent))
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.ERROR)
@@ -119,7 +119,7 @@ class ResultTest {
      */
     @Test
     fun ofData() {
-        result = Result.of(DATA)
+        result = Result.of(data = DATA)
 
         assertSoftly {
             it.assertThat(result.status).isEqualTo(Status.OK)
@@ -135,13 +135,13 @@ class ResultTest {
      */
     @Test
     fun ofResult() {
-        val result1 = Result.of(DATA)
-        val result2 = Result.of(1)
-        result2.addEvent(infoEvent)
-        val result3 = Result.of('c')
-        result3.addEvent(warnEvent)
+        val result1 = Result.of(data = DATA)
+        val result2 = Result.of(data = 1)
+        result2.addEvent(event = infoEvent)
+        val result3 = Result.of(data = 'c')
+        result3.addEvent(event = warnEvent)
         val result4 = Result<Unit>()
-        result4.addEvent(errorEvent)
+        result4.addEvent(event = errorEvent)
 
         val result = Result.of<Unit>(result1, result2, result3, result4)
 

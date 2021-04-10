@@ -58,7 +58,7 @@ class Result<T> : Serializable {
      * @param eventList list of events
      */
     fun addEvents(eventList: List<Event>) {
-        eventList.forEach { addEvent(it) }
+        eventList.forEach { addEvent(event = it) }
     }
 
     /**
@@ -86,7 +86,7 @@ class Result<T> : Serializable {
      * @return new status
      */
     private fun getNewStatus(event: Event): Status {
-        val newStatus = getStatus(event.severity)
+        val newStatus = getStatus(severity = event.severity)
         return if (status.ordinal >= newStatus.ordinal) status else newStatus
     }
 
@@ -129,7 +129,7 @@ class Result<T> : Serializable {
          */
         fun <T> of(vararg results: Result<*>): Result<T> {
             val result = Result<T>()
-            results.forEach { result.addEvents(it.events) }
+            results.forEach { result.addEvents(eventList = it.events) }
             return result
         }
 
@@ -143,7 +143,7 @@ class Result<T> : Serializable {
          */
         fun <T> info(key: String, message: String): Result<T> {
             val result = Result<T>()
-            result.addEvent(Event(Severity.INFO, key, message))
+            result.addEvent(event = Event(severity = Severity.INFO, key = key, message = message))
             return result
         }
 
@@ -157,7 +157,7 @@ class Result<T> : Serializable {
          */
         fun <T> warn(key: String, message: String): Result<T> {
             val result = Result<T>()
-            result.addEvent(Event(Severity.WARN, key, message))
+            result.addEvent(event = Event(severity = Severity.WARN, key = key, message = message))
             return result
         }
 
@@ -171,7 +171,7 @@ class Result<T> : Serializable {
          */
         fun <T> error(key: String, message: String): Result<T> {
             val result = Result<T>()
-            result.addEvent(Event(Severity.ERROR, key, message))
+            result.addEvent(event = Event(severity = Severity.ERROR, key = key, message = message))
             return result
         }
 
